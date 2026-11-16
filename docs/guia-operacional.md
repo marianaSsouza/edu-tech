@@ -83,12 +83,26 @@ O comando:
 2. cronometra 30 operações;
 3. grava o resultado em [`docs/evidencias/desempenho-rnf06.md`](evidencias/desempenho-rnf06.md).
 
+## 6. Hospedagem (tarefa 9.2): não se aplica a esta entrega
+
+A entrega é **local**: o sistema roda no computador de quem apresenta (`npm run dev`, endereço `localhost`), sem servidor na internet. A hospedagem é opcional no design (D13–D17), e nenhuma foi contratada ou configurada. Por isso, as condições abaixo, que valem **só para uma demonstração hospedada** (RNF-02, RNF-05; specs acesso-e-permissoes e gestao-escolar), **não se aplicam** e não são declaradas como prontas:
+
+| Condição para demonstração hospedada | Situação nesta entrega |
+|---|---|
+| Conexão protegida (HTTPS) | Não se aplica: acesso só por `localhost`, sem tráfego pela rede. O cookie de sessão já é `httpOnly` e passa a ser `secure` quando o servidor roda com `NODE_ENV=production` e `HTTPS=1`. |
+| Recuperação de acesso por mecanismo confiável | Não se aplica: não há recuperação de senha. A tela de login orienta a falar com a coordenação, e as contas são de demonstração. |
+| Backup diário com retenção de 30 dias e acesso restrito | Não se aplica: não há servidor contínuo. Há cópia sob demanda (`npm run backup`), e a restauração foi verificada (seção 3). |
+| Senhas fora de texto simples | **Verificado mesmo sendo local**: as 5 contas de `data/fio.sqlite` estão guardadas com hash bcrypt (`$2a$10$…`, 60 caracteres), e a senha de demonstração não aparece em nenhum lugar do arquivo do banco (verificação de 16/11/2026). |
+
+Se o projeto for hospedado no futuro, antes de anunciar a demonstração será preciso: ativar HTTPS, definir como recuperar o acesso, agendar o `npm run backup` diário, apagar cópias com mais de 30 dias e restringir o acesso à pasta `data/`.
+
 ## Registro da verificação
 
 | Data | O quê | Resultado | Evidência |
 |---|---|---|---|
 | 16/11/2026 | Ensaio de restauração (RNF-05, tarefa 9.1) na base de demonstração | Banco restaurado idêntico ao original (18 tabelas) | [`restauracao-rnf05.md`](evidencias/restauracao-rnf05.md) |
 | 16/11/2026 | Restauração por `npm run restaurar` em cópia de teste | Conteúdo idêntico à cópia; banco anterior guardado | Executado manualmente; mesmo comportamento coberto por `copia-seguranca.spec.ts` |
+| 16/11/2026 | Hospedagem (tarefa 9.2) | Entrega local: condições de hospedagem não se aplicam; senhas conferidas com hash bcrypt | Seção 6 deste guia |
 | 16/11/2026 | Medição de desempenho (RNF-06, tarefa 9.3) | 30 de 30 operações em até 2 s | [`desempenho-rnf06.md`](evidencias/desempenho-rnf06.md) |
 
 Observação: a base de demonstração atual não tem revisões registradas (0 linhas em `revisoes_resposta`). Por isso, a preservação de versões e revisões é provada pelo teste automático, que cria uma correção antes da cópia.

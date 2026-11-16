@@ -4,7 +4,7 @@ Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especific
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
 - **Testes automáticos:** 137 de 137 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
 
@@ -58,7 +58,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | | Correção antiga pela autora | ✅ | `calendario.spec.ts`: "correção antiga pela autora em bimestre reaberto…": a autora corrige o 1º bimestre reaberto, com revisão; outra professora recebe AUTORIA. A regra não exige a turma original (`policy.service.ts`), mas não há teste com turma de origem diferente. |
 | | Coordenação tenta editar | ✅ | `avaliacao.spec.ts`: "coordenação lê tudo, mas … salvar dá 403"; a tela fica em modo consulta, sem botão Salvar (verificado manualmente) |
 | Gestão restrita e sessão identificada | Professor tenta administrar matrícula | ❌ | Não há rotas de matrícula nem de cadastro (grupo 7). O cabeçalho já identifica pessoa e perfil, e a sessão encerrada leva ao login. |
-| Proteção de credenciais (hospedada) | Acesso hospedado | N/A | A entrega é local (tarefa 9.2). As senhas são guardadas com hash bcrypt (`seed.ts`) e o cookie é `httpOnly`. |
+| Proteção de credenciais (hospedada) | Acesso hospedado | N/A | A entrega é local; a não aplicabilidade está registrada em [`docs/guia-operacional.md`](guia-operacional.md), seção 6 (tarefa 9.2). Mesmo assim, foi conferido em `data/fio.sqlite` que as 5 senhas estão com hash bcrypt e que a senha de demonstração não aparece no arquivo. O cookie é `httpOnly`. |
 
 ## avaliacao-bimestral
 
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4, 9.1, 9.3.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4, 9.1 a 9.3.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.2, 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

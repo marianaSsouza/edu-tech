@@ -61,7 +61,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 ## 9. Operação e verificações não funcionais — P1
 
 - [x] 9.1 Preparar cópia de segurança e procedimento de restauração da demonstração; executar restauração preservando vínculos, versões e autoria e registrar evidência de RNF-05 no guia operacional.
-- [ ] 9.2 Se houver hospedagem, verificar conexão protegida, recuperação confiável de acesso, ausência de senhas em texto simples e backup diário com retenção de 30 dias/acesso restrito; se a entrega for local, registrar explicitamente a não aplicabilidade das condições de hospedagem.
+- [x] 9.2 Se houver hospedagem, verificar conexão protegida, recuperação confiável de acesso, ausência de senhas em texto simples e backup diário com retenção de 30 dias/acesso restrito; se a entrega for local, registrar explicitamente a não aplicabilidade das condições de hospedagem.
 - [x] 9.3 Medir RNF-06 com 500 alunos, cinco anos e 30 operações após inicialização; verificar pelo menos 29 em até 2 segundos e registrar ambiente, dados e tempos, corrigindo consultas que não cumprirem a meta.
 - [ ] 9.4 Verificar fluxos administrativos e de consulta por teclado, em desktop e 360 px, em dois navegadores disponíveis; registrar versões, foco, rótulos, estados e limitações conforme RNF-04.
 
