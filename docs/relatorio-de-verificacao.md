@@ -3,7 +3,7 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 132 de 132 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Testes automáticos:** 135 de 135 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
 - **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 7.3 (calendário) e 8.2 (evolução da escrita); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
@@ -41,8 +41,8 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
 | gestao-escolar | 8 | 0 | 4 | 4 | 0 |
-| regras-e-casos-de-referencia | 6 | 1 | 2 | 3 | 0 |
-| **Total** | **93** | **70** | **13** | **9** | **1** |
+| regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
+| **Total** | **93** | **74** | **12** | **6** | **1** |
 
 ---
 
@@ -182,10 +182,10 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 | Requisito | Cenário | Situação | Evidência / o que falta |
 | --- | --- | --- | --- |
-| Regras visíveis e coerentes | Consulta das regras | ❌ | Tela de regras (tarefa 8.3) não feita |
-| Execução isolada | Execução com falha | ❌ | Tarefa 8.3 |
-| | Antes da conclusão | ❌ | Tarefa 8.3 |
-| Contratos dos casos de referência | Casos reproduzíveis | ⚠️ | 23 dos 24 CR verificados na suíte automática (tabela abaixo); CR-22 é parcial. Falta a tela de regras (8.3). |
+| Regras visíveis e coerentes | Consulta das regras | ✅ | Tela "Regras" (menu da coordenação; a professora recebe 403, `casos-referencia.spec.ts`), aba "Como o sistema decide": matriz de escrita (política do projeto, não BNCC), fórmulas de atenção e indicadores, limite 2, última marcação, herança, ausência, N < 5 e catálogos CAT-v1 e demonstrativo. Os valores vêm das constantes que o sistema usa (`GET /api/regras`). |
+| Execução isolada | Execução com falha | ✅ | `casos-referencia.spec.ts`: "falha controlada aparece como falha, com esperado e obtido, e ajusta o total"; na tela, "Simular um erro" mostra o CR-01 como "Diferente", com resposta certa e valor calculado lado a lado (verificado no navegador). A execução não acessa o banco. |
+| | Antes da conclusão | ✅ | Enquanto executa, a tela mostra só "⏳ Conferindo os exemplos…"; o resumo e os exemplos só aparecem com o resultado real (`Regras.tsx`; verificado no navegador). |
+| Contratos dos casos de referência | Casos reproduzíveis | ✅ | Os 24 CR estão em `modules/regras/casos-referencia.ts`, com as funções reais: 23 executados na tela (`casos-referencia.spec.ts`: "23 casos … aprovados") e o CR-21 marcado "fora da tela", com evidência de integração. |
 | Demonstração e evidências | Declaração de conclusão | ⚠️ | Este relatório e o roteiro de demonstração (`docs/roteiro-demonstracao.md`). O roteiro PRO-01 a PRO-09 completo (10.1) depende do P1. |
 | | Entrega parcial | ✅ | Este relatório declara a entrega como parcial e lista o que falta |
 
@@ -203,7 +203,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | CR-19 | ✅ | `painel.spec.ts` (domain): "ausência entra no denominador" |
 | CR-20 | ✅ | `painel.spec.ts` (domain); `evolucao.spec.ts` |
 | CR-21 | ✅ | `acesso.spec.ts`, `avaliacao.spec.ts`, `ficha.spec.ts`, `painel.spec.ts` |
-| CR-22 | ⚠️ | O catálogo é fixado por contexto, mas não existe CAT-v2 para comparar |
+| CR-22 | ✅ | Tela de regras / `casos-referencia.ts`: com um CAT-v2 hipotético, a turma CAT-v1 continua com T = 64 (não existe CAT-v2 real no banco) |
 | CR-23 | ✅ | `lacunas.spec.ts`; o painel considera a atenção manual aberta até a referência |
 | CR-24 | ✅ | `cat-v1.spec.ts` (fixture separada) e `percentual.spec.ts` (17/40 = 42,5%) |
 
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 8.3, 8.4, grupo 9 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), grupo 9 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

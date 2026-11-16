@@ -55,8 +55,8 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 
 - [ ] 8.1 Implementar consolidação total/por habilidade, lacunas por habilidade, frações e arredondamento; verificar CR-01–04/12/13/19/24, cobertura, denominador zero, ausência total e barras acessíveis sem ajuste artificial da soma.
 - [x] 8.2 Implementar evolução da escrita usando população B e registros A inclusive após transferência; verificar CR-11/20, nível igual/menor, ausência e mensagem no primeiro bimestre; documentar denominadores.
-- [ ] 8.3 Implementar tela de regras com execução sintética isolada, estado Executando e detalhes de falha; verificar CA-14.1–14.4 e injetar falha controlada para comprovar ausência de sucesso fictício e de gravação pedagógica.
-- [ ] 8.4 Consolidar execução de CR-01–CR-24 nas camadas adequadas, distinguindo testes de integração dos casos da tela; verificar cada resultado contra a tabela da spec e registrar evidências por ID.
+- [x] 8.3 Implementar tela de regras com execução sintética isolada, estado Executando e detalhes de falha; verificar CA-14.1–14.4 e injetar falha controlada para comprovar ausência de sucesso fictício e de gravação pedagógica.
+- [x] 8.4 Consolidar execução de CR-01–CR-24 nas camadas adequadas, distinguindo testes de integração dos casos da tela; verificar cada resultado contra a tabela da spec e registrar evidências por ID.
 
 ## 9. Operação e verificações não funcionais — P1
 

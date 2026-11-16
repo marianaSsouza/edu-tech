@@ -10,9 +10,10 @@ import { HistoricoModule } from './modules/historico/historico.module';
 import { AtencaoModule } from './modules/atencao/atencao.service';
 import { PaineisModule } from './modules/paineis/painel.service';
 import { CalendarioModule } from './modules/calendario/calendario.service';
+import { RegrasModule } from './modules/regras/regras.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(buildDataSourceOptions()), AcessoModule, CatalogoModule, EscolaModule, AvaliacaoModule, HistoricoModule, AtencaoModule, PaineisModule, CalendarioModule],
+  imports: [TypeOrmModule.forRoot(buildDataSourceOptions()), AcessoModule, CatalogoModule, EscolaModule, AvaliacaoModule, HistoricoModule, AtencaoModule, PaineisModule, CalendarioModule, RegrasModule],
   controllers: [HealthController],
 })
 export class AppModule {}

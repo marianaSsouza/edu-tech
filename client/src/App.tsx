@@ -8,6 +8,7 @@ import Avaliacao from './pages/Avaliacao';
 import Ficha from './pages/Ficha';
 import Calendario from './pages/Calendario';
 import Painel from './pages/Painel';
+import Regras from './pages/Regras';
 import { Avatar } from './components/ui';
 
 /** Quem está logado. null = sem sessão. */
@@ -46,7 +47,7 @@ function Layout() {
   const coord = usuario.papel === 'COORDENACAO';
   const itensMenu = [
     { para: '/', rotulo: 'Turmas', fim: true },
-    ...(coord ? [{ para: '/painel', rotulo: 'Painel', fim: false }, { para: '/calendario', rotulo: 'Calendário', fim: false }] : []),
+    ...(coord ? [{ para: '/painel', rotulo: 'Painel', fim: false }, { para: '/calendario', rotulo: 'Calendário', fim: false }, { para: '/regras', rotulo: 'Regras', fim: false }] : []),
   ];
 
   return (
@@ -93,6 +94,7 @@ export const router = createBrowserRouter([
       { path: 'alunos/:id', element: <Ficha /> },
       { path: 'calendario', element: <Calendario /> },
       { path: 'painel', element: <Painel /> },
+      { path: 'regras', element: <Regras /> },
       { path: 'alunos/:id/avaliacao', element: <Avaliacao /> },
       { path: '*', element: <p>Página não encontrada. <Link to="/">Voltar às turmas</Link></p> },
     ],
