@@ -4,7 +4,7 @@
 
 Ver `proposal.md` para motivação e escopo. O repositório inspecionado contém os documentos v1.2 e OpenSpec, sem aplicação, manifesto de dependências ou testes existentes. O design é necessário por envolver autorização, persistência, temporalidade e dez capacidades relacionadas. Não há migração de sistema existente nem integração escolar nesta mudança.
 
-Fontes: `docs/visao-do-produto.md` e `docs/requisitos.md`, versões 1.2. As decisões abaixo complementam suas ambiguidades. Em dois pontos, refinam explicitamente a redação original: ano reaberto continua elegível para herança; fechamento bloqueia escrita pedagógica no período, mas não ações atuais de atenção manual. A ocultação de grupos pequenos aplica-se aos dois perfis. Os documentos-base permanecem intactos nesta fase; sua conciliação documental está prevista nas tarefas.
+Fontes: `docs/visao-do-produto.md` e `docs/requisitos.md`, versões 1.2. As decisões abaixo complementam suas ambiguidades. Em dois pontos, refinam explicitamente a redação original: ano reaberto continua elegível para herança; fechamento bloqueia escrita pedagógica no período, mas não ações atuais de atenção manual. A ocultação de grupos pequenos aplica-se aos dois perfis. Os documentos-base permanecem intactos nesta fase; sua conciliação documental está prevista nas tarefas (feita na versão 1.3 dos documentos-base, seção 11.1 dos Requisitos, tarefa 7.4).
 
 ## Goals / Non-Goals
 

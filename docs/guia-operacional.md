@@ -96,6 +96,25 @@ A entrega é **local**: o sistema roda no computador de quem apresenta (`npm run
 
 Se o projeto for hospedado no futuro, antes de anunciar a demonstração será preciso: ativar HTTPS, definir como recuperar o acesso, agendar o `npm run backup` diário, apagar cópias com mais de 30 dias e restringir o acesso à pasta `data/`.
 
+## 7. Fim do ano letivo: fechamento, passagem de ano e reabertura
+
+Feito pela **coordenação**, no sistema (sem comandos). Antes de começar, faça uma cópia de segurança (`npm run backup`).
+
+1. **Calendário:** feche os bimestres que ainda estão abertos (cada um com justificativa). Ao fechar, o sistema mostra as ausências por turma; fechar não cria avaliações.
+2. **Calendário:** com os quatro bimestres fechados, clique em **Fechar o ano**. A partir daí, as habilidades daquele ano passam a ser herdadas.
+3. **Gestão → Turmas e vínculos:** crie as turmas do ano seguinte (ano letivo = próximo ano) e vincule as professoras titulares (e substitutas, se houver).
+4. **Gestão → Alunos → Movimentar → Passagem de ano ou repetência:** para cada aluno, escolha a turma do ano seguinte. Turma do ano escolar seguinte = **passagem**; mesmo ano escolar = **repetência** (mesmas habilidades, mesmos IDs). Nenhuma avaliação é copiada.
+5. Quem sai da escola: **Movimentar → Saída da escola**, com o motivo. O histórico continua na ficha.
+
+**Reabrir um ano já fechado** (para corrigir algo): **Calendário → Reabrir o ano**, com justificativa, e depois reabra o bimestre que precisa de correção.
+- A passagem de ano e as matrículas do ano seguinte **continuam** como estão.
+- As habilidades do ano reaberto **continuam sendo herdadas** (o sistema lembra que o ano já foi encerrado uma vez).
+- Uma correção feita agora num bimestre antigo **não desfaz** consolidação ou reavaliação registrada num período posterior: vale a ordem dos períodos.
+- Consultas de datas passadas (por exemplo, o painel do 4º bimestre do ano reaberto) continuam usando a matrícula daquela data.
+- Ao terminar a correção, feche o bimestre e o ano de novo.
+
+Verificação automática: `server/src/modules/gestao/reabertura.spec.ts` (tarefa 7.4) e `movimentacoes.spec.ts` (tarefa 7.2).
+
 ## Registro da verificação
 
 | Data | O quê | Resultado | Evidência |
@@ -103,6 +122,7 @@ Se o projeto for hospedado no futuro, antes de anunciar a demonstração será p
 | 16/11/2026 | Ensaio de restauração (RNF-05, tarefa 9.1) na base de demonstração | Banco restaurado idêntico ao original (18 tabelas) | [`restauracao-rnf05.md`](evidencias/restauracao-rnf05.md) |
 | 16/11/2026 | Restauração por `npm run restaurar` em cópia de teste | Conteúdo idêntico à cópia; banco anterior guardado | Executado manualmente; mesmo comportamento coberto por `copia-seguranca.spec.ts` |
 | 16/11/2026 | Hospedagem (tarefa 9.2) | Entrega local: condições de hospedagem não se aplicam; senhas conferidas com hash bcrypt | Seção 6 deste guia |
+| 16/11/2026 | Reabertura depois da passagem de ano (tarefa 7.4) | Matrícula do ano seguinte, herança, eventos posteriores e datas passadas preservados | `reabertura.spec.ts` (3 testes) e seção 7 deste guia |
 | 16/11/2026 | Medição de desempenho (RNF-06, tarefa 9.3) | 30 de 30 operações em até 2 s | [`desempenho-rnf06.md`](evidencias/desempenho-rnf06.md) |
 
 Observação: a base de demonstração atual não tem revisões registradas (0 linhas em `revisoes_resposta`). Por isso, a preservação de versões e revisões é provada pelo teste automático, que cria uma correção antes da cópia.

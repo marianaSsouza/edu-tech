@@ -3,8 +3,8 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 158 de 158 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 e 7.2 (gestão: cadastros, vínculos e movimentações), 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Testes automáticos:** 161 de 161 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 a 7.4 (gestão: cadastros, vínculos, movimentações, calendário e reabertura depois da passagem de ano, com os documentos-base conciliados na v1.3), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
 
@@ -163,7 +163,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | | Ano com período aberto | ✅ | `calendario.spec.ts`: "CA-13.3…": 422 BIMESTRE_ABERTO; com os quatro fechados, o ano fecha |
 | Bloqueios por período | Tentativa de editar avaliação fechada | ✅ | `acesso.spec.ts` e `avaliacao.spec.ts`: "bimestre 2 de 2026 dá 422 PERIODO_FECHADO"; a tela mostra "🔒 Este bimestre está fechado" |
 | | Encerramento atual de atenção manual | ⚠️ | As ações de atenção não dependem do período (`atencao.service.ts`). Falta manter a atenção ativa nas consultas anteriores ao encerramento: hoje o painel usa a situação atual. |
-| Reabertura preserva encerramento | Reabertura após passagem de ano | ✅ | `calendario.spec.ts`: reabrir bimestre de ano fechado exige reabrir o ano; depois disso, a herança (6 pendências do Bernardo) e o contexto de 2026 continuam |
+| Reabertura preserva encerramento | Reabertura após passagem de ano | ✅ | `reabertura.spec.ts` (tarefa 7.4), com passagem real para 2027: "a matrícula de 2027 permanece e 2026 continua elegível para herança", "uma correção antiga, feita depois da reabertura, não supera a consolidação de 2027" e "datas de referência passadas não mudam". Também `calendario.spec.ts` (reabrir bimestre de ano fechado exige reabrir o ano). Procedimento: `docs/guia-operacional.md`, seção 7. |
 
 ## gestao-escolar
 
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1 a 7.3, 8.2 a 8.4, 9.1 a 9.3.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1 a 7.4, 8.2 a 8.4, 9.1 a 9.3.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.4, 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

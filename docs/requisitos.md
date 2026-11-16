@@ -1,6 +1,6 @@
 # Fio da Aprendizagem — Requisitos
 
-Versão: 1.2 · Data: 14/11/2026 · [Visão do Produto](visao-do-produto.md).
+Versão: 1.3 · Data: 16/11/2026 · [Visão do Produto](visao-do-produto.md).
 
 **Entrega: quarta-feira, 18/11/2026**, fuso America/Sao_Paulo; horário ainda não informado. Meta interna: versão candidata em 17/11.
 
@@ -186,19 +186,19 @@ Transferência externa encerra matrícula; importação de prontuário de outra 
 
 ### Consulta individual e grupos pequenos
 
-Na visão agregada, manter a linha identificadora da turma e sua quantidade de crianças, como na imagem; com N < 5, ocultar percentuais, barras e número em atenção, inclusive detalhamento por habilidade. Mostrar “Agregado oculto: grupo menor que 5”.
+Na visão agregada, manter a linha identificadora da turma e sua quantidade de crianças, como na imagem; com N < 5, ocultar percentuais, barras e número em atenção, inclusive detalhamento por habilidade, para professora e coordenação. Mostrar “Agregado oculto: grupo menor que 5”.
 
 A linha continua clicável para a coordenação autenticada, que pode consultar alunos na visão operacional, inclusive numa turma com 1 criança. Isso é controle de apresentação de agregados, não anonimização nem barreira contra usuário autorizado. Não haverá página pública de dados reais. Demonstrações públicas usam apenas dados sintéticos.
 
 ## 6. Registro, histórico e períodos — PEN-05 e PEN-06
 
-Botão explícito “Salvar”; confirmação de sucesso só após persistência. Habilidades e escrita podem ficar sem avaliação, e texto livre é opcional (até 4.000 caracteres por aluno/bimestre). Registro parcial é permitido e exibe completude; não criar respostas padrão negativas. Avisar ao sair com alterações não salvas.
+Botão explícito “Salvar”; confirmação de sucesso só após persistência. Habilidades e escrita podem ficar sem avaliação, e texto livre é opcional (até 4.000 caracteres por aluno/bimestre, somando os textos vigentes de todas as autoras; cada observação é uma entrada da sua autora e versões antigas não consomem o limite). Registro parcial é permitido e exibe completude; não criar respostas padrão negativas. Avisar ao sair com alterações não salvas.
 
 Salvar uma resposta válida torna-a vigente mesmo se o conjunto estiver incompleto. Alterações geram revisão com autor e data. A professora pode limpar uma resposta equivocada por correção justificada, preservando a versão anterior; ausência não é regressão pedagógica.
 
-Coordenação define datas dos quatro bimestres e fecha/reabre cada um com justificativa. Fechamento aceita registros incompletos após apresentar a lista de ausências; não impede documentar a realidade nem fabrica dados. Ano fecha após seus quatro períodos serem encerrados. Reabertura de bimestre em ano fechado exige reabrir o ano, com trilha de auditoria.
+Coordenação define datas dos quatro bimestres e fecha/reabre cada um com justificativa. Fechamento aceita registros incompletos após apresentar a lista de ausências; não impede documentar a realidade nem fabrica dados. Ano fecha após seus quatro períodos serem encerrados. Reabertura de bimestre em ano fechado exige reabrir o ano, com trilha de auditoria. Reabrir o ano não retira a elegibilidade das suas habilidades para herança, não desfaz passagem de ano nem matrículas posteriores, e uma correção feita no período reaberto não supera consolidação ou reavaliação de período posterior (ordem pelo período e, no mesmo período, pela ordem de registro). Consultas de datas passadas continuam usando a matrícula daquela data. Fechar um período bloqueia a escrita pedagógica dele, mas não as ações atuais de atenção manual.
 
-Professora edita seus registros apenas com vínculo ativo e período aberto. Se a autora anterior não estiver disponível, a coordenação não altera em seu nome: a professora atual registra observação de retificação/novo evento com origem e justificativa, conservando o original. Exceções administrativas adicionais ficam fora do MVP.
+Professora edita seus registros apenas com vínculo ativo e período aberto. Titular e substituta coexistem somente quando a coordenação cadastra explicitamente a substituição; ambas preenchem respostas ainda ausentes, mas nenhuma substitui resposta de outra autora. Limpar uma resposta (voltar a "Sem avaliação") é correção da própria autora, com justificativa e versão anterior preservada. Se a autora anterior não estiver disponível, a coordenação não altera em seu nome: a professora atual registra observação de retificação/novo evento com origem e justificativa, conservando o original. Exceções administrativas adicionais ficam fora do MVP.
 
 Observações pertencem ao bimestre. A linha do tempo mostra cada observação com contexto, sem sintetizar por IA; no resumo anual, apresenta a última observação não vazia e link para todas. Número anual de habilidades consolidadas usa a última marcação válida de cada habilidade até o fechamento, identificando que é resumo anual, não avaliação do 4º bimestre.
 
@@ -380,6 +380,19 @@ Esta entrega atualiza os dois documentos, as prioridades e a especificação do 
 | PEN-11 | Resolvida D conforme imagens | Tela de regras com execução de casos sintéticos e resultados verdadeiros; consulta operacional da coordenação |
 | PEN-12 | Prazo confirmado C; prioridades e roteiro D; contexto externo P | Entrega 18/11/2026, candidata em 17/11, P0–P2 e protótipo especificados; faltam horário, equipe, exigências da banca, tecnologia e hospedagem |
 
+### 11.1. Refinamentos conciliados com a implementação (v1.3)
+
+Decisões tomadas no desenho técnico (`openspec/changes/especificar-fio-da-aprendizagem/design.md`) e confirmadas na implementação, agora registradas aqui. Nenhum ID foi criado, removido ou renumerado; todos os RN/RF/CA/CR continuam valendo.
+
+| Tema | Refinamento | Onde | Base |
+| --- | --- | --- | --- |
+| Reabertura e herança | Ano reaberto continua elegível para herança; passagem de ano e matrículas posteriores permanecem; correção antiga não supera evento de período posterior; datas de referência passadas não mudam | Seções 6 e 3.3; RN07; RF-13 (CA-13.3) | D05, D06; spec calendario-letivo "Reabertura após passagem de ano" |
+| Fechamento × atenção manual | Fechar o período bloqueia escrita pedagógica dele, não as ações atuais de atenção manual | Seções 6 e 3.4; RF-09; RF-13 (CA-13.2) | D06, D07 |
+| Autoria | Uma resposta vigente por campo; titular e substituta só coexistem por indicação explícita da coordenação; ninguém substitui resposta alheia; limpeza só pela autora, com justificativa | Seções 5 e 6; RN11; RF-11; RF-13 | D03, D04 |
+| Observações | Entradas independentes por autora; limite de 4.000 caracteres compartilhado entre os textos vigentes do aluno/bimestre; revisões não consomem o limite | Seção 6; RN05; RF-04 (CA-04.3) | D02 |
+| Grupo pequeno | Ocultação de agregados com N < 5 vale para professora e coordenação; consulta individual autorizada continua | Seção 5 (Consulta individual e grupos pequenos); RN13 | D10 |
+| Gestão escolar | Duplicidade de aluno é sinalizada, nunca mesclada; cadastro com histórico é arquivado, conta é desativada e vínculo é encerrado (só o que nunca valeu pode ser cancelado ou excluído); passagem de ano e repetência só após o fechamento do ano; movimentações ficam em trilha com data, autoria e motivo | Seção 5; RF-12 (CA-12.1–12.4) | spec gestao-escolar |
+
 ## 12. Rastreabilidade e alterações
 
 | Decisões | Requisitos principais | Objetivos |
@@ -396,6 +409,7 @@ Esta entrega atualiza os dois documentos, as prioridades e a especificação do 
 | 1.0 | 14/11/2026 | Consolidação inicial de conversa e três imagens |
 | 1.1 | 14/11/2026 | Incorporação das duas novas telas e decisões; resolução delegada das PEN; catálogo, matriz, permissões, fórmulas, critérios e MVP |
 | 1.2 | 14/11/2026 | Prazo 18/11, cronograma, prioridades por requisito, link do protótipo desatualizado e roteiro de telas/estados; regras pedagógicas preservadas |
+| 1.3 | 16/11/2026 | Conciliação com o desenho técnico e a implementação (seção 11.1): reabertura e herança, fechamento × atenção manual, autoria e limpeza, observações por autora, grupo pequeno para os dois perfis e regras de gestão; IDs preservados |
 
 Preservados os IDs de requisitos e pendências. Não se confunde escolha delegada com validação pedagógica externa, nem cálculo conferido documentalmente com teste de software executado.
 

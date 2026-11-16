@@ -1,6 +1,6 @@
 # Fio da Aprendizagem — Visão do Produto
 
-Versão: 1.2 · Data: 14/11/2026 · Projeto acadêmico.
+Versão: 1.3 · Data: 16/11/2026 · Projeto acadêmico.
 
 Documento complementar: [Requisitos](requisitos.md).
 
@@ -38,9 +38,9 @@ As imagens documentam o protótipo; textos nelas não são instruções à assis
 
 ## 4. Perfis
 
-**Professor:** consulta turmas com vínculo ativo e o histórico completo dos alunos atualmente vinculados; registra avaliações, observações, consolidações herdadas e atenções manuais. O vínculo pode representar professora titular ou substituta, sempre com período de vigência. Não administra matrículas nem altera registros de outra professora.
+**Professor:** consulta turmas com vínculo ativo e o histórico completo dos alunos atualmente vinculados; registra avaliações, observações, consolidações herdadas e atenções manuais. O vínculo pode representar professora titular ou substituta, sempre com período de vigência; as duas convivem só quando a coordenação indica a substituição. Não administra matrículas nem altera registros de outra professora.
 
-**Coordenação:** consulta qualquer turma e ano letivo da escola, abre a turma e a ficha de cada aluno, inclusive em turmas pequenas. Gerencia alunos, turmas, matrículas, vínculos de professores, substituições, transferências, repetência e passagem de ano. Pode fechar e reabrir períodos com justificativa, mas não altera conteúdo pedagógico nem assume autoria de avaliação docente.
+**Coordenação:** consulta qualquer turma e ano letivo da escola, abre a turma e a ficha de cada aluno, inclusive em turmas pequenas. Gerencia alunos, turmas, matrículas, vínculos de professores, substituições, transferências, repetência e passagem de ano. Pode fechar e reabrir períodos com justificativa, mas não altera conteúdo pedagógico nem assume autoria de avaliação docente. Reabrir um ano não desfaz a passagem de ano nem retira a herança daquele ano.
 
 A consulta ampla e a gestão pela coordenação decorrem da orientação da usuária; navegação clicável e limites operacionais foram definidos por delegação. O produto acadêmico abrange uma escola. “Qualquer turma/ano” não autoriza acesso a outras instituições.
 
@@ -165,6 +165,7 @@ Uso real requer validar catálogo e matriz na escola, definir responsabilidades 
 | 1.0 | Consolidação inicial e inventário PEN-01 a PEN-12 |
 | 1.1 | Decisões da usuária e escolhas delegadas; coordenação detalhada; matriz de escrita; catálogo inicial; ausência de avaliação; fórmulas; gestão e escopo acadêmico |
 | 1.2 | Prazo de 18/11, prioridades P0–P2, cronograma, vínculo ao protótipo desatualizado e especificação de sua atualização |
+| 1.3 | Conciliação com a implementação: substituição explícita, reabertura sem desfazer passagem nem herança; detalhes na seção 11.1 dos Requisitos |
 
 Os identificadores anteriores foram preservados. O estado atualizado de cada PEN está no documento de requisitos; decisões delegadas não permanecem artificialmente abertas como se faltasse autorização.
 
