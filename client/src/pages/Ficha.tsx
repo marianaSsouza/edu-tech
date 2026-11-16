@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { api, Celula, FichaDto, SituacaoLacuna } from '../api';
 import { Carregando, ErroCaixa } from '../components/Estado';
+import { CartaoAtencao } from '../components/Atencao';
 
 const HAB = ['Não consolidada', 'Em desenvolvimento', 'Consolidada'];
 const SIMB = ['○', '◐', '●'];
@@ -42,6 +43,7 @@ export default function Ficha() {
         <p className="card mt-4" role="note">ℹ Histórico anterior indisponível: não há registros de anos anteriores a {f.linhaDoTempo[0].contexto.anoLetivo}. Nenhuma lacuna foi inventada para esse período.</p>
       )}
 
+      <CartaoAtencao alunoId={f.aluno.id} a={f.atencao} />
       <Lacunas f={f} />
 
       <h2 className="mt-8 text-xl font-extrabold">Linha do tempo</h2>

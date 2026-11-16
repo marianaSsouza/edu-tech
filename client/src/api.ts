@@ -61,8 +61,21 @@ export interface Revisao { versaoAnterior: number; nivelAnterior: number | null;
 export interface Celula { nivel: number; autorNome: string; revisoes: Revisao[] }
 export type SituacaoLacuna = 'NAO_CONSOLIDADA' | 'EM_DESENVOLVIMENTO' | 'SEM_AVALIACAO' | 'CONSOLIDADA';
 
+export interface AtencaoManual {
+  id: number; justificativa: string; situacao: 'ABERTA' | 'ENCERRADA'; autorNome: string; anoLetivo: number; bimestre: number; em: string;
+  eventos: Array<{ id: number; tipo: 'COMENTARIO' | 'ENCERRAMENTO' | 'REABERTURA'; texto: string; autorNome: string; em: string }>;
+}
+
 export interface FichaDto {
   aluno: { id: number; nome: string };
+  atencao: {
+    referencia: { anoLetivo: number; bimestre: number; etapa: number };
+    estado: 'EM_ATENCAO' | 'SEM_SINAL' | 'INCOMPLETA';
+    motivos: Array<'LACUNAS' | 'ESCRITA' | 'MANUAL'>;
+    escritaAusente: boolean; minimoEscrita: number; escrita: number | null;
+    lacunasPendentes: number; limiteLacunas: number; podeAgir: boolean;
+    manuais: AtencaoManual[];
+  };
   historicoAnteriorIndisponivel: boolean;
   linhaDoTempo: Array<{
     contexto: { id: number; anoLetivo: number; etapa: number; catalogo: string };

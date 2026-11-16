@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 import {
-  CatalogSkill, Enrollment, Observation, PedagogicalContext, PedagogicalEvent, Period, ResponseRevision,
+  AttentionEvent, CatalogSkill, Enrollment, ManualAttention, Observation, PedagogicalContext, PedagogicalEvent, Period, ResponseRevision,
   SchoolClass, SkillResponse, TeacherLink, User, WritingResponse, YearClosure,
 } from '../../database/entities';
 import { naoEncontrado } from '../../common/erros';
 import { Relogio } from '../../common/relogio';
 import { bimestreSugerido, situacaoPeriodo } from '../../domain/periodo';
 import { calcularLacunas, Marcacao, resumoAnual, ultimaObservacao } from '../../domain/lacunas';
+import { avaliarAtencao, LIMITE_LACUNAS } from '../../domain/atencao';
 import { PolicyService } from '../acesso/policy.service';
 
 interface Revisao { versaoAnterior: number; nivelAnterior: number | null; nivelNovo: number | null; autorNome: string; justificativa: string; em: string }
@@ -124,7 +125,37 @@ export class FichaService {
     const { itens, decomposicao } = calcularLacunas({ contextosElegiveis: elegiveis, marcacoes, referencia });
     const textoSkill = (id: string) => skills.find((s) => s.id === id)?.texto ?? '';
 
+    // ---- atenção pedagógica na referência atual (RN08/RN09) ----
+    const manuais = await ds.getRepository(ManualAttention).find({ where: { studentId }, order: { id: 'ASC' } });
+    const eventosAtencao = await ds.getRepository(AttentionEvent).find({
+      where: { attentionId: In(manuais.map((x) => x.id).concat(-1)) }, order: { id: 'ASC' },
+    });
+    const escritaRef = escritas.find((e) => e.contextId === atual.id && e.bimestre === referencia.bimestre) ?? null;
+    const avaliacaoAtencao = avaliarAtencao({
+      lacunasPendentes: decomposicao.total,
+      escrita: escritaRef ? escritaRef.nivel : null,
+      etapa: atual.etapa,
+      bimestre: referencia.bimestre,
+      manuaisAtivas: manuais.filter((x) => x.situacao === 'ABERTA').length,
+    });
+    const podeAgir = !this.policy.ehCoordenacao(u) && (await this.policy.temVinculoAtualComAluno(u.id, studentId));
+
     return {
+      atencao: {
+        referencia: { ...referencia, etapa: atual.etapa },
+        ...avaliacaoAtencao,
+        escrita: escritaRef ? escritaRef.nivel : null,
+        lacunasPendentes: decomposicao.total,
+        limiteLacunas: LIMITE_LACUNAS,
+        podeAgir,
+        manuais: manuais.map((x) => ({
+          id: x.id, justificativa: x.justificativa, situacao: x.situacao, autorNome: nome(x.autorId),
+          anoLetivo: x.anoLetivo, bimestre: x.bimestre, em: new Date(x.criadoEm).toISOString(),
+          eventos: eventosAtencao.filter((e) => e.attentionId === x.id).map((e) => ({
+            id: e.id, tipo: e.tipo, texto: e.texto, autorNome: nome(e.autorId), em: new Date(e.criadoEm).toISOString(),
+          })),
+        })),
+      },
       aluno: { id: atual.student.id, nome: atual.student.nome },
       // RN14: ingressante depois do 1º ano sem contexto anterior conhecido → limitação explícita, sem lacunas inventadas
       historicoAnteriorIndisponivel: contextos[0].etapa > 1,
