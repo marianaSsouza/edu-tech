@@ -13,6 +13,7 @@ import Regras from './pages/Regras';
 import { Avatar } from './components/ui';
 import { IconeAluno, IconeCalendario, IconeMenu, IconePainel, IconeRegras, IconeTurmas, Marca } from './components/Icones';
 import Alunos from './pages/Alunos';
+import { BotaoVoltar } from './components/BotaoVoltar';
 
 /** Quem está logado. null = sem sessão. */
 export function useUsuario() {
@@ -102,6 +103,7 @@ function Layout() {
 
       <div className="min-w-0 flex-1">
         <main className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
+          {pathname !== '/' && <BotaoVoltar />}
           <Outlet />
         </main>
         <footer className="px-4 pb-6 text-center text-xs text-muted">Escola fictícia · somente dados sintéticos</footer>
