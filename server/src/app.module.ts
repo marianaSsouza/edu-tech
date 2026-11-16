@@ -8,9 +8,10 @@ import { EscolaModule } from './modules/escola/escola.module';
 import { AvaliacaoModule } from './modules/avaliacao/avaliacao.module';
 import { HistoricoModule } from './modules/historico/historico.module';
 import { AtencaoModule } from './modules/atencao/atencao.service';
+import { PaineisModule } from './modules/paineis/painel.service';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(buildDataSourceOptions()), AcessoModule, CatalogoModule, EscolaModule, AvaliacaoModule, HistoricoModule, AtencaoModule],
+  imports: [TypeOrmModule.forRoot(buildDataSourceOptions()), AcessoModule, CatalogoModule, EscolaModule, AvaliacaoModule, HistoricoModule, AtencaoModule, PaineisModule],
   controllers: [HealthController],
 })
 export class AppModule {}

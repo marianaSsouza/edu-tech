@@ -60,3 +60,10 @@ Dois anos letivos (2025, 1º ano; 2026, 2º ano), 12 alunos, turma 2º A com 8 e
 - **Observações:** uma por autora; limite somado de 4.000 caracteres por aluno/bimestre.
 
 Exemplos com a base fictícia (data atual em 2026): Beatriz e Débora editam o 4º bimestre do 2º A; Carlos não abre alunos do 2º A; Ana Paula não abre mais a turma de 2025; o 1º e o 2º bimestres de 2026 estão fechados.
+
+## Ficha, atenção e painel (grupos 4 a 6)
+
+- **Painel** (tela inicial): turmas do ano com filtros de ano e bimestre. A população é a matrícula na data de referência (último dia do bimestre já encerrado, ou hoje). Turma com menos de 5 crianças mostra "Agregado oculto", para professora e coordenação; a lista de alunos e a ficha continuam acessíveis.
+- **Turma**: indicadores do bimestre (consolidação, coberturas, escrita alfabética, em atenção, atenção não concluída), barras com ausência separada, lacunas por habilidade e lista alfabética de alunos.
+- **Ficha do aluno**: atenção pedagógica com todos os motivos, atenção manual (abrir, comentar, encerrar, reabrir), lacunas herdadas com decomposição e linha do tempo com resumo anual e correções.
+- **Fora do P0 por enquanto**: consolidar/reavaliar lacuna pela tela, corrigir texto original de atenção manual, evolução da escrita entre bimestres e gestão escolar (grupos 7 a 10).

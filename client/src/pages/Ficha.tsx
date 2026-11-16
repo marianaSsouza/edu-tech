@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { api, Celula, FichaDto, SituacaoLacuna } from '../api';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { CartaoAtencao } from '../components/Atencao';
@@ -18,6 +18,8 @@ const data = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
 /** PRO-03 / PRO-05: ficha do aluno com lacunas herdadas e linha do tempo (somente leitura). */
 export default function Ficha() {
   const { id } = useParams();
+  const location = useLocation();
+  const voltar = (location.state as { voltar?: string } | null)?.voltar;
   const q = useQuery({ queryKey: ['ficha', id], queryFn: () => api<FichaDto>(`/alunos/${id}/ficha`) });
 
   if (q.isLoading) return <Carregando texto="Carregando a ficha…" />;
@@ -28,7 +30,7 @@ export default function Ficha() {
 
   return (
     <section>
-      {turmaAtual && <Link to={`/turmas/${turmaAtual.id}`} className="text-sm">← {turmaAtual.nome}</Link>}
+      {(voltar || turmaAtual) && <Link to={voltar ?? `/turmas/${turmaAtual!.id}`} className="text-sm">← Voltar à turma</Link>}
       <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold">{f.aluno.nome}</h1>

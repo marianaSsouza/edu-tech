@@ -55,6 +55,7 @@ function useAcao() {
     try {
       await fn();
       await qc.invalidateQueries({ queryKey: ['ficha'] });
+      qc.invalidateQueries({ queryKey: ['painel'] });
       return true;
     } catch (e) {
       setErro((e as ErroApi).message);

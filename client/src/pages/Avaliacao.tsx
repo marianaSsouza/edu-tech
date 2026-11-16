@@ -147,7 +147,7 @@ function Formulario({ dados, recarregar, irPara }: {
     setEdicoes(restEdicoes);
     setNovaObs(restNova);
     await recarregar();
-    qc.invalidateQueries({ queryKey: ['turma'] });
+    qc.invalidateQueries({ queryKey: ['painel'] });
     qc.invalidateQueries({ queryKey: ['ficha'] }); // CA-08.6: atenção e histórico refletem o que foi salvo
     setSalvando(false);
     if (!falhas.length) {

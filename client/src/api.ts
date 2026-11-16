@@ -101,3 +101,30 @@ export interface FichaDto {
     }>;
   };
 }
+
+// ---- painel (indicadores) ----
+export interface Fracao { n: number; d: number; percentual: string | null }
+export interface Indicadores {
+  N: number;
+  pares: { T: number; C: number; D: number; NC: number; U: number };
+  consolidacao: Fracao; coberturaHabilidades: Fracao; semAvaliacoes: boolean;
+  escritaAlfabetica: Fracao; coberturaEscrita: Fracao; escritaAusente: number;
+  emAtencao: Fracao; atencaoIncompleta: number;
+  porHabilidade: Array<{ skillId: string; previstos: number; C: number; D: number; NC: number; U: number; consolidacao: Fracao }>;
+  lacunasPorHabilidade: Array<{ skillId: string; criancas: number; porAusencia: number; fracao: Fracao }>;
+}
+export interface ReferenciaPainel { anoLetivo: number; bimestre: number; data: string; situacao: 'FUTURO' | 'ENCERRADO' | 'EM_ANDAMENTO' }
+export interface PainelGeral {
+  referencia: ReferenciaPainel; periodos: Array<{ bimestre: number; situacao: Situacao }>; anosDisponiveis: number[]; grupoMinimo: number;
+  turmas: Array<{ turma: { id: number; nome: string; etapa: number; anoLetivo: number }; N: number; oculto: boolean; indicadores: Indicadores | null }>;
+}
+export interface PainelTurma {
+  turma: { id: number; nome: string; etapa: number; anoLetivo: number };
+  referencia: ReferenciaPainel; periodos: Array<{ bimestre: number; situacao: Situacao }>; grupoMinimo: number; limiteLacunas: number;
+  N: number; oculto: boolean; indicadores: Indicadores | null;
+  alunos: Array<{
+    id: number; nome: string; escrita: number | null; habilidadesAvaliadas: number; habilidadesPrevistas: number;
+    lacunas: { total: number; naoConsolidada: number; emDesenvolvimento: number; semAvaliacao: number };
+    atencao: { estado: 'EM_ATENCAO' | 'SEM_SINAL' | 'INCOMPLETA'; motivos: Array<'LACUNAS' | 'ESCRITA' | 'MANUAL'>; escritaAusente: boolean };
+  }>;
+}
