@@ -1,18 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { api, Celula, FichaDto, SituacaoLacuna } from '../api';
+import { api, Celula, FichaDto } from '../api';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { CartaoAtencao } from '../components/Atencao';
+import { TabelaLacunas } from '../components/TabelaLacunas';
 
 const HAB = ['Não consolidada', 'Em desenvolvimento', 'Consolidada'];
 const SIMB = ['○', '◐', '●'];
 const ESCRITA = ['Pré-silábico', 'Silábico', 'Silábico-alfabético', 'Alfabético'];
-const SITUACAO: Record<SituacaoLacuna, string> = {
-  NAO_CONSOLIDADA: '○ Não consolidada',
-  EM_DESENVOLVIMENTO: '◐ Em desenvolvimento',
-  SEM_AVALIACAO: '— Sem avaliação registrada',
-  CONSOLIDADA: '● Consolidada depois',
-};
 const data = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
 
 /** PRO-03 / PRO-05: ficha do aluno com lacunas herdadas e linha do tempo (somente leitura). */
@@ -81,11 +76,11 @@ function Lacunas({ f }: { f: FichaDto }) {
       <p className="text-sm text-muted">
         Situação até o {referencia.bimestre}º bimestre de {referencia.anoLetivo}. Habilidades dos anos anteriores encerrados; a última marcação vale, e ausência não é nível.
       </p>
-      {pendentes.length > 0 && <TabelaLacunas itens={pendentes} />}
+      {pendentes.length > 0 && <TabelaLacunas alunoId={f.aluno.id} itens={pendentes} podeRegistrar={f.lacunas.podeRegistrar} />}
       {consolidadas.length > 0 && (
         <details className="mt-3">
           <summary className="cursor-pointer font-bold">Herdadas já consolidadas ({consolidadas.length})</summary>
-          <TabelaLacunas itens={consolidadas} />
+          <TabelaLacunas alunoId={f.aluno.id} itens={consolidadas} podeRegistrar={f.lacunas.podeRegistrar} />
         </details>
       )}
       {eventos.length > 0 && (
@@ -103,30 +98,6 @@ function Lacunas({ f }: { f: FichaDto }) {
           </ul>
         </>
       )}
-    </div>
-  );
-}
-
-function TabelaLacunas({ itens }: { itens: FichaDto['lacunas']['itens'] }) {
-  return (
-    <div className="mt-2 overflow-x-auto">
-      <table className="w-full min-w-[520px] text-left text-sm">
-        <thead>
-          <tr className="border-b border-line text-muted">
-            <th className="py-1 pr-2">Habilidade</th><th className="pr-2">Origem</th><th className="pr-2">Situação</th><th>Última marcação</th>
-          </tr>
-        </thead>
-        <tbody>
-          {itens.map((i) => (
-            <tr key={i.skillId} className="border-b border-line align-top">
-              <td className="py-1.5 pr-2"><b>{i.skillId}</b> · {i.texto}</td>
-              <td className="pr-2">{i.origem.etapa}º ano ({i.origem.anoLetivo})</td>
-              <td className="pr-2 font-bold">{SITUACAO[i.situacao]}</td>
-              <td>{i.ultima ? `${i.ultima.bimestre}º bim. ${i.ultima.anoLetivo} · ${i.ultima.autorNome}` : '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }

@@ -18,7 +18,7 @@ npm test
 npm run dev
 ```
 
-- O `npm test` deve terminar com `Tests: 113 passed`. Deixe esse terminal visível: ele é a prova automática.
+- O `npm test` deve terminar com `Tests: 129 passed`. Deixe esse terminal visível: ele é a prova automática.
 - Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
 - Senha de todas as contas: `demo1234`.
 - A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.
@@ -79,10 +79,19 @@ Clique em **Sair** e entre como `debora@escola.exemplo` (substituta do 2º A).
    - *Fala:* "A atenção fica encerrada, a autora original continua sendo a Beatriz e o encerramento fica registrado em nome da Débora. O motivo automático de lacunas continua."
    - Spec **atencao-pedagogica**: "Sucessora encerra atenção".
 
+## Extra, se houver tempo (≈ 1 min 30)
+
+1. Como **Beatriz**, na ficha do **Bernardo**, clique em **Consolidar** em H01-LP03 e escreva a evidência. A contagem cai de 6 para 5 e o evento aparece com origem 2025.
+   - Spec **lacunas-herdadas**: "Consolidação e reavaliação com origem" (CR-06).
+2. No painel do **2º A**, 3º bimestre, mostre **Evolução da escrita**: "3 de 8 avaliáveis avançaram (37,5%)" em relação ao 1º bimestre.
+   - Spec **paineis-e-indicadores**: "Evolução entre bimestres" (CR-11).
+3. Como **coordenação**, abra **Calendário** e clique em **Fechar** no 4º bimestre. Antes de confirmar aparecem as ausências por turma; não é preciso confirmar.
+   - Spec **calendario-letivo**: "Fechar bimestre incompleto" (CA-13.2).
+
 ## 5. Acesso negado (≈ 30 s, opcional)
 
 Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para provar o acesso negado por endereço direto, mostre no terminal o teste "Carlos não lê aluno do 2º A; Ana Paula não lê Ana Clara (403, CR-21)".
 
 ## Fechamento (fala sugerida)
 
-"O P0 está completo e verificado: 58 dos 93 cenários das specs estão feitos com evidência, 20 estão parciais e 14 não foram feitos. Isso está detalhado no relatório de verificação. A gestão escolar, o fechamento de bimestres, a evolução da escrita e a tela de regras são o P1 e ficaram para depois, então a entrega está declarada como parcial."
+"O P0 está completo e verificado: 69 dos 93 cenários das specs estão feitos com evidência, 13 estão parciais e 10 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos o calendário (fechar e reabrir bimestres) e a evolução da escrita; a gestão escolar e a tela de regras ficaram para depois, então a entrega está declarada como parcial."

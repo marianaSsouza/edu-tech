@@ -21,3 +21,17 @@ export class YearClosure {
   @PrimaryColumn({ type: 'integer' }) anoLetivo: number;
   @CreateDateColumn() encerradoEm: Date;
 }
+
+export type TipoEventoCalendario = 'FECHAR_BIMESTRE' | 'REABRIR_BIMESTRE' | 'FECHAR_ANO' | 'REABRIR_ANO';
+
+/** RF-13 / RNF-03: trilha de fechamento e reabertura (quem, quando, por quê). bimestre null = ação sobre o ano. */
+@Entity('eventos_calendario')
+export class CalendarEvent {
+  @PrimaryGeneratedColumn() id: number;
+  @Column({ type: 'integer' }) anoLetivo: number;
+  @Column({ type: 'integer', nullable: true }) bimestre: number | null;
+  @Column({ type: 'varchar' }) tipo: TipoEventoCalendario;
+  @Column({ type: 'text' }) justificativa: string;
+  @Column({ type: 'integer' }) autorId: number;
+  @CreateDateColumn() criadoEm: Date;
+}

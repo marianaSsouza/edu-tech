@@ -13,9 +13,10 @@ export default function AlunosTurma() {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const bimestre = params.get('bimestre') ?? '';
+  const comparar = params.get('comparar') ?? '';
   const q = useQuery({
-    queryKey: ['painel', 'turma', id, bimestre],
-    queryFn: () => api<PainelTurma>(`/painel/turmas/${id}?bimestre=${bimestre}`),
+    queryKey: ['painel', 'turma', id, bimestre, comparar],
+    queryFn: () => api<PainelTurma>(`/painel/turmas/${id}?bimestre=${bimestre}&comparar=${comparar}`),
   });
   const d = q.data;
   const voltar = `/?ano=${d?.turma.anoLetivo ?? ''}&bimestre=${d?.referencia.bimestre ?? ''}`;
@@ -42,6 +43,7 @@ export default function AlunosTurma() {
               {d.oculto || !d.indicadores ? <div className="mt-2"><AgregadoOculto N={d.N} minimo={d.grupoMinimo} /></div> : (
                 <>
                   <Cartoes i={d.indicadores} />
+                  {d.evolucao && <EvolucaoEscrita ev={d.evolucao} onComparar={(c) => setParams({ ano: String(d.turma.anoLetivo), bimestre: String(d.referencia.bimestre), comparar: String(c) })} />}
                   <details className="mt-4">
                     <summary className="cursor-pointer font-bold">Lacunas herdadas por habilidade ({d.indicadores.lacunasPorHabilidade.length})</summary>
                     {d.indicadores.lacunasPorHabilidade.length === 0 ? <p className="mt-1 text-sm text-muted">Nenhuma lacuna herdada pendente.</p> : (
@@ -103,5 +105,32 @@ export default function AlunosTurma() {
         </>
       )}
     </section>
+  );
+}
+
+const NOMES_BIM = ['1º', '2º', '3º', '4º'];
+
+/** Tarefa 8.2: E de V avaliáveis e N − V sem comparação; ausência nunca vira zero (CR-11, CR-20). */
+function EvolucaoEscrita({ ev, onComparar }: { ev: NonNullable<PainelTurma['evolucao']>; onComparar: (a: number) => void }) {
+  return (
+    <div className="mt-4 rounded-xl border border-line bg-white p-3">
+      <h3 className="font-extrabold">Evolução da escrita</h3>
+      {ev.mensagem ? <p className="mt-1 text-sm text-muted">{ev.mensagem}</p> : (
+        <>
+          <label className="mt-1 block text-sm">
+            Comparar o {NOMES_BIM[ev.b - 1]} bimestre com o{' '}
+            <select className="rounded-lg border border-line px-2 py-1" value={ev.a} onChange={(e) => onComparar(Number(e.target.value))}>
+              {Array.from({ length: ev.b - 1 }, (_, i) => i + 1).map((x) => <option key={x} value={x}>{NOMES_BIM[x - 1]} bimestre</option>)}
+            </select>
+          </label>
+          <p className="mt-2 text-lg font-extrabold">
+            {ev.E} de {ev.V} avaliáveis avançaram {ev.fracao?.percentual ? `(${ev.fracao.percentual})` : '(Sem dados)'}
+          </p>
+          <p className="text-xs text-muted">
+            {ev.semComparacao} sem comparação (sem escrita em um dos dois bimestres). Nível igual ou menor não conta como avanço; ausência não vira zero.
+          </p>
+        </>
+      )}
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import { Controller, Get, Module, Param, ParseIntPipe } from '@nestjs/common';
 import { UsuarioAtual } from '../../common/auth';
 import { User } from '../../database/entities';
 import { FichaService } from './ficha.service';
+import { LacunasController, LacunasService } from './lacunas.service';
 
 @Controller('alunos')
 export class FichaController {
@@ -13,5 +14,5 @@ export class FichaController {
   }
 }
 
-@Module({ controllers: [FichaController], providers: [FichaService] })
+@Module({ controllers: [FichaController, LacunasController], providers: [FichaService, LacunasService] })
 export class HistoricoModule {}

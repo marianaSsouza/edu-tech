@@ -1,30 +1,16 @@
-PASS src/database/seed/seed.spec.ts (16.695 s)
-  base fictícia e persistência (tarefas 1.2 a 1.4)
-    √ carrega CAT-v1 (40 itens) e a base; repetir a carga não duplica identidades
-    √ reinicialização (reset) devolve exatamente a mesma base
-    √ tem uma turma com oito alunos e outra com quatro em 2026
-    √ mantém titular e substituta vigentes na mesma turma
-    √ habilidade nunca avaliada não vira linha (ausência não é zero)
-    √ rejeita uma segunda resposta vigente para a mesma habilidade/contexto/bimestre
-    √ grava de forma atômica: se a transação falha, nada fica gravado
-PASS src/modules/historico/ficha.spec.ts (17.481 s)
-  ficha do aluno: histórico e lacunas herdadas — integração (tarefas 4.1, 4.2)
-    √ CA-05.1: mostra os contextos de 1º e 2º anos com autoria; CA-05.3: bimestre sem resposta aparece como ausente
-    √ Bernardo: 6 pendências herdadas (3 em desenvolvimento + 1 não consolidada + 2 sem avaliação); consolidação de 2026 sai da conta
-    √ correção identificada: a ficha mostra a revisão com o valor original
-    √ ingressante sem prontuário: "Histórico anterior indisponível" e nenhuma lacuna fabricada (RN14)
-    √ ano anterior reaberto continua elegível para herança (spec lacunas, "Ano anterior reaberto")
-    √ acesso: Ana Paula e Carlos não abrem a ficha da Ana Clara; coordenação abre (CR-21)
-PASS src/domain/percentual.spec.ts
-  percentual (D09)
-    √ 2 de 4 → 50,0%
-    √ 7 de 12 → 58,3%
-    √ 1 de 8 → 12,5% (sem erro de ponto flutuante)
-    √ 2 de 3 → 66,7% (arredonda meio para cima)
-    √ 17 de 40 → 42,5%
-    √ denominador zero não vira 0%
-    √ rejeita entradas inválidas
-PASS src/modules/atencao/atencao.spec.ts (18.303 s)
+PASS src/modules/paineis/evolucao.spec.ts (28.004 s)
+  evolução da escrita — integração
+    √ 2º A: do 1º para o 3º bimestre, 3 de 8 avançam; no 1º pede dois bimestres; grupo pequeno fica oculto
+PASS src/modules/paineis/painel.spec.ts (34.862 s)
+  painel — integração
+    √ CA-11.3 / CR-18: coordenação vê 2º A com agregados e 2º B (4 crianças) com "agregado oculto"
+    √ ocultação vale para os dois perfis; a lista individual continua disponível
+    √ 2º A no 3º bimestre: cobertura 64/64, escrita alfabética 6/8 = 75,0%, 4 crianças em atenção (CA-10.2/10.4)
+    √ 4º bimestre sem registros: 0,0% com aviso, cobertura de escrita 0/8, todos sem escrita (CR-13, CR-16)
+    √ CA-10.3: transferido conta uma vez, na turma da data de referência; com 5 crianças os agregados aparecem
+    √ acesso: Carlos não abre o painel do 2º A; Ana Paula não tem turmas hoje
+    √ turma de 2025 (encerrada) usa o último dia do bimestre como referência
+PASS src/modules/atencao/atencao.spec.ts (40.573 s)
   atenção pedagógica — integração
     √ Davi: lacunas (3) e atenção manual da seed; escrita do 4º bimestre ausente fica indicada (CR-17, CA-08.3)
     √ CA-08.6 / CA-08.7: sem escrita fica incompleta; salvar escrita atualiza a atenção na próxima consulta
@@ -32,12 +18,51 @@ PASS src/modules/atencao/atencao.spec.ts (18.303 s)
     √ coordenação, Carlos e Ana Paula não abrem atenção (403)
     √ CA-09.5: substituta encerra com justificativa (autora original preservada) e depois reabre; nada é apagado
     √ coordenação consulta, mas não encerra (403)
-PASS src/database/seed/cat-v1.spec.ts
-  CAT-v1 (CA-02.1, CR-22)
-    √ tem 40 IDs únicos
-    √ tem oito habilidades por etapa: quatro de LP e quatro de MAT
-    √ o 2º ano oferece H02-LP01..LP04 e H02-MAT01..MAT04, com as descrições da fonte
-    √ a fixture de cinco itens é separada: IDs próprios e denominadores distintos (CR-24)
+PASS src/domain/painel.spec.ts
+  indicadores do painel (RN12, seção 7)
+    √ ausência entra no denominador: C, D, ausente, NC → consolidação 1/4 = 25,0% e cobertura 3/4 = 75,0% (CA-10.4)
+    √ CR-01: [2,2,1,0] → 2/4 = 50,0%
+    √ CR-02 / CR-12: 7/12 = 58,3% e 1/16 = 6,3%
+    √ CR-13: denominador zero é "Sem dados" (0/0); tudo ausente dá 0,0% com aviso
+    √ atenção: aluno com vários motivos conta uma vez; incompleta conta à parte (CR-17, CR-16)
+    √ lacunas por habilidade: duas crianças, uma por ausência (spec "Pendências de naturezas diferentes")
+    √ catálogo não uniforme: T é a soma dos pares previstos
+    √ CR-18: grupo de 4 oculta agregados; de 5 mostra
+  evolução da escrita (seção 7)
+    √ CR-11: duas crianças com dados nos dois períodos; uma avança → 1 de 2
+    √ CR-20: uma de três sem escrita em A; uma das duas comparáveis avança → 1 de 2, 1 sem comparação
+    √ igualdade ou regressão entram em V, mas não em E
+PASS src/modules/historico/ficha.spec.ts (19.601 s)
+  ficha do aluno: histórico e lacunas herdadas — integração (tarefas 4.1, 4.2)
+    √ CA-05.1: mostra os contextos de 1º e 2º anos com autoria; CA-05.3: bimestre sem resposta aparece como ausente
+    √ Bernardo: 6 pendências herdadas (3 em desenvolvimento + 1 não consolidada + 2 sem avaliação); consolidação de 2026 sai da conta
+    √ correção identificada: a ficha mostra a revisão com o valor original
+    √ ingressante sem prontuário: "Histórico anterior indisponível" e nenhuma lacuna fabricada (RN14)
+    √ ano anterior reaberto continua elegível para herança (spec lacunas, "Ano anterior reaberto")
+    √ acesso: Ana Paula e Carlos não abrem a ficha da Ana Clara; coordenação abre (CR-21)
+PASS src/modules/avaliacao/avaliacao.spec.ts (48.078 s)
+  avaliação bimestral — integração (tarefas 3.1–3.3, 3.5; CR-21)
+    leituras
+      √ turmas: coordenação vê todas; Beatriz vê só o 2º A, com 8 alunos (CA-10.1, RF-11)
+      √ alunos da turma em ordem alfabética; Carlos não abre a turma do 2º A (403)
+      √ bimestre sugerido é o 4º; 8 habilidades sem resposta e Beatriz pode editar (CA-01.1, CA-13.1)
+      √ histórico de 2025 fica disponível à professora atual, com autoria preservada (cenário "Histórico de aluno atual")
+      √ Carlos não lê aluno do 2º A; Ana Paula não lê Ana Clara (403, CR-21)
+      √ coordenação lê tudo, mas a leitura volta sem permissão de edição e salvar dá 403
+    autoria entre titular e substituta (D03, cenário "Titular e substituta simultâneas")
+      √ Beatriz salva; Débora sem versão recebe 409; com versão recebe 403 AUTORIA; mas salva uma habilidade ausente
+      √ duas criações simultâneas da mesma habilidade: um sucesso e um 409 (CA-13.5)
+    correção pela autora (D04, RF-13)
+      √ exige justificativa (422), grava revisão, sobe a versão; versão antiga dá 409
+      √ salvar o mesmo nível de novo não cria revisão
+      √ escrita: cria e corrige com revisão; nível fora de 0..3 dá 422
+      √ habilidade de outra etapa é rejeitada (422)
+    período (D06, CA-13.2)
+      √ bimestre 2 de 2026 dá 422 PERIODO_FECHADO
+    observações por autora (D02; RN05, RF-04, CA-04.1–04.3)
+      √ 3.000 + 1.001 caracteres é rejeitado; 3.000 + 1.000 é aceito
+      √ texto vazio é rejeitado (a observação é opcional, mas não se cria vazia)
+      √ só a autora edita; a versão antiga é guardada e não consome o limite; versão antiga dá 409
 PASS src/domain/atencao.spec.ts
   matriz de escrita (RN04)
     √ usa exatamente a matriz da spec
@@ -52,16 +77,41 @@ PASS src/domain/atencao.spec.ts
     √ 2 lacunas e escrita ausente → em atenção por lacunas, com a ausência registrada
     √ CA-09.1 / CA-09.5: manual ativa sinaliza sem critério automático
     √ CA-09.2: texto de atenção precisa de 1 a 2.000 caracteres não vazios
-PASS src/domain/painel.spec.ts
-  indicadores do painel (RN12, seção 7)
-    √ ausência entra no denominador: C, D, ausente, NC → consolidação 1/4 = 25,0% e cobertura 3/4 = 75,0% (CA-10.4)
-    √ CR-01: [2,2,1,0] → 2/4 = 50,0%
-    √ CR-02 / CR-12: 7/12 = 58,3% e 1/16 = 6,3%
-    √ CR-13: denominador zero é "Sem dados" (0/0); tudo ausente dá 0,0% com aviso
-    √ atenção: aluno com vários motivos conta uma vez; incompleta conta à parte (CR-17, CR-16)
-    √ lacunas por habilidade: duas crianças, uma por ausência (spec "Pendências de naturezas diferentes")
-    √ catálogo não uniforme: T é a soma dos pares previstos
-    √ CR-18: grupo de 4 oculta agregados; de 5 mostra
+PASS src/domain/percentual.spec.ts
+  percentual (D09)
+    √ 2 de 4 → 50,0%
+    √ 7 de 12 → 58,3%
+    √ 1 de 8 → 12,5% (sem erro de ponto flutuante)
+    √ 2 de 3 → 66,7% (arredonda meio para cima)
+    √ 17 de 40 → 42,5%
+    √ denominador zero não vira 0%
+    √ rejeita entradas inválidas
+PASS src/database/seed/cat-v1.spec.ts
+  CAT-v1 (CA-02.1, CR-22)
+    √ tem 40 IDs únicos
+    √ tem oito habilidades por etapa: quatro de LP e quatro de MAT
+    √ o 2º ano oferece H02-LP01..LP04 e H02-MAT01..MAT04, com as descrições da fonte
+    √ a fixture de cinco itens é separada: IDs próprios e denominadores distintos (CR-24)
+PASS src/modules/acesso/acesso.spec.ts (50.37 s)
+  acesso e permissões (tarefas 2.1 e 2.2)
+    login (RN11, RNF-02)
+      √ login correto abre sessão e a sessão identifica a pessoa
+      √ senha errada dá 401
+      √ conta desativada dá 401 e a sessão aberta antes deixa de valer (cenário "Desativação de professora")
+      √ logout encerra a sessão
+      √ lê o cookie da sessão no cabeçalho
+    leitura de aluno (RN06, RF-11, CR-21)
+      √ professora vinculada lê aluno da própria turma
+      √ Carlos (2º B) não lê aluno do 2º A: 403
+      √ Ana Paula não lê ex-aluna, mesmo sendo autora dos registros de 2025: 403 (cenário "Ex-aluno sem vínculo")
+      √ coordenação lê qualquer aluno; aluno inexistente dá 404
+      √ turmas: professora só as vinculadas hoje
+    escrita pedagógica (RF-11, RF-13, CA-13.2)
+      √ Beatriz pode escrever no 4º bimestre de 2026
+      √ coordenação nunca escreve (cenário "Coordenação tenta editar")
+      √ bimestre 2 de 2026 está fechado: 422 PERIODO_FECHADO
+      √ bimestre que ainda não começou: 422 PERIODO_FUTURO
+      √ Carlos não escreve para aluno do 2º A: 403
 PASS src/domain/regras.spec.ts
   vigência de datas civis (D06)
     √ é inclusiva nas duas pontas e aceita fim em aberto
@@ -96,60 +146,33 @@ PASS src/domain/lacunas.spec.ts
   resumo anual e observações (RF-05, seção 6)
     √ 4º bimestre sem resposta não apaga a consolidação do 2º
     √ última observação não vazia
-PASS src/modules/acesso/acesso.spec.ts (23.009 s)
-  acesso e permissões (tarefas 2.1 e 2.2)
-    login (RN11, RNF-02)
-      √ login correto abre sessão e a sessão identifica a pessoa
-      √ senha errada dá 401
-      √ conta desativada dá 401 e a sessão aberta antes deixa de valer (cenário "Desativação de professora")
-      √ logout encerra a sessão
-      √ lê o cookie da sessão no cabeçalho
-    leitura de aluno (RN06, RF-11, CR-21)
-      √ professora vinculada lê aluno da própria turma
-      √ Carlos (2º B) não lê aluno do 2º A: 403
-      √ Ana Paula não lê ex-aluna, mesmo sendo autora dos registros de 2025: 403 (cenário "Ex-aluno sem vínculo")
-      √ coordenação lê qualquer aluno; aluno inexistente dá 404
-      √ turmas: professora só as vinculadas hoje
-    escrita pedagógica (RF-11, RF-13, CA-13.2)
-      √ Beatriz pode escrever no 4º bimestre de 2026
-      √ coordenação nunca escreve (cenário "Coordenação tenta editar")
-      √ bimestre 2 de 2026 está fechado: 422 PERIODO_FECHADO
-      √ bimestre que ainda não começou: 422 PERIODO_FUTURO
-      √ Carlos não escreve para aluno do 2º A: 403
-PASS src/modules/avaliacao/avaliacao.spec.ts (23.371 s)
-  avaliação bimestral — integração (tarefas 3.1–3.3, 3.5; CR-21)
-    leituras
-      √ turmas: coordenação vê todas; Beatriz vê só o 2º A, com 8 alunos (CA-10.1, RF-11)
-      √ alunos da turma em ordem alfabética; Carlos não abre a turma do 2º A (403)
-      √ bimestre sugerido é o 4º; 8 habilidades sem resposta e Beatriz pode editar (CA-01.1, CA-13.1)
-      √ histórico de 2025 fica disponível à professora atual, com autoria preservada (cenário "Histórico de aluno atual")
-      √ Carlos não lê aluno do 2º A; Ana Paula não lê Ana Clara (403, CR-21)
-      √ coordenação lê tudo, mas a leitura volta sem permissão de edição e salvar dá 403
-    autoria entre titular e substituta (D03, cenário "Titular e substituta simultâneas")
-      √ Beatriz salva; Débora sem versão recebe 409; com versão recebe 403 AUTORIA; mas salva uma habilidade ausente
-      √ duas criações simultâneas da mesma habilidade: um sucesso e um 409 (CA-13.5)
-    correção pela autora (D04, RF-13)
-      √ exige justificativa (422), grava revisão, sobe a versão; versão antiga dá 409
-      √ salvar o mesmo nível de novo não cria revisão
-      √ escrita: cria e corrige com revisão; nível fora de 0..3 dá 422
-      √ habilidade de outra etapa é rejeitada (422)
-    período (D06, CA-13.2)
-      √ bimestre 2 de 2026 dá 422 PERIODO_FECHADO
-    observações por autora (D02; RN05, RF-04, CA-04.1–04.3)
-      √ 3.000 + 1.001 caracteres é rejeitado; 3.000 + 1.000 é aceito
-      √ texto vazio é rejeitado (a observação é opcional, mas não se cria vazia)
-      √ só a autora edita; a versão antiga é guardada e não consome o limite; versão antiga dá 409
-PASS src/modules/paineis/painel.spec.ts (7.222 s)
-  painel — integração
-    √ CA-11.3 / CR-18: coordenação vê 2º A com agregados e 2º B (4 crianças) com "agregado oculto"
-    √ ocultação vale para os dois perfis; a lista individual continua disponível
-    √ 2º A no 3º bimestre: cobertura 64/64, escrita alfabética 6/8 = 75,0%, 4 crianças em atenção (CA-10.2/10.4)
-    √ 4º bimestre sem registros: 0,0% com aviso, cobertura de escrita 0/8, todos sem escrita (CR-13, CR-16)
-    √ CA-10.3: transferido conta uma vez, na turma da data de referência; com 5 crianças os agregados aparecem
-    √ acesso: Carlos não abre o painel do 2º A; Ana Paula não tem turmas hoje
-    √ turma de 2025 (encerrada) usa o último dia do bimestre como referência
-Test Suites: 12 passed, 12 total
-Tests:       113 passed, 113 total
+PASS src/database/seed/seed.spec.ts (17.636 s)
+  base fictícia e persistência (tarefas 1.2 a 1.4)
+    √ carrega CAT-v1 (40 itens) e a base; repetir a carga não duplica identidades
+    √ reinicialização (reset) devolve exatamente a mesma base
+    √ tem uma turma com oito alunos e outra com quatro em 2026
+    √ mantém titular e substituta vigentes na mesma turma
+    √ habilidade nunca avaliada não vira linha (ausência não é zero)
+    √ rejeita uma segunda resposta vigente para a mesma habilidade/contexto/bimestre
+    √ grava de forma atômica: se a transação falha, nada fica gravado
+PASS src/modules/historico/lacunas.spec.ts (12.965 s)
+  consolidar e reavaliar lacuna herdada — integração
+    √ CR-06 / CA-07.1–07.3: consolidar tira da contagem, mantém 2025 intacto e registra origem, autora e período
+    √ reabertura pedagógica: reavaliar uma herdada consolidada como Em desenvolvimento volta à contagem, com os dois eventos
+    √ CA-07.4: com duas pendências, consolidar uma remove só o motivo por quantidade
+    √ validações: justificativa vazia, habilidade não herdada e reavaliação com nível inválido dão 422
+    √ coordenação e Carlos não registram (403); a ficha da coordenação vem sem permissão
+    √ com o bimestre em andamento fechado, o registro é negado (422 PERIODO_FECHADO)
+PASS src/modules/calendario/calendario.spec.ts (9.187 s)
+  calendário — integração
+    √ só a coordenação gerencia o calendário (403 para professora)
+    √ CA-13.2 "Fechar bimestre incompleto": mostra ausências, fecha com justificativa, bloqueia escrita e não fabrica avaliações
+    √ CA-13.3 "Ano com período aberto": não fecha o ano com bimestre aberto; com os quatro fechados, fecha
+    √ "Reabertura após passagem de ano": exige reabrir o ano; a herança e a matrícula de 2026 continuam
+    √ período futuro não pode ser fechado
+    √ correção antiga pela autora em bimestre reaberto: grava revisão e a ficha identifica o original (acesso e histórico)
+Test Suites: 15 passed, 15 total
+Tests:       129 passed, 129 total
 Snapshots:   0 total
-Time:        25.811 s, estimated 34 s
+Time:        59.102 s
 Ran all test suites.

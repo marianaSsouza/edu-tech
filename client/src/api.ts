@@ -90,10 +90,11 @@ export interface FichaDto {
   }>;
   lacunas: {
     referencia: { anoLetivo: number; bimestre: number };
+    podeRegistrar: boolean; motivoBloqueio: string | null;
     decomposicao: { total: number; naoConsolidada: number; emDesenvolvimento: number; semAvaliacao: number };
     itens: Array<{
       skillId: string; texto: string; origem: { anoLetivo: number; etapa: number }; situacao: SituacaoLacuna; pendente: boolean;
-      ultima: { nivel: number; anoLetivo: number; bimestre: number; tipo: string; autorNome: string } | null;
+      ultima: { nivel: number; anoLetivo: number; bimestre: number; tipo: string; autorNome: string; evidencia: string | null } | null;
     }>;
     eventos: Array<{
       id: number; tipo: string; skillId: string; texto: string; nivel: number; anoLetivo: number; bimestre: number;
@@ -122,6 +123,7 @@ export interface PainelTurma {
   turma: { id: number; nome: string; etapa: number; anoLetivo: number };
   referencia: ReferenciaPainel; periodos: Array<{ bimestre: number; situacao: Situacao }>; grupoMinimo: number; limiteLacunas: number;
   N: number; oculto: boolean; indicadores: Indicadores | null;
+  evolucao: null | { a: number; b: number; mensagem: string | null; E?: number; V?: number; semComparacao?: number; N?: number; fracao?: Fracao };
   alunos: Array<{
     id: number; nome: string; escrita: number | null; habilidadesAvaliadas: number; habilidadesPrevistas: number;
     lacunas: { total: number; naoConsolidada: number; emDesenvolvimento: number; semAvaliacao: number };

@@ -6,6 +6,7 @@ import Turmas from './pages/Turmas';
 import AlunosTurma from './pages/AlunosTurma';
 import Avaliacao from './pages/Avaliacao';
 import Ficha from './pages/Ficha';
+import Calendario from './pages/Calendario';
 
 /** Quem está logado. null = sem sessão. */
 export function useUsuario() {
@@ -45,6 +46,7 @@ function Layout() {
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-2 px-4 py-3">
           <Link to="/" className="text-lg font-extrabold text-ink no-underline">Fio da Aprendizagem</Link>
           <div className="flex items-center gap-3 text-sm">
+            {usuario.papel === 'COORDENACAO' && <Link to="/calendario" className="font-bold">Calendário</Link>}
             <span>
               <b>{usuario.nome}</b> · <span className="text-muted">{papelLegivel(usuario.papel)}</span>
             </span>
@@ -69,6 +71,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Turmas /> },
       { path: 'turmas/:id', element: <AlunosTurma /> },
       { path: 'alunos/:id', element: <Ficha /> },
+      { path: 'calendario', element: <Calendario /> },
       { path: 'alunos/:id/avaliacao', element: <Avaliacao /> },
       { path: '*', element: <p>Página não encontrada. <Link to="/">Voltar às turmas</Link></p> },
     ],

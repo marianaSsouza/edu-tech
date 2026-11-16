@@ -139,6 +139,7 @@ export class FichaService {
       manuaisAtivas: manuais.filter((x) => x.situacao === 'ABERTA').length,
     });
     const podeAgir = !this.policy.ehCoordenacao(u) && (await this.policy.temVinculoAtualComAluno(u.id, studentId));
+    const escritaLacuna = await this.policy.avaliarEscrita(u, atual, referencia.bimestre);
 
     return {
       atencao: {
@@ -162,11 +163,16 @@ export class FichaService {
       linhaDoTempo,
       lacunas: {
         referencia,
+        // tarefa 4.3: consolidar/reavaliar exige vínculo atual e bimestre em andamento aberto
+        podeRegistrar: escritaLacuna.pode,
+        motivoBloqueio: escritaLacuna.motivo,
         decomposicao,
         itens: itens.map((i) => ({
           skillId: i.skillId, texto: textoSkill(i.skillId), origem: i.origem, situacao: i.situacao, pendente: i.pendente,
           ultima: i.ultima && {
             nivel: i.ultima.nivel, anoLetivo: i.ultima.anoLetivo, bimestre: i.ultima.bimestre, tipo: i.ultima.tipo, autorNome: nome(i.ultima.autorId),
+            // consolidação/reavaliação: a evidência aparece direto na linha da lacuna
+            evidencia: i.ultima.tipo === 'AVALIACAO' ? null : eventos.find((e) => e.seq === i.ultima!.seq)?.justificativa ?? null,
           },
         })),
         eventos: eventos.map((e) => ({

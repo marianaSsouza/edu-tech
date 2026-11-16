@@ -1,4 +1,4 @@
-import { agregadosVisiveis, agregar, AlunoPainel, fracao } from './painel';
+import { agregadosVisiveis, agregar, AlunoPainel, evolucaoEscrita, fracao } from './painel';
 
 const aluno = (respostas: Record<string, number>, extra: Partial<AlunoPainel> = {}): AlunoPainel => ({
   skillIds: ['A', 'B', 'C', 'D'], respostas, escrita: 3, atencao: 'SEM_SINAL', lacunas: [], ...extra,
@@ -54,5 +54,17 @@ describe('indicadores do painel (RN12, seção 7)', () => {
   it('CR-18: grupo de 4 oculta agregados; de 5 mostra', () => {
     expect(agregadosVisiveis(4)).toBe(false);
     expect(agregadosVisiveis(5)).toBe(true);
+  });
+});
+
+describe('evolução da escrita (seção 7)', () => {
+  it('CR-11: duas crianças com dados nos dois períodos; uma avança → 1 de 2', () => {
+    expect(evolucaoEscrita([{ a: 1, b: 2 }, { a: 2, b: 2 }])).toMatchObject({ E: 1, V: 2, semComparacao: 0 });
+  });
+  it('CR-20: uma de três sem escrita em A; uma das duas comparáveis avança → 1 de 2, 1 sem comparação', () => {
+    expect(evolucaoEscrita([{ a: null, b: 3 }, { a: 1, b: 3 }, { a: 2, b: 1 }])).toMatchObject({ E: 1, V: 2, semComparacao: 1, N: 3 });
+  });
+  it('igualdade ou regressão entram em V, mas não em E', () => {
+    expect(evolucaoEscrita([{ a: 2, b: 2 }, { a: 3, b: 1 }])).toMatchObject({ E: 0, V: 2 });
   });
 });

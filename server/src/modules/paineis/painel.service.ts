@@ -9,7 +9,7 @@ import { dadosInvalidos, naoEncontrado } from '../../common/erros';
 import { Relogio } from '../../common/relogio';
 import { avaliarAtencao, LIMITE_LACUNAS } from '../../domain/atencao';
 import { calcularLacunas, Marcacao } from '../../domain/lacunas';
-import { agregadosVisiveis, agregar, AlunoPainel, GRUPO_MINIMO } from '../../domain/painel';
+import { agregadosVisiveis, agregar, AlunoPainel, evolucaoEscrita, GRUPO_MINIMO } from '../../domain/painel';
 import { bimestreSugerido, situacaoPeriodo } from '../../domain/periodo';
 import { PolicyService } from '../acesso/policy.service';
 
@@ -40,7 +40,7 @@ export class PainelService {
   }
 
   /** Painel de uma turma: indicadores (ou oculto) e lista alfabética de alunos, sem ranking. */
-  async turma(u: User, classId: number, bimestreParam?: number) {
+  async turma(u: User, classId: number, bimestreParam?: number, compararParam?: number) {
     const t = await this.ds.getRepository(SchoolClass).findOneBy({ id: classId });
     if (!t) throw naoEncontrado('Turma não encontrada.');
     await this.policy.exigirLeituraTurma(u, classId);
@@ -50,7 +50,16 @@ export class PainelService {
       turma: { id: t.id, nome: t.nome, etapa: t.etapa, anoLetivo: t.anoLetivo },
       referencia: ref, periodos, grupoMinimo: GRUPO_MINIMO, limiteLacunas: LIMITE_LACUNAS,
       N: r.N, oculto: r.oculto, indicadores: r.indicadores, alunos: r.alunos,
+      evolucao: r.oculto || ref.situacao === 'FUTURO' ? null : await this.evolucao(r.contextos, ref.bimestre, compararParam ?? 1),
     };
+  }
+
+  /** Tarefa 8.2: compara a escrita do bimestre A (padrão: 1º) com a do selecionado (B), para os alunos da turma em B. */
+  private async evolucao(contextos: number[], b: number, a: number) {
+    if (a >= b) return { a, b, mensagem: 'Selecione dois bimestres distintos: o de comparação precisa ser anterior ao selecionado.' };
+    const escritas = await this.ds.getRepository(WritingResponse).findBy({ contextId: In(contextos.concat(-1)), bimestre: In([a, b]) });
+    const nivel = (ctx: number, bim: number) => escritas.find((e) => e.contextId === ctx && e.bimestre === bim)?.nivel ?? null;
+    return { a, b, mensagem: null, ...evolucaoEscrita(contextos.map((c) => ({ a: nivel(c, a), b: nivel(c, b) }))) };
   }
 
   /** D06: período passado usa o último dia; período em andamento usa hoje; futuro não tem população nem indicadores. */
@@ -71,7 +80,7 @@ export class PainelService {
 
   private async calcular(t: SchoolClass, ref: Referencia) {
     const ds = this.ds;
-    if (ref.situacao === 'FUTURO') return { N: 0, oculto: false, indicadores: null, alunos: [] };
+    if (ref.situacao === 'FUTURO') return { N: 0, oculto: false, indicadores: null, alunos: [], contextos: [] as number[] };
 
     // ---- população: matrícula vigente na data de referência (transferido conta só na turma de destino) ----
     const mats = await ds.query(
@@ -140,7 +149,7 @@ export class PainelService {
     const N = alunos.length;
     const oculto = !agregadosVisiveis(N);
     // RN13: com N < 5, nenhum agregado sai do servidor (a lista individual continua para quem pode consultar)
-    return { N, oculto, indicadores: oculto ? null : agregar(paraAgregar), alunos };
+    return { N, oculto, indicadores: oculto ? null : agregar(paraAgregar), alunos, contextos: ctxs.map((c) => c.id) };
   }
 }
 
@@ -161,8 +170,8 @@ export class PainelController {
   }
 
   @Get('turmas/:id')
-  turma(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Query('bimestre') bimestre?: string) {
-    return this.painel.turma(u, id, numero(bimestre));
+  turma(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Query('bimestre') bimestre?: string, @Query('comparar') comparar?: string) {
+    return this.painel.turma(u, id, numero(bimestre), numero(comparar));
   }
 }
 

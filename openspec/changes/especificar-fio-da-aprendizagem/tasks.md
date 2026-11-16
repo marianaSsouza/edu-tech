@@ -28,7 +28,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 
 - [x] 4.1 Implementar linha do tempo e consulta de versões, com resumo anual e última observação não vazia; verificar CA-05.1–05.3, quarta avaliação ausente sem apagar marcação anterior e acesso a todas as observações.
 - [x] 4.2 Implementar elegibilidade de anos encerrados ao menos uma vez, deduplicação por ID e última marcação; verificar CA-06.1–06.3, CR-05/07, repetência e histórico externo indisponível sem lacunas fabricadas.
-- [ ] 4.3 Implementar consolidação e reavaliação herdada com origem e justificativa; verificar CA-07.1–07.4, CR-06 e reabertura da pendência após regressão. _(Parcial: regra de consolidação/reavaliação pronta e testada; falta a tela para registrar o evento.)_
+- [x] 4.3 Implementar consolidação e reavaliação herdada com origem e justificativa; verificar CA-07.1–07.4, CR-06 e reabertura da pendência após regressão.
 - [x] 4.4 Implementar precedência por período/ordem de registro e revisão na posição original; verificar eventos distintos no mesmo bimestre, correção retroativa e CR-23, documentando a diferença entre correção e avanço posterior.
 
 ## 5. Atenção pedagógica — P0
@@ -48,13 +48,13 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 
 - [ ] 7.1 Implementar formulários de alunos, turmas, professores, contas e vínculos com vigência; verificar CA-12.1/12.4, sinalização de duplicidade, arquivamento e coexistência explícita de titular/substituta.
 - [ ] 7.2 Implementar transferências internas/externas, passagem de ano, repetência e mudança excepcional de etapa; verificar CA-12.2/12.3, matrícula única e registro preservado sem cópia de avaliações.
-- [ ] 7.3 Implementar calendário escolar único, fechamento/reabertura com justificativa e lista de ausências; verificar CA-13.2/13.3, ano com quatro períodos encerrados e bloqueio de registro/indicadores futuros.
+- [x] 7.3 Implementar calendário escolar único, fechamento/reabertura com justificativa e lista de ausências; verificar CA-13.2/13.3, ano com quatro períodos encerrados e bloqueio de registro/indicadores futuros.
 - [ ] 7.4 Verificar reabertura após passagem de ano preservando matrícula, herança e eventos posteriores, além de datas de referência passadas; atualizar documentação operacional e conciliar essas decisões e as de autoria/observações nos dois documentos-base, preservando IDs.
 
 ## 8. Indicadores completos e referência — P1
 
 - [ ] 8.1 Implementar consolidação total/por habilidade, lacunas por habilidade, frações e arredondamento; verificar CR-01–04/12/13/19/24, cobertura, denominador zero, ausência total e barras acessíveis sem ajuste artificial da soma.
-- [ ] 8.2 Implementar evolução da escrita usando população B e registros A inclusive após transferência; verificar CR-11/20, nível igual/menor, ausência e mensagem no primeiro bimestre; documentar denominadores.
+- [x] 8.2 Implementar evolução da escrita usando população B e registros A inclusive após transferência; verificar CR-11/20, nível igual/menor, ausência e mensagem no primeiro bimestre; documentar denominadores.
 - [ ] 8.3 Implementar tela de regras com execução sintética isolada, estado Executando e detalhes de falha; verificar CA-14.1–14.4 e injetar falha controlada para comprovar ausência de sucesso fictício e de gravação pedagógica.
 - [ ] 8.4 Consolidar execução de CR-01–CR-24 nas camadas adequadas, distinguindo testes de integração dos casos da tela; verificar cada resultado contra a tabela da spec e registrar evidências por ID.
 

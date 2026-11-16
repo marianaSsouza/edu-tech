@@ -88,3 +88,17 @@ export function agregar(alunos: AlunoPainel[]): Agregados {
 export function agregadosVisiveis(N: number): boolean {
   return N >= GRUPO_MINIMO;
 }
+
+export interface Evolucao { E: number; V: number; semComparacao: number; N: number; fracao: Fracao }
+
+/**
+ * Evolução da escrita (seção 7, CR-11/CR-20): conjunto = alunos da turma na referência B; registros A dos mesmos alunos.
+ * E = nível B > nível A; V = escrita presente em A e em B; N − V sem comparação. Ausência nunca vira zero;
+ * igual ou menor não conta como avanço.
+ */
+export function evolucaoEscrita(alunos: Array<{ a: number | null; b: number | null }>): Evolucao {
+  const comparaveis = alunos.filter((x) => x.a !== null && x.b !== null);
+  const E = comparaveis.filter((x) => (x.b as number) > (x.a as number)).length;
+  const V = comparaveis.length;
+  return { E, V, semComparacao: alunos.length - V, N: alunos.length, fracao: fracao(E, V) };
+}
