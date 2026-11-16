@@ -9,7 +9,10 @@
     "seed": "ts-node src/database/seed/run-seed.ts",
     "seed:reset": "ts-node src/database/seed/run-seed.ts --reset",
     "test": "jest",
-    "desempenho": "ts-node src/desempenho/medir.ts"
+    "desempenho": "ts-node src/desempenho/medir.ts",
+    "backup": "ts-node src/operacao/cli.ts backup",
+    "restaurar": "ts-node src/operacao/cli.ts restaurar",
+    "verificar-restauracao": "ts-node src/operacao/cli.ts verificar"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

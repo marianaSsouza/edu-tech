@@ -3,8 +3,8 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 135 de 135 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Testes automáticos:** 137 de 137 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
 
@@ -40,9 +40,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | paineis-e-indicadores | 15 | 15 | 0 | 0 | 0 |
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
-| gestao-escolar | 8 | 0 | 4 | 4 | 0 |
+| gestao-escolar | 8 | 1 | 3 | 4 | 0 |
 | regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **75** | **12** | **5** | **1** |
+| **Total** | **93** | **76** | **11** | **5** | **1** |
 
 ---
 
@@ -176,7 +176,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Passagem de ano e repetência | Repetência | ⚠️ | A regra de herança com repetência está testada (`lacunas.spec.ts`). Falta a operação de matrícula (7.2). |
 | | Mudança excepcional de etapa | ❌ | Tarefa 7.2 (P1) |
 | Transferência externa e arquivamento | Saída da escola | ❌ | Tarefa 7.2 (P1) |
-| Dados sintéticos e recuperação | Restauração antes da entrega | ⚠️ | `npm run seed:reset` recria a base do zero (`seed.spec.ts`: "reinicialização devolve exatamente a mesma base"). Falta o procedimento de cópia e restauração do arquivo (9.1). |
+| Dados sintéticos e recuperação | Restauração antes da entrega | ✅ | Procedimento em [`docs/guia-operacional.md`](guia-operacional.md) (`npm run backup`, `npm run restaurar`). `npm run verificar-restauracao` restaurou a base de demonstração em ambiente separado: 18 tabelas idênticas (linhas e hash de todo o conteúdo), evidência em [`docs/evidencias/restauracao-rnf05.md`](evidencias/restauracao-rnf05.md). `copia-seguranca.spec.ts`: "restaura vínculos, matrículas, avaliações com versão, revisões e autoria exatamente como estavam". Reinício: `npm run seed:reset` (`seed.spec.ts`). |
 
 ## regras-e-casos-de-referencia
 
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4, 9.3.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4, 9.1, 9.3.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.1, 9.2, 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.2, 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

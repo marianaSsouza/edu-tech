@@ -28,7 +28,12 @@ Abra **http://localhost:5173** e entre com uma das contas de demonstração abai
 | --- | --- |
 | `npm test` | roda os testes do servidor (catálogo, regras puras, base fictícia, persistência, acesso e avaliação) |
 | `npm run seed:reset` | apaga os dados e recria a base fictícia do zero |
+| `npm run backup` | cria uma cópia de segurança conferida em `data/backups/` (pode rodar com o sistema ligado) |
+| `npm run restaurar -- data/backups/<arquivo>` | volta o banco para essa cópia (com o sistema desligado); guarda o banco anterior ao lado |
+| `npm run verificar-restauracao` | ensaia a restauração em pasta separada e grava a evidência em `docs/evidencias/restauracao-rnf05.md` |
 | `npm run desempenho` | mede o RNF-06: cria uma base sintética de 500 alunos e 5 anos em `data/desempenho.sqlite` (fora do git), sobe a aplicação e cronometra 30 operações; o resultado vai para `docs/evidencias/desempenho-rnf06.md` |
+
+Cópia de segurança, restauração e reinício passo a passo: [`docs/guia-operacional.md`](docs/guia-operacional.md).
 | `npm run build` e `npm start` | compila tudo e serve cliente e API juntos em http://localhost:3000 |
 
 ## Contas de demonstração (senha: `demo1234`)
