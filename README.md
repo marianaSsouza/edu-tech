@@ -67,3 +67,9 @@ Exemplos com a base fictícia (data atual em 2026): Beatriz e Débora editam o 4
 - **Turma**: indicadores do bimestre (consolidação, coberturas, escrita alfabética, em atenção, atenção não concluída), barras com ausência separada, lacunas por habilidade e lista alfabética de alunos.
 - **Ficha do aluno**: atenção pedagógica com todos os motivos, atenção manual (abrir, comentar, encerrar, reabrir), lacunas herdadas com decomposição e linha do tempo com resumo anual e correções.
 - **Fora do P0 por enquanto**: consolidar/reavaliar lacuna pela tela, corrigir texto original de atenção manual, evolução da escrita entre bimestres e gestão escolar (grupos 7 a 10).
+
+### Exemplos de permissão, correção e estados (tarefas 2.3, 4.4 e 5.3)
+
+- **Transferência:** se um aluno do 2º A passa para o 2º B no mesmo ano, o registro bimestral continua no mesmo contexto (nada é copiado). O professor do 2º B passa a ler e a preencher o que estiver ausente; as respostas já salvas continuam com a autora original, que só pode corrigi-las se tiver vínculo atual com o aluno.
+- **Correção x avanço:** corrigir uma avaliação antiga troca a versão vigente daquele mesmo período e guarda a anterior (aparece "✎ corrigida" na ficha). Um avanço (consolidação feita depois) é um evento novo, num período posterior: não reescreve o ano anterior e prevalece sobre ele na herança, mesmo que a correção antiga seja feita hoje.
+- **Estados de atenção:** "Em atenção" (com todos os motivos), "Sem sinal de atenção nos dados disponíveis" e "Atenção automática não concluída: escrita sem avaliação". "Histórico anterior indisponível" é um aviso separado e não muda o estado de atenção.

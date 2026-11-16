@@ -1,0 +1,88 @@
+# Roteiro de demonstração (7 minutos)
+
+Escola fictícia, dados sintéticos. Cada passo indica a spec e o cenário que ele demonstra, para o avaliador conferir no [relatório de verificação](relatorio-de-verificacao.md).
+
+## Antes de começar (5 minutos antes)
+
+Na pasta do projeto, um comando por vez:
+
+```bash
+npm run seed:reset
+```
+
+```bash
+npm test
+```
+
+```bash
+npm run dev
+```
+
+- O `npm test` deve terminar com `Tests: 113 passed`. Deixe esse terminal visível: ele é a prova automática.
+- Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
+- Senha de todas as contas: `demo1234`.
+- A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.
+
+## 1. Coordenação: painel e grupo pequeno (≈ 1 min 30)
+
+Entre como `coordenacao@escola.exemplo`.
+
+1. Na tela inicial, clique em **3º bim.**
+   - *Fala:* "A população é a matrícula no último dia do bimestre. O 2º A tem 8 crianças e mostra os indicadores; o 2º B tem 4, então o agregado fica oculto, para a coordenação e para o professor."
+   - Spec **paineis-e-indicadores**: "População do período" e "Limite de apresentação" (CR-18).
+2. Abra o **2º A**. Mostre consolidação 48,4% (31/64), cobertura 100,0%, escrita alfabética 75,0% (6/8) e em atenção 50,0% (4/8).
+   - *Fala:* "Toda porcentagem vem com a fração. A ausência entra no denominador e aparece hachurada na barra; não vira 'não consolidada'."
+   - Spec **paineis-e-indicadores**: "Consolidação e cobertura" e "Frações e arredondamento".
+3. Clique em **4º bim.**: aparece o aviso "Sem avaliações registradas" e 0,0%.
+   - *Fala:* "Aqui o 0,0% é falta de registro, não desempenho."
+   - Cenário "Turma sem avaliações" (CR-13).
+4. Volte ao 3º bimestre e abra o **2º B**: aparece "Agregado oculto", mas os 4 alunos continuam na lista e podem ser abertos.
+
+## 2. Ficha do aluno: lacunas, histórico e atenção (≈ 2 min)
+
+Ainda como coordenação, abra o **2º A** e clique em **Bernardo**.
+
+1. **Atenção pedagógica:** "Em atenção" por lacunas, com a escrita do 4º bimestre ainda sem avaliação.
+   - Spec **atencao-pedagogica**: "Lacunas com escrita ausente".
+2. **Lacunas herdadas:** "6 pendências: 1 não consolidada + 3 em desenvolvimento + 2 sem avaliação registrada".
+   - *Fala:* "Habilidade nunca avaliada conta como pendência, mas aparece separada; não recebe nível negativo."
+   - Spec **lacunas-herdadas**: CR-07.
+3. Mostre a consolidação de H01-LP02 feita em 2026, com origem, autora, data e evidência.
+4. Desça até a **linha do tempo de 2025**: o resumo anual do H01-LP02 continua "◐ Em desenvolvimento".
+   - *Fala:* "O avanço de 2026 não reescreve 2025."
+   - Spec **historico-pedagogico**: "Consolidação posterior" (CA-07.1).
+5. Clique em **← Voltar à turma**: volta ao 3º bimestre com o filtro preservado.
+
+## 3. Professora: avaliar e salvar (≈ 2 min)
+
+Clique em **Sair** e entre como `beatriz@escola.exemplo` (titular do 2º A).
+
+1. Abra 2º A → **Ana Clara** → **Avaliação →**. O 4º bimestre está aberto e vazio.
+2. Marque **H02-LP01 = Consolidada** e **Escrita = Alfabético**. Mostre a completude ("1 de 8").
+3. Clique em **Salvar**: aparece "✔ Tudo salvo".
+   - Spec **avaliacao-bimestral**: "Salvar somente uma habilidade".
+4. Troque H02-LP01 para **Em desenvolvimento**. Aparece o campo de justificativa; salve sem preencher e mostre o aviso. Preencha e salve.
+   - *Fala:* "A correção guarda a versão anterior; na ficha aparece ✎ com o valor original."
+5. Clique em **2º bimestre**: "🔒 Este bimestre está fechado. Somente consulta".
+   - Spec **calendario-letivo**: "Tentativa de editar avaliação fechada".
+6. Abra a ficha da Ana Clara (link no topo): a atenção agora diz "Sem sinal de atenção nos dados disponíveis", porque a escrita foi registrada.
+   - CA-08.6: atualiza depois de salvar.
+
+## 4. Substituta: autoria e atenção manual (≈ 1 min 30)
+
+Clique em **Sair** e entre como `debora@escola.exemplo` (substituta do 2º A).
+
+1. Abra a avaliação da **Ana Clara** no 4º bimestre: H02-LP01 está bloqueada com "Registrado por Profª Beatriz".
+   - *Fala:* "A substituta preenche o que está vazio e pode escrever a própria observação, mas não troca a resposta da titular."
+   - Spec **acesso-e-permissoes**: "Titular e substituta simultâneas".
+2. Abra a ficha do **Davi** → atenção manual → **Encerrar**, escreva o motivo e salve.
+   - *Fala:* "A atenção fica encerrada, a autora original continua sendo a Beatriz e o encerramento fica registrado em nome da Débora. O motivo automático de lacunas continua."
+   - Spec **atencao-pedagogica**: "Sucessora encerra atenção".
+
+## 5. Acesso negado (≈ 30 s, opcional)
+
+Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para provar o acesso negado por endereço direto, mostre no terminal o teste "Carlos não lê aluno do 2º A; Ana Paula não lê Ana Clara (403, CR-21)".
+
+## Fechamento (fala sugerida)
+
+"O P0 está completo e verificado: 58 dos 93 cenários das specs estão feitos com evidência, 20 estão parciais e 14 não foram feitos. Isso está detalhado no relatório de verificação. A gestão escolar, o fechamento de bimestres, a evolução da escrita e a tela de regras são o P1 e ficaram para depois, então a entrega está declarada como parcial."

@@ -1,3 +1,4 @@
+import { Enrollment, PedagogicalContext, Period, SchoolClass, Student } from '../../database/entities';
 import { criarBaseTeste } from '../../test-utils/base-teste';
 import { PolicyService } from '../acesso/policy.service';
 import { AvaliacaoService } from '../avaliacao/avaliacao.service';
@@ -50,6 +51,23 @@ describe('ficha do aluno: histórico e lacunas herdadas — integração (tarefa
     const cel = f.linhaDoTempo[1].habilidades.find((h) => h.id === 'H02-LP01')!.porBimestre[3]!;
     expect(cel.nivel).toBe(2);
     expect(cel.revisoes).toEqual([expect.objectContaining({ nivelAnterior: 1, nivelNovo: 2, autorNome: 'Profª Beatriz', justificativa: 'Revi a leitura.' })]);
+  });
+
+  it('ingressante sem prontuário: "Histórico anterior indisponível" e nenhuma lacuna fabricada (RN14)', async () => {
+    const turma = await b.ds.getRepository(SchoolClass).findOneByOrFail({ nome: '2º A', anoLetivo: 2026 });
+    const s = await b.ds.getRepository(Student).save({ nome: 'Nina (ingressante)' });
+    const c = await b.ds.getRepository(PedagogicalContext).save({ studentId: s.id, anoLetivo: 2026, etapa: 2, catalogVersion: 'CAT-v1' });
+    await b.ds.getRepository(Enrollment).insert({ contextId: c.id, classId: turma.id, de: '2026-08-10', ate: null });
+    const f = await ficha.ficha(b.beatriz, s.id);
+    expect(f.historicoAnteriorIndisponivel).toBe(true);
+    expect(f.lacunas.decomposicao.total).toBe(0);
+    expect(f.atencao.estado).toBe('INCOMPLETA'); // limitação do histórico não cria estado de atenção
+  });
+
+  it('ano anterior reaberto continua elegível para herança (spec lacunas, "Ano anterior reaberto")', async () => {
+    await b.ds.getRepository(Period).update({ anoLetivo: 2025, bimestre: 4 }, { estado: 'REABERTO' });
+    const f = await ficha.ficha(b.beatriz, (await b.aluno('Bernardo')).id);
+    expect(f.lacunas.decomposicao.total).toBe(6);
   });
 
   it('acesso: Ana Paula e Carlos não abrem a ficha da Ana Clara; coordenação abre (CR-21)', async () => {
