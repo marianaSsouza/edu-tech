@@ -20,13 +20,13 @@ npm run seed       # cria data/fio.sqlite com CAT-v1 e a base fictícia
 npm run dev        # servidor em http://localhost:3000 e cliente em http://localhost:5173
 ```
 
-Abra **http://localhost:5173**. A página deve mostrar o servidor "ok", 40 habilidades e a base de demonstração carregada.
+Abra **http://localhost:5173** e entre com uma das contas de demonstração abaixo. Fluxo: Turmas → Alunos da turma → Avaliação (por bimestre) → Salvar.
 
 ## Outros comandos
 
 | Comando | O que faz |
 | --- | --- |
-| `npm test` | roda os testes do servidor (catálogo, cálculo de percentual, base fictícia, persistência) |
+| `npm test` | roda os testes do servidor (catálogo, regras puras, base fictícia, persistência, acesso e avaliação) |
 | `npm run seed:reset` | apaga os dados e recria a base fictícia do zero |
 | `npm run build` e `npm start` | compila tudo e serve cliente e API juntos em http://localhost:3000 |
 
@@ -49,3 +49,14 @@ Dois anos letivos (2025, 1º ano; 2026, 2º ano), 12 alunos, turma 2º A com 8 e
 - **`npm install` falha em `better-sqlite3`:** confira `node -v` (precisa ser 20 ou maior) e rode `npm install` de novo. Se pedir compilador, o binário pronto não foi encontrado; me envie a mensagem de erro.
 - **Porta ocupada:** use `PORT=3001 npm start` (ou ajuste a porta no `vite.config.ts`).
 - **Banco em outro lugar:** defina `DB_PATH` com o caminho do arquivo.
+
+## Permissões e salvamento (Slice 2, tarefas 2.1–2.2 e 3.1–3.3/3.5)
+
+- **Login** por sessão (cookie `fio_sessao`, 8 h, guardado em memória: reiniciar o servidor desloga todo mundo). Conta desativada não entra.
+- **Quem lê:** coordenação lê todos os alunos e turmas. Professora lê só alunos da turma com vínculo vigente hoje (inclusive o histórico de anos anteriores desses alunos). Ex-aluno sem vínculo: negado.
+- **Quem escreve:** só professora com vínculo atual, em bimestre já iniciado e não fechado. Coordenação só consulta.
+- **Autoria:** titular e substituta preenchem habilidades ainda sem resposta; a resposta de outra professora não pode ser trocada (use uma observação própria). Corrigir a própria resposta exige justificativa e guarda a versão anterior.
+- **Conflito:** se outra pessoa salvou antes, o servidor responde 409; a tela recarrega e mantém só o que não foi salvo.
+- **Observações:** uma por autora; limite somado de 4.000 caracteres por aluno/bimestre.
+
+Exemplos com a base fictícia (data atual em 2026): Beatriz e Débora editam o 4º bimestre do 2º A; Carlos não abre alunos do 2º A; Ana Paula não abre mais a turma de 2025; o 1º e o 2º bimestres de 2026 estão fechados.

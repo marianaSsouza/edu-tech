@@ -22,3 +22,13 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
+
+/* Componentes simples reaproveitados nas telas. Foco sempre visível (RNF-04). */
+@layer components {
+  .card { @apply rounded-2xl border border-line bg-white p-4; }
+  .btn { @apply rounded-xl bg-brand px-4 py-2 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-sec { @apply rounded-xl border border-line bg-white px-3 py-1.5 font-bold text-ink hover:border-brand disabled:opacity-50; }
+  .campo { @apply w-full rounded-lg border border-line bg-white px-3 py-2; }
+}
+a { color: var(--color-brand); }
+:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; }

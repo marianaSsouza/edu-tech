@@ -1,7 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { Public } from './common/auth';
 import { CatalogSkill, User } from './database/entities';
 
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(private readonly ds: DataSource) {}
