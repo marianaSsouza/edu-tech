@@ -18,7 +18,7 @@ npm test
 npm run dev
 ```
 
-- O `npm test` deve terminar com `Tests: 149 passed`. Deixe esse terminal visível: ele é a prova automática.
+- O `npm test` deve terminar com `Tests: 158 passed`. Deixe esse terminal visível: ele é a prova automática.
 - Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
 - Senha de todas as contas: `demo1234`.
 - A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.
@@ -88,7 +88,7 @@ Clique em **Sair** e entre como `debora@escola.exemplo` (substituta do 2º A).
 3. Como **coordenação**, abra **Calendário** e clique em **Fechar** no 4º bimestre. Antes de confirmar aparecem as ausências por turma; não é preciso confirmar.
    - Spec **calendario-letivo**: "Fechar bimestre incompleto" (CA-13.2).
 
-## Gestão da escola (≈ 1 min)
+## Gestão da escola (≈ 1 min 30)
 
 Como **coordenação**, abra **Gestão** no menu.
 
@@ -96,8 +96,11 @@ Como **coordenação**, abra **Gestão** no menu.
    - Spec **gestao-escolar**: "Possível duplicidade".
 2. Em **Turmas e vínculos**, tente vincular outra professora como **Titular** no 2º A: é recusado. Como **Substituta**, é aceito, e as duas convivem.
    - Spec **gestao-escolar**: "Substituição autorizada".
-3. Em **Contas**, crie uma conta: aparece uma senha temporária uma única vez. "Nova senha" resolve o "Esqueci minha senha".
-4. *Fala:* "Nada com histórico é apagado: aluno é arquivado, conta é desativada, vínculo é encerrado. A professora não vê esta tela (CA-12.4)."
+3. Em **Alunos**, clique em **Movimentar** no Bernardo e troque para o **2º B**: a matrícula antiga termina ontem e a nova começa hoje, no mesmo registro do bimestre (nada é copiado). A movimentação aparece em "Movimentações". Abra a ficha do Bernardo: as duas turmas aparecem em 2026.
+   - Spec **gestao-escolar**: "Transferência durante o bimestre".
+   - *Fala:* "Passagem de ano e repetência só são aceitas depois que o ano é fechado no Calendário."
+4. Em **Contas**, crie uma conta: aparece uma senha temporária uma única vez. "Nova senha" resolve o "Esqueci minha senha".
+5. *Fala:* "Nada com histórico é apagado: aluno é arquivado, conta é desativada, vínculo é encerrado. A professora não vê esta tela (CA-12.4)."
 
 ## Regras e casos (≈ 30 s)
 
@@ -109,4 +112,4 @@ Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para prova
 
 ## Fechamento (fala sugerida)
 
-"O P0 está completo e verificado: 79 dos 93 cenários das specs estão feitos com evidência, 11 estão parciais e 2 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos a gestão da escola (cadastros, contas e vínculos), o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos, a cópia de segurança com restauração conferida e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); transferências e passagem de ano (7.2) ficaram para depois, então a entrega está declarada como parcial."
+"O P0 está completo e verificado: 83 dos 93 cenários das specs estão feitos com evidência, 8 estão parciais e 1 não foi feito. Isso está detalhado no relatório de verificação. Do P1, fizemos a gestão da escola (cadastros, contas, vínculos, transferências, passagem de ano e repetência), o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos, a cópia de segurança com restauração conferida e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); ficaram para depois a reabertura depois da passagem de ano (7.4) e parte das verificações finais, então a entrega está declarada como parcial."

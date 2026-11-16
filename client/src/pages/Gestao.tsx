@@ -13,11 +13,20 @@ interface Resumo {
     vinculos: Array<{ id: number; userId: number; nome: string; tipo: 'TITULAR' | 'SUBSTITUTA'; de: string; ate: string | null; situacao: 'VIGENTE' | 'FUTURO' | 'ENCERRADO' }>;
   }>;
   usuarios: Array<{ id: number; nome: string; email: string; papel: 'PROFESSOR' | 'COORDENACAO'; ativo: boolean }>;
-  alunos: Array<{ id: number; nome: string; arquivado: boolean; turmaAtual: { id: number; nome: string } | null }>;
+  alunos: Array<{
+    id: number; nome: string; arquivado: boolean;
+    turmaAtual: { id: number; nome: string; etapa: number; anoLetivo: number } | null;
+    ultima: { classId: number; turma: string; anoLetivo: number; etapa: number; de: string; ate: string | null; anoFechado: boolean } | null;
+    movimentacoes: Array<{ id: number; tipo: keyof typeof TIPO_MOV; data: string; justificativa: string | null; autor: string; de: string | null; para: string | null }>;
+  }>;
 }
 type Aba = 'alunos' | 'turmas' | 'contas';
 
 const br = (d: string) => d.split('-').reverse().join('/');
+const TIPO_MOV = {
+  TRANSFERENCIA_INTERNA: 'Troca de turma', TRANSFERENCIA_EXTERNA: 'Saída da escola', PASSAGEM_ANO: 'Passagem de ano',
+  REPETENCIA: 'Repetência', MUDANCA_ETAPA: 'Mudança de ano escolar', ARQUIVAMENTO: 'Arquivamento',
+} as const;
 const SIT = { VIGENTE: ['Vigente', 'chip-menta'], FUTURO: ['Começa depois', 'chip-lilas'], ENCERRADO: ['Encerrado', 'chip-cinza'] } as const;
 
 /** Envia e devolve a mensagem de erro (ou null); recarrega a gestão e as telas que dependem dela. */
@@ -90,6 +99,7 @@ function AbaAlunos({ r }: { r: Resumo }) {
   const [parecidos, setParecidos] = useState<Parecido[] | null>(null);
   const [msg, setMsg] = useState<{ tipo: 'erro' | 'ok'; texto: string } | null>(null);
   const [busca, setBusca] = useState('');
+  const [movendo, setMovendo] = useState<number | null>(null);
   const [enviando, setEnviando] = useState(false);
 
   const cadastrar = async (confirmarDuplicidade: boolean) => {
@@ -173,18 +183,152 @@ function AbaAlunos({ r }: { r: Resumo }) {
         </div>
         <ul className="mt-3 divide-y divide-line">
           {lista.map((a) => (
-            <li key={a.id} className="flex flex-wrap items-center gap-3 py-3">
-              <div className="min-w-0 flex-1">
-                <Link to={`/alunos/${a.id}`} className="text-lg font-bold">{a.nome}</Link>
-                <p className="text-sm text-muted">{a.turmaAtual ? `Matrícula atual: ${a.turmaAtual.nome}` : 'Sem matrícula hoje'}</p>
+            <li key={a.id} className="py-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <Link to={`/alunos/${a.id}`} className="text-lg font-bold">{a.nome}</Link>
+                  <p className="text-sm text-muted">
+                    {a.turmaAtual ? `Matrícula atual: ${a.turmaAtual.nome}`
+                      : a.ultima && a.ultima.de > r.hoje ? `Próxima matrícula: ${a.ultima.turma}, a partir de ${br(a.ultima.de)}`
+                      : 'Sem matrícula hoje'}
+                  </p>
+                </div>
+                {a.arquivado ? <span className="chip chip-cinza">Arquivado</span> : (
+                  <>
+                    <button type="button" className="btn-sec px-4 py-1.5 text-sm" aria-expanded={movendo === a.id}
+                      onClick={() => { setMovendo(movendo === a.id ? null : a.id); setMsg(null); }}>Movimentar</button>
+                    <button type="button" className="btn-sec px-4 py-1.5 text-sm" onClick={() => arquivar(a)}>Arquivar</button>
+                  </>
+                )}
               </div>
-              {a.arquivado ? <span className="chip chip-cinza">Arquivado</span>
-                : <button type="button" className="btn-sec px-4 py-1.5 text-sm" onClick={() => arquivar(a)}>Arquivar</button>}
+              {movendo === a.id && <Movimentar a={a} r={r} fechar={(texto) => { setMovendo(null); if (texto) setMsg({ tipo: 'ok', texto }); }} />}
+              {a.movimentacoes.length > 0 && (
+                <details className="mt-1 text-sm">
+                  <summary className="cursor-pointer font-bold text-muted">Movimentações ({a.movimentacoes.length})</summary>
+                  <ul className="mt-1 space-y-1">
+                    {a.movimentacoes.map((x) => (
+                      <li key={x.id}>
+                        <b>{TIPO_MOV[x.tipo]}</b> em {br(x.data)}{x.de && ` · de ${x.de}`}{x.para && ` para ${x.para}`}
+                        <span className="text-muted"> · {x.autor}</span>{x.justificativa && <span className="block text-muted">“{x.justificativa}”</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
             </li>
           ))}
         </ul>
       </article>
     </div>
+  );
+}
+
+// ------------------------------------------------------------------ movimentar aluno (tarefa 7.2)
+
+type Operacao = 'TROCAR' | 'ETAPA' | 'SAIDA' | 'PASSAGEM';
+
+/** Uma movimentação por vez: troca de turma, mudança de ano escolar, saída ou passagem de ano/repetência. */
+function Movimentar({ a, r, fechar }: { a: Resumo['alunos'][number]; r: Resumo; fechar: (texto?: string) => void }) {
+  const enviar = useEnviar();
+  const atual = a.turmaAtual;
+  const ultima = a.ultima;
+  const [op, setOp] = useState<Operacao>(atual ? 'TROCAR' : 'PASSAGEM');
+  const [turmaId, setTurmaId] = useState<number | ''>('');
+  const [dataMov, setDataMov] = useState(r.hoje);
+  const [justificativa, setJustificativa] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
+
+  const opcoesTurma = (() => {
+    if (op === 'TROCAR' && atual) return r.turmas.filter((t) => t.anoLetivo === atual.anoLetivo && t.etapa === atual.etapa && t.id !== atual.id);
+    if (op === 'ETAPA' && atual) return r.turmas.filter((t) => t.anoLetivo === atual.anoLetivo && t.etapa !== atual.etapa);
+    if (op === 'PASSAGEM' && ultima) return r.turmas.filter((t) => t.anoLetivo === ultima.anoLetivo + 1 && (t.etapa === ultima.etapa || t.etapa === ultima.etapa + 1));
+    return [];
+  })();
+  const escolhida = r.turmas.find((t) => t.id === turmaId);
+  const precisaJust = op === 'ETAPA' || op === 'SAIDA';
+
+  const OPS: Array<{ v: Operacao; rotulo: string; desc: string; pode: boolean }> = [
+    { v: 'TROCAR', rotulo: 'Trocar de turma', desc: 'Mesmo ano escolar e mesmo ano letivo. O registro do bimestre acompanha o aluno.', pode: !!atual },
+    { v: 'ETAPA', rotulo: 'Mudar de ano escolar', desc: 'Excepcional, no meio do ano. As habilidades do novo ano começam sem avaliação.', pode: !!atual },
+    { v: 'SAIDA', rotulo: 'Saída da escola', desc: 'Transferência para outra escola. A matrícula termina e o histórico fica guardado.', pode: !!atual },
+    { v: 'PASSAGEM', rotulo: 'Passagem de ano ou repetência', desc: 'Para o ano letivo seguinte, depois que o ano atual for fechado.', pode: !!ultima },
+  ];
+
+  const confirmar = async (e: FormEvent) => {
+    e.preventDefault();
+    setErro(null);
+    setEnviando(true);
+    const [caminho, body] =
+      op === 'TROCAR' ? ['trocar-turma', { turmaId, data: dataMov }]
+      : op === 'ETAPA' ? ['mudar-etapa', { turmaId, data: dataMov, justificativa }]
+      : op === 'SAIDA' ? ['saida', { data: dataMov, justificativa }]
+      : ['passagem-ano', { turmaId }];
+    const res = await enviar(`/gestao/alunos/${a.id}/${caminho}`, body);
+    setEnviando(false);
+    if (!res.ok) { setErro(res.erro.message); return; }
+    fechar(op === 'SAIDA' ? `Saída de ${a.nome} registrada. O histórico continua na ficha.`
+      : op === 'PASSAGEM' ? `${a.nome}: ${escolhida && ultima && escolhida.etapa === ultima.etapa ? 'repetência' : 'passagem de ano'} registrada para ${escolhida?.nome} (${escolhida?.anoLetivo}).`
+      : `${a.nome} agora está no ${escolhida?.nome}.`);
+  };
+
+  return (
+    <form className="mt-3 space-y-3 rounded-2xl bg-bg p-4" onSubmit={confirmar}>
+      <fieldset>
+        <legend className="font-bold">O que aconteceu com {a.nome}?</legend>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {OPS.filter((o) => o.pode).map((o) => (
+            <label key={o.v} className="opcao items-start">
+              <input type="radio" name={`op-${a.id}`} className="mt-1" checked={op === o.v} onChange={() => { setOp(o.v); setTurmaId(''); setErro(null); }} />
+              <span><span className="block">{o.rotulo}</span><span className="block text-xs font-normal text-muted">{o.desc}</span></span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      {op !== 'SAIDA' && (
+        <div>
+          <label htmlFor={`mov-turma-${a.id}`} className="font-bold">Turma de destino</label>
+          <select id={`mov-turma-${a.id}`} className="campo mt-1" value={turmaId} onChange={(e) => setTurmaId(e.target.value ? Number(e.target.value) : '')}>
+            <option value="">Escolha…</option>
+            {opcoesTurma.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nome} · {t.etapa}º ano · {t.anoLetivo}
+                {op === 'PASSAGEM' && ultima ? (t.etapa === ultima.etapa ? ' (repetência)' : ' (passagem)') : ''}
+              </option>
+            ))}
+          </select>
+          {opcoesTurma.length === 0 && (
+            <p className="mt-1 text-sm text-muted">
+              {op === 'PASSAGEM' && ultima
+                ? `Não há turma de ${ultima.anoLetivo + 1} para o ${ultima.etapa}º ou ${ultima.etapa + 1}º ano. Crie em "Turmas e vínculos".`
+                : 'Não há turma compatível. Crie em "Turmas e vínculos".'}
+            </p>
+          )}
+          {op === 'PASSAGEM' && ultima && !ultima.anoFechado && (
+            <p className="mt-2 rounded-xl bg-[#fff8e1] px-3 py-2 text-sm">⚠ O ano {ultima.anoLetivo} ainda não foi fechado no Calendário. A passagem só é aceita depois do fechamento.</p>
+          )}
+        </div>
+      )}
+
+      {op !== 'PASSAGEM' && (
+        <label className="block font-bold">{op === 'SAIDA' ? 'Último dia na escola' : 'A partir de'}
+          <input type="date" className="campo mt-1 sm:w-60" value={dataMov} onChange={(e) => setDataMov(e.target.value)} />
+        </label>
+      )}
+      {precisaJust && (
+        <label className="block font-bold">{op === 'SAIDA' ? 'Motivo ou escola de destino' : 'Justificativa'} (obrigatório)
+          <textarea rows={2} maxLength={2000} className="campo mt-1" value={justificativa} onChange={(e) => setJustificativa(e.target.value)} />
+        </label>
+      )}
+      <p className="text-xs text-muted">Nenhuma avaliação é copiada nem apagada. A movimentação fica registrada com data e autoria.</p>
+      {erro && <p role="alert" className="rounded-2xl bg-alerta-claro px-4 py-2 font-bold text-alerta">⚠ {erro}</p>}
+      <div className="flex flex-wrap gap-2">
+        <button type="submit" className="btn px-5 py-2"
+          disabled={enviando || (op !== 'SAIDA' && !turmaId) || (precisaJust && !justificativa.trim())}>Confirmar</button>
+        <button type="button" className="btn-sec px-5 py-2" onClick={() => fechar()}>Cancelar</button>
+      </div>
+    </form>
   );
 }
 

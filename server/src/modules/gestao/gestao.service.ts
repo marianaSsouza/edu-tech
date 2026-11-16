@@ -3,10 +3,10 @@ import { randomInt } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { DataSource, EntityManager } from 'typeorm';
 import { UsuarioAtual } from '../../common/auth';
-import { acessoNegado, dadosInvalidos, ErroApi, naoEncontrado } from '../../common/erros';
+import { acessoNegado, dadosInvalidos, ehViolacaoUnica, ErroApi, naoEncontrado } from '../../common/erros';
 import { exclusivo } from '../../common/exclusivo';
 import { Relogio } from '../../common/relogio';
-import { Enrollment, Papel, PedagogicalContext, SchoolClass, Student, TeacherLink, TipoVinculo, User } from '../../database/entities';
+import { Enrollment, Movimentacao, Papel, PedagogicalContext, Period, SchoolClass, Student, TeacherLink, TipoVinculo, User, YearClosure } from '../../database/entities';
 import { CATALOGO_VERSAO_ATUAL } from '../../database/seed/cat-v1';
 import { PolicyService } from '../acesso/policy.service';
 
@@ -66,6 +66,10 @@ const data = (v: unknown, campo: string): string => {
   if (typeof v !== 'string' || !DATA.test(v) || Number.isNaN(Date.parse(v))) throw dadosInvalidos(`${campo} deve ser uma data válida (AAAA-MM-DD).`);
   return v;
 };
+const textoOpcional = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 2000) : null);
+/** Dia anterior (AAAA-MM-DD), para encerrar a matrícula na véspera da nova. */
+const vespera = (d: string) => new Date(Date.parse(d + 'T12:00:00Z') - 86_400_000).toISOString().slice(0, 10);
+interface MatriculaInfo { id: number; contextId: number; classId: number; de: string; ate: string | null; anoLetivo: number; etapa: number; turma: string }
 const sobrepoe = (a: { de: string; ate: string | null }, b: { de: string; ate: string | null }) =>
   a.de <= (b.ate ?? FIM_ABERTO) && b.de <= (a.ate ?? FIM_ABERTO);
 
@@ -96,11 +100,13 @@ export class GestaoService {
     const usuarios = await this.ds.getRepository(User).find({ order: { nome: 'ASC' } });
     const vinculos = await this.ds.getRepository(TeacherLink).find({ order: { de: 'ASC' } });
     const nomeDe = new Map(usuarios.map((x) => [x.id, x.nome]));
-    const matriculas: Array<{ studentId: number; classId: number; de: string; ate: string | null }> = await this.ds.query(
-      `SELECT c.studentId, m.classId, m.de, m.ate FROM matriculas m JOIN contextos_pedagogicos c ON c.id = m.contextId`,
+    const matriculas: Array<{ studentId: number; classId: number; de: string; ate: string | null; anoLetivo: number; etapa: number }> = await this.ds.query(
+      `SELECT c.studentId, m.classId, m.de, m.ate, c.anoLetivo, c.etapa FROM matriculas m JOIN contextos_pedagogicos c ON c.id = m.contextId ORDER BY m.de DESC, m.id DESC`,
     );
     const vigente = (x: { de: string; ate: string | null }) => x.de <= hoje && (x.ate === null || x.ate >= hoje);
     const alunos = await this.ds.getRepository(Student).find({ order: { nome: 'ASC' } });
+    const movs = await this.ds.getRepository(Movimentacao).find({ order: { id: 'ASC' } });
+    const fechados = new Set((await this.ds.getRepository(YearClosure).find()).map((y) => y.anoLetivo));
     const nomeTurma = new Map(turmas.map((t) => [t.id, `${t.nome} (${t.anoLetivo})`]));
 
     return {
@@ -118,7 +124,16 @@ export class GestaoService {
       usuarios: usuarios.map((x) => ({ id: x.id, nome: x.nome, email: x.email, papel: x.papel, ativo: x.ativo })),
       alunos: alunos.map((a) => {
         const atual = matriculas.find((m) => m.studentId === a.id && vigente(m));
-        return { id: a.id, nome: a.nome, arquivado: !a.ativo, turmaAtual: atual ? { id: atual.classId, nome: nomeTurma.get(atual.classId) ?? '—' } : null };
+        const ultima = matriculas.find((m) => m.studentId === a.id);
+        return {
+          id: a.id, nome: a.nome, arquivado: !a.ativo,
+          turmaAtual: atual ? { id: atual.classId, nome: nomeTurma.get(atual.classId) ?? '—', etapa: atual.etapa, anoLetivo: atual.anoLetivo } : null,
+          ultima: ultima ? { classId: ultima.classId, turma: nomeTurma.get(ultima.classId) ?? '—', anoLetivo: ultima.anoLetivo, etapa: ultima.etapa, de: ultima.de, ate: ultima.ate, anoFechado: fechados.has(ultima.anoLetivo) } : null,
+          movimentacoes: movs.filter((x) => x.studentId === a.id).map((x) => ({
+            id: x.id, tipo: x.tipo, data: x.data, justificativa: x.justificativa, autor: nomeDe.get(x.autorId) ?? '—',
+            de: x.deClassId ? nomeTurma.get(x.deClassId) ?? '—' : null, para: x.paraClassId ? nomeTurma.get(x.paraClassId) ?? '—' : null,
+          })),
+        };
       }),
     };
   }
@@ -201,6 +216,7 @@ export class GestaoService {
       );
       for (const mt of vigentes) await m.update(Enrollment, { id: mt.id }, { ate: hoje });
       await m.update(Student, { id }, { ativo: false });
+      await this.registrar(m, u, { studentId: id, tipo: 'ARQUIVAMENTO', deClassId: null, paraClassId: null, data: hoje, justificativa: null });
       return { id, arquivado: true, matriculasEncerradas: vigentes.length };
     });
   }
@@ -237,6 +253,140 @@ export class GestaoService {
       }
       await m.delete(SchoolClass, { id });
       return { id, excluida: true };
+    });
+  }
+
+  // ---------------------------------------------------------------- movimentações (tarefa 7.2)
+
+  private async matriculasDoAluno(m: EntityManager, studentId: number): Promise<MatriculaInfo[]> {
+    return m.query(
+      `SELECT mt.id, mt.contextId, mt.classId, mt.de, mt.ate, c.anoLetivo, c.etapa, t.nome AS turma
+         FROM matriculas mt JOIN contextos_pedagogicos c ON c.id = mt.contextId JOIN turmas t ON t.id = mt.classId
+        WHERE c.studentId = ? ORDER BY mt.de DESC, mt.id DESC`,
+      [studentId],
+    );
+  }
+
+  private async alunoAtivo(m: EntityManager, id: number): Promise<Student> {
+    const a = await m.findOneBy(Student, { id });
+    if (!a) throw naoEncontrado('Aluno não encontrado.');
+    if (!a.ativo) throw regra('ALUNO_ARQUIVADO', `${a.nome} está arquivado(a); não recebe novas matrículas.`);
+    return a;
+  }
+
+  /** Matrícula vigente numa data (matrícula única: no máximo uma). */
+  private async vigenteEm(m: EntityManager, studentId: number, data: string): Promise<MatriculaInfo> {
+    const atual = (await this.matriculasDoAluno(m, studentId)).find((x) => x.de <= data && (x.ate === null || x.ate >= data));
+    if (!atual) throw regra('SEM_MATRICULA', `O aluno não tem matrícula vigente em ${data.split('-').reverse().join('/')}.`);
+    return atual;
+  }
+
+  private registrar(m: EntityManager, u: User, mov: Omit<Movimentacao, 'id' | 'autorId' | 'criadoEm'>) {
+    return m.insert(Movimentacao, { ...mov, autorId: u.id });
+  }
+
+  /**
+   * Cenário "Transferência durante o bimestre" (CA-12.2): mesma etapa e mesmo ano letivo. Encerra a matrícula
+   * na véspera e abre a nova NO MESMO CONTEXTO: o registro bimestral acompanha o aluno (autoria preservada,
+   * nada copiado) e a turma de origem fica visível na ficha.
+   */
+  async transferirTurma(u: User, id: number, body: { turmaId?: unknown; data?: unknown; justificativa?: unknown }) {
+    this.exigirCoordenacao(u);
+    const turmaId = inteiro(body?.turmaId, 1, Number.MAX_SAFE_INTEGER, 'turma');
+    const dataMov = body?.data ? data(body.data, 'A data') : this.relogio.hoje();
+    return this.gravar(async (m) => {
+      const aluno = await this.alunoAtivo(m, id);
+      const atual = await this.vigenteEm(m, id, dataMov);
+      const destino = await m.findOneBy(SchoolClass, { id: turmaId });
+      if (!destino) throw naoEncontrado('Turma não encontrada.');
+      if (destino.id === atual.classId) throw regra('MESMA_TURMA', `${aluno.nome} já está no ${destino.nome}.`);
+      if (destino.anoLetivo !== atual.anoLetivo) throw regra('ANO_DIFERENTE', 'A troca de turma é dentro do mesmo ano letivo. Para o ano seguinte, use a passagem de ano.');
+      if (destino.etapa !== atual.etapa) throw regra('ETAPA_DIFERENTE', `O ${destino.nome} é de outro ano escolar. Use "Mudança de ano escolar" (excepcional, com justificativa).`);
+      if (dataMov <= atual.de) throw regra('DATA_INVALIDA', 'A troca precisa ser depois do início da matrícula atual.');
+      await m.update(Enrollment, { id: atual.id }, { ate: vespera(dataMov) });
+      await m.insert(Enrollment, { contextId: atual.contextId, classId: destino.id, de: dataMov, ate: atual.ate });
+      await this.registrar(m, u, { studentId: id, tipo: 'TRANSFERENCIA_INTERNA', deClassId: atual.classId, paraClassId: destino.id, data: dataMov, justificativa: textoOpcional(body?.justificativa) });
+      return { id, de: atual.turma, para: destino.nome, data: dataMov };
+    });
+  }
+
+  /** Cenário "Saída da escola": encerra a matrícula; o histórico continua consultável pela coordenação. */
+  async transferenciaExterna(u: User, id: number, body: { data?: unknown; justificativa?: unknown }) {
+    this.exigirCoordenacao(u);
+    const dataMov = body?.data ? data(body.data, 'A data') : this.relogio.hoje();
+    const motivo = texto(body?.justificativa, 'o motivo ou a escola de destino', 500);
+    return this.gravar(async (m) => {
+      await this.alunoAtivo(m, id);
+      const atual = await this.vigenteEm(m, id, dataMov);
+      await m.update(Enrollment, { id: atual.id }, { ate: dataMov });
+      await m.update(Student, { id }, { ativo: false });
+      await this.registrar(m, u, { studentId: id, tipo: 'TRANSFERENCIA_EXTERNA', deClassId: atual.classId, paraClassId: null, data: dataMov, justificativa: motivo });
+      return { id, ultimoDia: dataMov };
+    });
+  }
+
+  /**
+   * Passagem de ano e repetência (CA-12.3): só depois do fechamento do ano de origem. Nova matrícula num
+   * contexto novo do ano seguinte, SEM copiar avaliações. Mesma etapa = repetência (mesmos IDs de habilidade,
+   * a herança deduplica); etapa seguinte = passagem.
+   */
+  async passagemAno(u: User, id: number, body: { turmaId?: unknown }) {
+    this.exigirCoordenacao(u);
+    const turmaId = inteiro(body?.turmaId, 1, Number.MAX_SAFE_INTEGER, 'turma');
+    return this.gravar(async (m) => {
+      const aluno = await this.alunoAtivo(m, id);
+      const todas = await this.matriculasDoAluno(m, id);
+      const ultima = todas[0];
+      if (!ultima) throw regra('SEM_MATRICULA', `${aluno.nome} não tem matrícula anterior.`);
+      const destino = await m.findOneBy(SchoolClass, { id: turmaId });
+      if (!destino) throw naoEncontrado('Turma não encontrada.');
+      if (destino.anoLetivo !== ultima.anoLetivo + 1) {
+        throw regra('ANO_DIFERENTE', `A passagem é do ano ${ultima.anoLetivo} para ${ultima.anoLetivo + 1}; escolha uma turma de ${ultima.anoLetivo + 1}.`);
+      }
+      if (!(await m.existsBy(YearClosure, { anoLetivo: ultima.anoLetivo }))) {
+        throw regra('ANO_NAO_FECHADO', `O ano letivo ${ultima.anoLetivo} ainda não foi fechado. Feche-o no Calendário antes da passagem de ano.`);
+      }
+      const tipo = destino.etapa === ultima.etapa + 1 ? 'PASSAGEM_ANO' : destino.etapa === ultima.etapa ? 'REPETENCIA' : null;
+      if (!tipo) throw regra('ETAPA_INVALIDA', `De ${ultima.etapa}º ano, o aluno vai para o ${ultima.etapa + 1}º ano (passagem) ou continua no ${ultima.etapa}º (repetência).`);
+
+      const periodos = await m.find(Period, { where: [{ anoLetivo: ultima.anoLetivo }, { anoLetivo: destino.anoLetivo }], order: { bimestre: 'ASC' } });
+      const fimOrigem = periodos.filter((p) => p.anoLetivo === ultima.anoLetivo).at(-1)?.fim ?? `${ultima.anoLetivo}-12-31`;
+      const inicioDestino = periodos.find((p) => p.anoLetivo === destino.anoLetivo)?.inicio ?? `${destino.anoLetivo}-02-01`;
+      if (ultima.ate === null || ultima.ate > fimOrigem) await m.update(Enrollment, { id: ultima.id }, { ate: fimOrigem });
+
+      const ctx = await m.save(m.create(PedagogicalContext, { studentId: id, anoLetivo: destino.anoLetivo, etapa: destino.etapa, catalogVersion: CATALOGO_VERSAO_ATUAL }));
+      await m.insert(Enrollment, { contextId: ctx.id, classId: destino.id, de: inicioDestino, ate: null });
+      await this.registrar(m, u, { studentId: id, tipo, deClassId: ultima.classId, paraClassId: destino.id, data: inicioDestino, justificativa: null });
+      return { id, tipo, para: destino.nome, anoLetivo: destino.anoLetivo, inicio: inicioDestino };
+    }).catch((e) => {
+      if (ehViolacaoUnica(e)) throw conflito('JA_MATRICULADO', 'O aluno já tem matrícula nesse ano e ano escolar.');
+      throw e;
+    });
+  }
+
+  /**
+   * Cenário "Mudança excepcional de etapa": no mesmo ano letivo, contexto NOVO na outra etapa, com todas as
+   * habilidades sem avaliação. O contexto anterior fica como estava; catálogos não são convertidos.
+   */
+  async mudancaEtapa(u: User, id: number, body: { turmaId?: unknown; data?: unknown; justificativa?: unknown }) {
+    this.exigirCoordenacao(u);
+    const turmaId = inteiro(body?.turmaId, 1, Number.MAX_SAFE_INTEGER, 'turma');
+    const dataMov = body?.data ? data(body.data, 'A data') : this.relogio.hoje();
+    const justificativa = texto(body?.justificativa, 'a justificativa da mudança', 2000);
+    return this.gravar(async (m) => {
+      await this.alunoAtivo(m, id);
+      const atual = await this.vigenteEm(m, id, dataMov);
+      const destino = await m.findOneBy(SchoolClass, { id: turmaId });
+      if (!destino) throw naoEncontrado('Turma não encontrada.');
+      if (destino.anoLetivo !== atual.anoLetivo) throw regra('ANO_DIFERENTE', 'A mudança de ano escolar acontece dentro do mesmo ano letivo.');
+      if (destino.etapa === atual.etapa) throw regra('MESMA_ETAPA', 'A turma escolhida é do mesmo ano escolar: use "Trocar de turma".');
+      if (dataMov <= atual.de) throw regra('DATA_INVALIDA', 'A mudança precisa ser depois do início da matrícula atual.');
+      let ctx = await m.findOneBy(PedagogicalContext, { studentId: id, anoLetivo: destino.anoLetivo, etapa: destino.etapa });
+      if (!ctx) ctx = await m.save(m.create(PedagogicalContext, { studentId: id, anoLetivo: destino.anoLetivo, etapa: destino.etapa, catalogVersion: CATALOGO_VERSAO_ATUAL }));
+      await m.update(Enrollment, { id: atual.id }, { ate: vespera(dataMov) });
+      await m.insert(Enrollment, { contextId: ctx.id, classId: destino.id, de: dataMov, ate: atual.ate });
+      await this.registrar(m, u, { studentId: id, tipo: 'MUDANCA_ETAPA', deClassId: atual.classId, paraClassId: destino.id, data: dataMov, justificativa });
+      return { id, de: `${atual.etapa}º ano`, para: `${destino.etapa}º ano`, turma: destino.nome };
     });
   }
 
@@ -357,6 +507,10 @@ export class GestaoController {
   @Post('alunos') criarAluno(@UsuarioAtual() u: User, @Body() b: { nome?: unknown; turmaId?: unknown; confirmarDuplicidade?: unknown }) { return this.g.criarAluno(u, b); }
   @Post('alunos/:id/nome') renomear(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Body() b: { nome?: unknown }) { return this.g.renomearAluno(u, id, b); }
   @Post('alunos/:id/arquivar') arquivar(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number) { return this.g.arquivarAluno(u, id); }
+  @Post('alunos/:id/trocar-turma') trocar(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Body() b: { turmaId?: unknown; data?: unknown; justificativa?: unknown }) { return this.g.transferirTurma(u, id, b); }
+  @Post('alunos/:id/saida') saida(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Body() b: { data?: unknown; justificativa?: unknown }) { return this.g.transferenciaExterna(u, id, b); }
+  @Post('alunos/:id/passagem-ano') passagem(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Body() b: { turmaId?: unknown }) { return this.g.passagemAno(u, id, b); }
+  @Post('alunos/:id/mudar-etapa') mudarEtapa(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Body() b: { turmaId?: unknown; data?: unknown; justificativa?: unknown }) { return this.g.mudancaEtapa(u, id, b); }
   @Post('turmas') criarTurma(@UsuarioAtual() u: User, @Body() b: { nome?: unknown; etapa?: unknown; anoLetivo?: unknown }) { return this.g.criarTurma(u, b); }
   @Post('turmas/:id/excluir') excluirTurma(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number) { return this.g.excluirTurma(u, id); }
   @Post('contas') criarConta(@UsuarioAtual() u: User, @Body() b: { nome?: unknown; email?: unknown; papel?: unknown }) { return this.g.criarConta(u, b); }

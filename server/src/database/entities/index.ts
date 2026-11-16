@@ -1,5 +1,5 @@
 import { User } from './acesso.entities';
-import { Student, SchoolClass, PedagogicalContext, Enrollment, TeacherLink } from './escola.entities';
+import { Student, SchoolClass, PedagogicalContext, Enrollment, TeacherLink, Movimentacao } from './escola.entities';
 import { CatalogSkill } from './catalogo.entities';
 import { CalendarEvent, Period, YearClosure } from './calendario.entities';
 import { SequenceCounter, SkillResponse, WritingResponse, ResponseRevision, Observation } from './avaliacao.entities';
@@ -15,7 +15,7 @@ export * from './lacunas.entities';
 export * from './atencao.entities';
 
 export const ALL_ENTITIES = [
-  User, Student, SchoolClass, PedagogicalContext, Enrollment, TeacherLink,
+  User, Student, SchoolClass, PedagogicalContext, Enrollment, TeacherLink, Movimentacao,
   CatalogSkill, Period, YearClosure, CalendarEvent,
   SequenceCounter, SkillResponse, WritingResponse, ResponseRevision, Observation,
   PedagogicalEvent, ManualAttention, AttentionEvent,

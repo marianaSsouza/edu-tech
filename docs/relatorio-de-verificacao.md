@@ -3,8 +3,8 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 149 de 149 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 (gestão: cadastros e vínculos), 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Testes automáticos:** 158 de 158 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 e 7.2 (gestão: cadastros, vínculos e movimentações), 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
 
@@ -40,9 +40,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | paineis-e-indicadores | 15 | 15 | 0 | 0 | 0 |
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
-| gestao-escolar | 8 | 4 | 3 | 1 | 0 |
+| gestao-escolar | 8 | 8 | 0 | 0 | 0 |
 | regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **79** | **11** | **2** | **1** |
+| **Total** | **93** | **83** | **8** | **1** | **1** |
 
 ---
 
@@ -170,12 +170,12 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Requisito | Cenário | Situação | Evidência / o que falta |
 | --- | --- | --- | --- |
 | Cadastros escolares mínimos | Possível duplicidade | ✅ | `gestao.spec.ts`: "sinaliza sem mesclar: só cadastra com confirmação, e o novo aluno nasce sem o histórico do outro" e "nome igual, com erro de digitação ou mesmo primeiro nome na turma é sinalizado; sem CPF". Tela **Gestão → Alunos** mostra os parecidos e pede confirmação (verificado no navegador). |
-| Matrícula única e transferência | Transferência durante o bimestre | ⚠️ | O cálculo trata a transferência sem copiar avaliação (`painel.spec.ts`, CA-10.3). Falta a tela para transferir (7.2). |
+| Matrícula única e transferência | Transferência durante o bimestre | ✅ | `movimentacoes.spec.ts`: "mesmo registro bimestral, origem visível, uma contagem e autoria respeitada" (nova matrícula no mesmo contexto, sem sobreposição; 2º A com 7 e 2º B com 5; a professora de destino preenche o que falta e recebe 403 ao tentar substituir resposta de outra autora). Tela **Gestão → Alunos → Movimentar** (verificado no navegador). |
 | Vigência dos vínculos | Substituição autorizada | ✅ | `gestao.spec.ts`: "segunda titular é recusada; substituta explícita coexiste e as duas acessam". Tela **Gestão → Turmas e vínculos**. |
 | | Vínculo encerrado | ✅ | `gestao.spec.ts`: "a professora deixa de registrar; a autoria passada continua" (vínculo encerrado pela coordenação, não apagado). Também `acesso.spec.ts` (Ana Paula). |
-| Passagem de ano e repetência | Repetência | ⚠️ | A regra de herança com repetência está testada (`lacunas.spec.ts`). Falta a operação de matrícula (7.2). |
-| | Mudança excepcional de etapa | ❌ | Tarefa 7.2 (P1) |
-| Transferência externa e arquivamento | Saída da escola | ⚠️ | Arquivar aluno encerra a matrícula e mantém o histórico consultável pela coordenação (`gestao.spec.ts`: "arquivamento: encerra a matrícula e marca o aluno, sem apagar avaliações"). Falta registrar como "transferência externa" com motivo (7.2). |
+| Passagem de ano e repetência | Repetência | ✅ | `movimentacoes.spec.ts`: "mesma etapa, nova matrícula, mesmos IDs de habilidade" e "passagem: nova matrícula e contexto novo, sem copiar avaliações"; só depois do fechamento do ano ("só depois do fechamento do ano de origem"). Herança com repetência: `lacunas.spec.ts`. |
+| | Mudança excepcional de etapa | ✅ | `movimentacoes.spec.ts`: "contexto novo sem avaliação; o anterior é conservado sem conversão" (justificativa obrigatória; no painel da nova turma, 0 de 8 habilidades avaliadas). |
+| Transferência externa e arquivamento | Saída da escola | ✅ | `movimentacoes.spec.ts`: "encerra a matrícula no último dia informado, com motivo; histórico fica consultável pela coordenação". Arquivamento: `gestao.spec.ts`. Toda movimentação fica na trilha (tabela `movimentacoes`, com data, autora e motivo). |
 | Dados sintéticos e recuperação | Restauração antes da entrega | ✅ | Procedimento em [`docs/guia-operacional.md`](guia-operacional.md) (`npm run backup`, `npm run restaurar`). `npm run verificar-restauracao` restaurou a base de demonstração em ambiente separado: 18 tabelas idênticas (linhas e hash de todo o conteúdo), evidência em [`docs/evidencias/restauracao-rnf05.md`](evidencias/restauracao-rnf05.md). `copia-seguranca.spec.ts`: "restaura vínculos, matrículas, avaliações com versão, revisões e autoria exatamente como estavam". Reinício: `npm run seed:reset` (`seed.spec.ts`). |
 
 ## regras-e-casos-de-referencia
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1, 7.3, 8.2 a 8.4, 9.1 a 9.3.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1 a 7.3, 8.2 a 8.4, 9.1 a 9.3.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.4, 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { User } from './acesso.entities';
 
 /** spec gestao-escolar. Datas civis são guardadas como texto 'AAAA-MM-DD' (D06, America/Sao_Paulo). */
@@ -64,4 +64,20 @@ export class TeacherLink {
   @Column({ type: 'varchar' }) tipo: TipoVinculo;
   @Column({ type: 'varchar' }) de: string;
   @Column({ type: 'varchar', nullable: true }) ate: string | null;
+}
+
+export type TipoMovimentacao = 'TRANSFERENCIA_INTERNA' | 'TRANSFERENCIA_EXTERNA' | 'PASSAGEM_ANO' | 'REPETENCIA' | 'MUDANCA_ETAPA' | 'ARQUIVAMENTO';
+
+/** Tarefa 7.2: trilha das movimentações do aluno (quem, quando, de onde, para onde e por quê). Nunca é editada. */
+@Entity('movimentacoes')
+export class Movimentacao {
+  @PrimaryGeneratedColumn() id: number;
+  @Column({ type: 'integer' }) studentId: number;
+  @Column({ type: 'varchar' }) tipo: TipoMovimentacao;
+  @Column({ type: 'integer', nullable: true }) deClassId: number | null;
+  @Column({ type: 'integer', nullable: true }) paraClassId: number | null;
+  @Column({ type: 'varchar' }) data: string;
+  @Column({ type: 'text', nullable: true }) justificativa: string | null;
+  @Column({ type: 'integer' }) autorId: number;
+  @CreateDateColumn() criadoEm: Date;
 }

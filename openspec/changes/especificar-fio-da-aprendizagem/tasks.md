@@ -47,7 +47,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 ## 7. Gestão e calendário completos — P1
 
 - [x] 7.1 Implementar formulários de alunos, turmas, professores, contas e vínculos com vigência; verificar CA-12.1/12.4, sinalização de duplicidade, arquivamento e coexistência explícita de titular/substituta.
-- [ ] 7.2 Implementar transferências internas/externas, passagem de ano, repetência e mudança excepcional de etapa; verificar CA-12.2/12.3, matrícula única e registro preservado sem cópia de avaliações.
+- [x] 7.2 Implementar transferências internas/externas, passagem de ano, repetência e mudança excepcional de etapa; verificar CA-12.2/12.3, matrícula única e registro preservado sem cópia de avaliações.
 - [x] 7.3 Implementar calendário escolar único, fechamento/reabertura com justificativa e lista de ausências; verificar CA-13.2/13.3, ano com quatro períodos encerrados e bloqueio de registro/indicadores futuros.
 - [ ] 7.4 Verificar reabertura após passagem de ano preservando matrícula, herança e eventos posteriores, além de datas de referência passadas; atualizar documentação operacional e conciliar essas decisões e as de autoria/observações nos dois documentos-base, preservando IDs.
 
