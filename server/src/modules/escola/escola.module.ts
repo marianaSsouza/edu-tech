@@ -9,7 +9,7 @@ export class TurmasController {
 
   @Get()
   async listar(@UsuarioAtual() u: User) {
-    return { turmas: await this.turmas.listar(u) };
+    return { turmas: await this.turmas.listar(u), periodoAtual: await this.turmas.periodoAtual() };
   }
 
   @Get(':id/alunos')

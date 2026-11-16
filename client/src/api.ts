@@ -31,6 +31,7 @@ export interface Usuario { id: number; nome: string; email: string; papel: Papel
 
 export interface Turma {
   id: number; nome: string; etapa: number; anoLetivo: number; alunos: number; meuVinculo: 'TITULAR' | 'SUBSTITUTA' | null;
+  professores?: Array<{ nome: string; tipo: 'TITULAR' | 'SUBSTITUTA' }>; anoEncerrado?: boolean;
 }
 export interface AlunoDaTurma { id: number; nome: string; contextId: number }
 

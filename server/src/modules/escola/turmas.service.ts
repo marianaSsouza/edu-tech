@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
-import { SchoolClass, TeacherLink, TipoVinculo, User } from '../../database/entities';
+import { Period, SchoolClass, TeacherLink, TipoVinculo, User, YearClosure } from '../../database/entities';
+import { bimestreSugerido, situacaoPeriodo } from '../../domain/periodo';
 import { naoEncontrado } from '../../common/erros';
 import { Relogio } from '../../common/relogio';
 import { PolicyService } from '../acesso/policy.service';
 
 export interface TurmaResumo {
   id: number; nome: string; etapa: number; anoLetivo: number; alunos: number; meuVinculo: TipoVinculo | null;
+  professores?: Array<{ nome: string; tipo: TipoVinculo }>; anoEncerrado?: boolean;
 }
 export interface AlunoDaTurma { id: number; nome: string; contextId: number; de: string; ate: string | null }
 
@@ -30,12 +32,32 @@ export class TurmasService {
       ? await this.ds.getRepository(TeacherLink).find({ where: { userId: u.id, classId: In(ids) } })
       : [];
     const resultado: TurmaResumo[] = [];
+    const todosVinculos = await this.ds.getRepository(TeacherLink).find({ where: { classId: In(turmas.map((t) => t.id).concat(-1)) }, relations: { user: true } });
+    const encerrados = (await this.ds.getRepository(YearClosure).find()).map((y) => y.anoLetivo);
     for (const t of turmas) {
       const alunos = (await this.alunosDe(t, hoje)).length;
       const v = vinculos.find((x) => x.classId === t.id && x.de <= hoje && (x.ate === null || x.ate >= hoje));
-      resultado.push({ id: t.id, nome: t.nome, etapa: t.etapa, anoLetivo: t.anoLetivo, alunos, meuVinculo: v?.tipo ?? null });
+      // docentes vigentes hoje; para turma de ano passado, quem esteve vinculado (apresentação dos cartões)
+      const anoPassado = t.anoLetivo < Number(hoje.slice(0, 4));
+      const professores = todosVinculos
+        .filter((x) => x.classId === t.id && (anoPassado || (x.de <= hoje && (x.ate === null || x.ate >= hoje))))
+        .map((x) => ({ nome: x.user.nome, tipo: x.tipo }));
+      resultado.push({
+        id: t.id, nome: t.nome, etapa: t.etapa, anoLetivo: t.anoLetivo, alunos, meuVinculo: v?.tipo ?? null,
+        professores, anoEncerrado: encerrados.includes(t.anoLetivo),
+      });
     }
     return resultado;
+  }
+
+  /** Bimestre em andamento (para o subtítulo da tela de turmas). */
+  async periodoAtual() {
+    const hoje = this.relogio.hoje();
+    const ano = Number(hoje.slice(0, 4));
+    const periodos = await this.ds.getRepository(Period).find({ where: { anoLetivo: ano }, order: { bimestre: 'ASC' } });
+    if (!periodos.length) return null;
+    const p = periodos.find((x) => x.bimestre === bimestreSugerido(periodos, hoje))!;
+    return { anoLetivo: ano, bimestre: p.bimestre, inicio: p.inicio, fim: p.fim, situacao: situacaoPeriodo(p, hoje) };
   }
 
   async alunos(u: User, classId: number): Promise<{ turma: TurmaResumo; alunos: AlunoDaTurma[] }> {

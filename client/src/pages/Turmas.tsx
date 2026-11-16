@@ -1,76 +1,76 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
-import { api, PainelGeral } from '../api';
+import { Link } from 'react-router-dom';
+import { api, Turma } from '../api';
 import { useUsuario } from '../App';
 import { Carregando, ErroCaixa } from '../components/Estado';
-import { SeletorBimestre, textoReferencia } from '../components/Painel';
+import { Titulo } from '../components/ui';
 
-/** PRO-02 / PRO-07: turmas com indicadores essenciais; filtros de ano e bimestre preservados na URL. */
+interface Resposta {
+  turmas: Turma[];
+  periodoAtual: { anoLetivo: number; bimestre: number; inicio: string; fim: string; situacao: 'DISPONIVEL' | 'FECHADO' | 'FUTURO' } | null;
+}
+
+const FAIXAS = [
+  'linear-gradient(90deg, #0f766e, #22c08f)',
+  'linear-gradient(90deg, #1f6fd6, #7c5cf0)',
+  'linear-gradient(90deg, #f6a823, #fdd34d)',
+];
+const GRUPO_MINIMO = 5;
+const dm = (d: string) => d.slice(8, 10) + '/' + d.slice(5, 7);
+
+/** Tela inicial: cartões das turmas (coordenação: todas; professora: as suas). */
 export default function Turmas() {
   const { data: usuario } = useUsuario();
-  const [params, setParams] = useSearchParams();
-  const ano = params.get('ano') ?? '';
-  const bimestre = params.get('bimestre') ?? '';
-  const q = useQuery({
-    queryKey: ['painel', 'geral', ano, bimestre],
-    queryFn: () => api<PainelGeral>(`/painel?ano=${ano}&bimestre=${bimestre}`),
-  });
+  const q = useQuery({ queryKey: ['turmas'], queryFn: () => api<Resposta>('/turmas') });
   const coord = usuario?.papel === 'COORDENACAO';
-  const d = q.data;
+  const p = q.data?.periodoAtual;
 
   return (
     <section>
-      <h1 className="text-2xl font-extrabold">{coord ? 'Painel da escola' : 'Minhas turmas'}</h1>
+      <Titulo
+        sobre={p ? `Ano letivo ${p.anoLetivo}` : undefined}
+        titulo={coord ? 'Turmas da escola' : 'Minhas turmas'}
+        sub={
+          <>
+            {p && `${p.bimestre}º bimestre ${p.situacao === 'FECHADO' ? 'fechado' : `aberto até ${dm(p.fim)}`}.`}
+            {coord && ' A coordenação consulta, mas não edita conteúdo pedagógico.'}
+          </>
+        }
+      />
       {q.isLoading && <Carregando />}
       {q.error && <ErroCaixa erro={q.error} tentarDeNovo={() => q.refetch()} />}
-      {d && (
-        <>
-          <div className="mt-3 flex flex-wrap items-end gap-3">
-            {d.anosDisponiveis.length > 1 && (
-              <label className="text-sm font-bold">
-                Ano letivo
-                <select className="campo mt-1 block w-auto" value={d.referencia.anoLetivo}
-                  onChange={(e) => setParams({ ano: e.target.value })}>
-                  {d.anosDisponiveis.map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
-              </label>
-            )}
-            <SeletorBimestre periodos={d.periodos} atual={d.referencia.bimestre}
-              onEscolher={(b) => setParams({ ano: String(d.referencia.anoLetivo), bimestre: String(b) })} />
-          </div>
-          <p className="mt-2 text-sm text-muted">Referência: {textoReferencia(d.referencia)}</p>
-
-          {d.turmas.length === 0 && (
-            <p className="card mt-4">{coord ? 'Não há turmas neste ano letivo.' : 'Você não tem turmas vinculadas hoje. Se isso estiver errado, procure a coordenação.'}</p>
-          )}
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {d.turmas.map(({ turma: t, N, oculto, indicadores: i }) => (
-              <li key={t.id}>
-                <Link to={`/turmas/${t.id}?ano=${t.anoLetivo}&bimestre=${d.referencia.bimestre}`} className="card block text-ink no-underline hover:border-brand">
-                  <span className="text-lg font-extrabold">{t.nome}</span>
-                  <span className="ml-2 text-sm text-muted">{t.etapa}º ano · {N} {N === 1 ? 'criança' : 'crianças'}</span>
-                  {d.referencia.situacao === 'FUTURO' ? (
-                    <span className="mt-2 block text-sm text-muted">Bimestre ainda não começou.</span>
-                  ) : N === 0 ? (
-                    <span className="mt-2 block text-sm text-muted">Turma sem alunos na data de referência.</span>
-                  ) : oculto ? (
-                    <span className="mt-2 block text-sm">🔒 Agregado oculto: grupo menor que {d.grupoMinimo}</span>
-                  ) : i && (
-                    <span className="mt-2 block space-y-0.5 text-sm">
-                      <span className="block">⚑ Em atenção: <b>{i.emAtencao.n}</b> de {i.N}{i.atencaoIncompleta > 0 && ` · ${i.atencaoIncompleta} com atenção não concluída`}</span>
-                      <span className="block">Escrita alfabética: <b>{i.escritaAlfabetica.percentual}</b> ({i.escritaAlfabetica.n}/{i.escritaAlfabetica.d}) · cobertura de escrita {i.coberturaEscrita.percentual}</span>
-                      <span className="block">Consolidação: <b>{i.consolidacao.percentual ?? 'Sem dados'}</b> · cobertura {i.coberturaHabilidades.percentual ?? 'Sem dados'}</span>
-                    </span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          {d.turmas.some((t) => t.oculto) && (
-            <p className="mt-3 text-xs text-muted">Turmas com menos de {d.grupoMinimo} crianças não mostram agregados; a lista de alunos e a ficha individual continuam disponíveis ao abrir a turma.</p>
-          )}
-        </>
+      {q.data && q.data.turmas.length === 0 && (
+        <p className="card mt-6">Você não tem turmas vinculadas hoje. Se isso estiver errado, procure a coordenação.</p>
       )}
+      <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {q.data?.turmas.map((t, i) => {
+          const titular = t.professores?.filter((x) => x.tipo === 'TITULAR').map((x) => x.nome).join(', ');
+          const substituta = t.professores?.filter((x) => x.tipo === 'SUBSTITUTA').map((x) => x.nome).join(', ');
+          const passado = p ? t.anoLetivo < p.anoLetivo : false;
+          return (
+            <li key={t.id} className="card flex flex-col overflow-hidden p-0">
+              <div aria-hidden="true" className="h-6" style={{ backgroundImage: FAIXAS[i % FAIXAS.length] }} />
+              <div className="flex flex-1 flex-col p-6 pt-5">
+                <h2 className="text-3xl font-extrabold">{t.nome}</h2>
+                <p className="mt-1 text-lg text-muted">{t.etapa}º ano · {t.anoLetivo}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="chip chip-lilas">{t.alunos} {t.alunos === 1 ? 'aluno' : 'alunos'}</span>
+                  {t.anoEncerrado && <span className="chip chip-amarelo">Ano encerrado</span>}
+                  {!t.anoEncerrado && t.alunos > 0 && t.alunos < GRUPO_MINIMO && <span className="chip chip-amarelo">Agregado oculto: grupo menor que {GRUPO_MINIMO}</span>}
+                  {t.meuVinculo && <span className="chip chip-menta">Você é {t.meuVinculo === 'TITULAR' ? 'titular' : 'substituta'}</span>}
+                </div>
+                <p className="mt-4 text-muted">
+                  {titular && <>{passado ? `Titular em ${t.anoLetivo}` : 'Titular'}: {titular}</>}
+                  {substituta && <> · Substituta: {substituta}</>}
+                </p>
+                <div className="mt-auto pt-5">
+                  <Link to={`/turmas/${t.id}?ano=${t.anoLetivo}`} className="btn-sec w-full py-3 text-lg">Abrir turma</Link>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }

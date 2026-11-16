@@ -25,12 +25,12 @@ export default function Calendario() {
 
   return (
     <section>
-      <h1 className="text-2xl font-extrabold">Calendário escolar</h1>
-      <p className="text-sm text-muted">Um calendário para a escola toda. Fechar um bimestre bloqueia avaliações, observações e eventos de lacunas daquele período, para todas as turmas.</p>
+      <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">Calendário escolar</h1>
+      <p className="mt-1 text-muted sm:text-lg">Um calendário para a escola toda. Fechar um bimestre bloqueia avaliações, observações e eventos de lacunas daquele período, para todas as turmas.</p>
       {q.isLoading && <Carregando />}
       {q.error && <ErroCaixa erro={q.error} tentarDeNovo={() => q.refetch()} />}
       {q.data?.anos.map((a) => (
-        <article key={a.anoLetivo} className="card mt-4">
+        <article key={a.anoLetivo} className="card mt-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-extrabold">
               {a.anoLetivo} <span className="text-sm font-semibold text-muted">· {a.anoFechado ? '🔒 ano fechado' : a.jaEncerradoAlgumaVez ? 'ano reaberto (continua valendo para herança)' : 'ano em curso'}</span>

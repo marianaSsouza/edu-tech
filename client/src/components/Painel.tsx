@@ -17,8 +17,8 @@ export function SeletorBimestre({ periodos, atual, onEscolher }: {
   return (
     <nav aria-label="Bimestre" className="flex flex-wrap gap-2">
       {periodos.map((p) => (
-        <button key={p.bimestre} type="button" aria-current={p.bimestre === atual ? 'true' : undefined} onClick={() => onEscolher(p.bimestre)}
-          className={`rounded-xl border px-3 py-1 text-sm ${p.bimestre === atual ? 'border-brand bg-brand-soft font-extrabold' : 'border-line bg-white'}`}>
+        <button key={p.bimestre} type="button" aria-current={p.bimestre === atual ? 'page' : undefined} onClick={() => onEscolher(p.bimestre)}
+          className="aba">
           {p.bimestre}º bim. <span className="text-xs text-muted">({rotulo[p.situacao]})</span>
         </button>
       ))}
@@ -74,9 +74,9 @@ export function Cartoes({ i }: { i: Indicadores }) {
       {i.semAvaliacoes && <p className="mt-2 rounded-lg bg-warn-soft px-3 py-2 text-sm text-warn" role="note">⚠ Sem avaliações registradas neste bimestre. Os 0,0% indicam falta de registro, não desempenho.</p>}
       <dl className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {itens.map((x) => (
-          <div key={x.t} className="rounded-xl border border-line bg-white p-3">
+          <div key={x.t} className="rounded-2xl border border-line bg-gradient-to-br from-white to-[#f2f7fb] p-4">
             <dt className="text-xs font-bold text-muted">{x.t}</dt>
-            <dd className="text-lg font-extrabold">{x.v}</dd>
+            <dd className="text-xl font-extrabold">{x.v}</dd>
             <dd className="text-xs text-muted">{x.d}</dd>
           </div>
         ))}

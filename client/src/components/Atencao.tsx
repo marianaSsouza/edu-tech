@@ -16,8 +16,8 @@ export function CartaoAtencao({ alunoId, a }: { alunoId: number; a: FichaDto['at
     : '✓ Sem sinal de atenção nos dados disponíveis';
 
   return (
-    <div className={`card mt-4 ${a.estado === 'EM_ATENCAO' ? 'border-warn' : ''}`}>
-      <h2 className="text-lg font-extrabold">Atenção pedagógica</h2>
+    <div className={`card mt-6 ${a.estado === 'EM_ATENCAO' ? 'border-2 border-amarelo' : ''}`}>
+      <h2 className="text-2xl font-extrabold">Atenção pedagógica</h2>
       <p className={`mt-1 font-extrabold ${a.estado === 'EM_ATENCAO' ? 'text-warn' : ''}`}>{titulo}</p>
       <p className="text-sm text-muted">Referência: {ref}.</p>
       <ul className="mt-2 list-disc space-y-0.5 pl-5 text-sm">

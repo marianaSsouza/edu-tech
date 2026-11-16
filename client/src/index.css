@@ -1,34 +1,110 @@
+@import "@fontsource-variable/nunito";
 @import "tailwindcss";
 
-/* Paleta do protótipo de referência (artefato "Fio da Aprendizagem — prova de conceito"). */
+/*
+ * Identidade visual (proposta de design de 16/11/2026): degradê verde-azulado → azul,
+ * acentos amarelo, lilás e menta, fundo claro em degradê e cartões brancos com sombra suave.
+ */
 @theme {
-  --font-sans: Nunito, system-ui, sans-serif;
-  --color-bg: #f6f4ef;
-  --color-ink: #1f2a26;
-  --color-muted: #66736d;
-  --color-line: #e4e0d6;
-  --color-brand: #2f6f5e;
-  --color-brand-soft: #e3efe9;
+  --font-sans: "Nunito Variable", Nunito, system-ui, sans-serif;
+
+  --color-ink: #1b2a2f;
+  --color-muted: #5d6c72;
+  --color-line: #dfe6ec;
+  --color-bg: #eef4f6;
+
+  --color-teal: #0f766e;
+  --color-teal-claro: #19a98a;
+  --color-azul: #1f6fd6;
+  --color-azul-escuro: #1d4f9c;
+
+  --color-amarelo: #f8b72f;
+  --color-amarelo-claro: #fde58a;
+  --color-amarelo-texto: #7a4600;
+  --color-lilas: #e3e6ff;
+  --color-lilas-texto: #2f3f9e;
+  --color-menta: #cdf3ea;
+  --color-menta-texto: #0d6b5f;
+  --color-alerta: #b4541e;
+  --color-alerta-claro: #fde9dc;
+
+  /* níveis da rubrica (barras e legendas; sempre com texto e símbolo junto) */
+  --color-nivel0: #cfd8dc;
+  --color-nivel1: #f6c344;
+  --color-nivel2: #1fa982;
+
+  /* compatibilidade com nomes antigos usados nas telas */
+  --color-brand: #0f766e;
+  --color-brand-soft: #dff4ef;
   --color-warn: #b4541e;
-  --color-warn-soft: #fbeadf;
-  --color-nivel0: #d5dbd8;
-  --color-nivel1: #f2b545;
-  --color-nivel2: #3f9b6e;
+  --color-warn-soft: #fde9dc;
 }
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  min-height: 100vh;
   color: var(--color-ink);
   font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  background-image: linear-gradient(135deg, #e3f3ef 0%, #e6eefc 45%, #eef0fb 65%, #fdf2d9 100%);
+  background-attachment: fixed;
 }
 
-/* Componentes simples reaproveitados nas telas. Foco sempre visível (RNF-04). */
-@layer components {
-  .card { @apply rounded-2xl border border-line bg-white p-4; }
-  .btn { @apply rounded-xl bg-brand px-4 py-2 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-sec { @apply rounded-xl border border-line bg-white px-3 py-1.5 font-bold text-ink hover:border-brand disabled:opacity-50; }
-  .campo { @apply w-full rounded-lg border border-line bg-white px-3 py-2; }
+@layer base {
+  a { color: var(--color-azul-escuro); }
+  h1, h2, h3 { letter-spacing: -0.01em; }
 }
-@layer base { a { color: var(--color-brand); } }
-:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; }
+
+:focus-visible { outline: 3px solid var(--color-azul); outline-offset: 2px; }
+
+@layer components {
+  .degrade { background-image: linear-gradient(100deg, #0f766e 0%, #1683a0 50%, #1f6fd6 100%); }
+
+  .card {
+    @apply rounded-3xl border border-white/70 bg-white p-6;
+    box-shadow: 0 12px 32px -12px rgb(31 70 110 / 0.18), 0 2px 6px rgb(31 70 110 / 0.05);
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 font-extrabold text-white no-underline transition
+      disabled:cursor-not-allowed disabled:opacity-50;
+    background-image: linear-gradient(100deg, #0f766e 0%, #1f6fd6 100%);
+    box-shadow: 0 8px 20px -8px rgb(31 111 214 / 0.55);
+  }
+  .btn:hover:not(:disabled) { filter: brightness(1.06); }
+
+  .btn-sec {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-azul-escuro/80 bg-white px-4 py-2 font-bold text-azul-escuro no-underline transition
+      hover:bg-lilas disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .campo {
+    @apply w-full rounded-2xl border-2 border-line bg-white px-4 py-2.5 text-ink placeholder:text-muted/70 focus:border-azul focus:outline-none;
+  }
+
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold; }
+  .chip-amarelo { @apply text-amarelo-texto; background-image: linear-gradient(90deg, #fde58a, #fbc04a); }
+  .chip-lilas { @apply bg-lilas text-lilas-texto; }
+  .chip-menta { @apply bg-menta text-menta-texto; }
+  .chip-alerta { @apply bg-alerta-claro text-alerta; }
+  .chip-cinza { @apply bg-[#eef1f4] text-muted; }
+
+  /* opção de rádio em formato de cartão (rubrica de habilidade e escrita) */
+  .opcao {
+    @apply flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-line bg-white px-4 py-2.5 font-bold transition
+      hover:border-azul/60
+      has-[:checked]:border-teal-claro has-[:checked]:text-teal
+      has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-azul
+      has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-[#f3f5f6] has-[:disabled]:text-muted;
+  }
+  .opcao:has(:checked) { background-image: linear-gradient(90deg, #d8f5ec, #dbeafe); }
+  .opcao input { @apply h-5 w-5 accent-teal; }
+
+  .barra-trilho { @apply h-2.5 overflow-hidden rounded-full bg-[#dbe4ef]; }
+  .barra-cheia { @apply h-full rounded-full; background-image: linear-gradient(90deg, #19a98a, #1f6fd6); }
+
+  .aba {
+    @apply rounded-2xl border-2 border-line bg-white px-4 py-2 font-bold text-ink transition hover:border-azul/60;
+  }
+  .aba[aria-current] { @apply border-transparent text-white; background-image: linear-gradient(100deg, #0f766e, #1f6fd6); }
+}

@@ -4,6 +4,7 @@ import { api, Celula, FichaDto } from '../api';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { CartaoAtencao } from '../components/Atencao';
 import { TabelaLacunas } from '../components/TabelaLacunas';
+import { Migalhas, Titulo } from '../components/ui';
 
 const HAB = ['Não consolidada', 'Em desenvolvimento', 'Consolidada'];
 const SIMB = ['○', '◐', '●'];
@@ -25,25 +26,28 @@ export default function Ficha() {
 
   return (
     <section>
-      {(voltar || turmaAtual) && <Link to={voltar ?? `/turmas/${turmaAtual!.id}`} className="text-sm">← Voltar à turma</Link>}
-      <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold">{f.aluno.nome}</h1>
-          <p className="text-muted">
-            Hoje: {atual.contexto.etapa}º ano · ano letivo {atual.contexto.anoLetivo}{turmaAtual && ` · turma ${turmaAtual.nome}`}
-          </p>
-        </div>
-        <Link to={`/alunos/${f.aluno.id}/avaliacao?ano=${atual.contexto.anoLetivo}`} className="btn no-underline">Avaliação por bimestre</Link>
-      </div>
+      <Migalhas itens={[
+        { rotulo: 'Turmas', para: '/' },
+        ...(turmaAtual ? [{ rotulo: turmaAtual.nome, para: voltar ?? `/turmas/${turmaAtual.id}` }] : []),
+        { rotulo: `${f.aluno.nome} · ficha` },
+      ]} />
+      <Titulo avatar={f.aluno.nome} titulo={f.aluno.nome}
+        sub={`Hoje: ${atual.contexto.etapa}º ano · ano letivo ${atual.contexto.anoLetivo}${turmaAtual ? ` · turma ${turmaAtual.nome}` : ''}`}
+        acoes={<Link to={`/alunos/${f.aluno.id}/avaliacao?ano=${atual.contexto.anoLetivo}`} className="btn">Avaliação por bimestre</Link>} />
+      <nav aria-label="Seções da ficha" className="mt-5 flex flex-wrap gap-2">
+        <a href="#atencao" className="chip chip-amarelo no-underline">Atenção pedagógica</a>
+        <a href="#lacunas" className="chip chip-lilas no-underline">Lacunas herdadas</a>
+        <a href="#linha-do-tempo" className="chip chip-menta no-underline">Linha do tempo</a>
+      </nav>
 
       {f.historicoAnteriorIndisponivel && (
-        <p className="card mt-4" role="note">ℹ Histórico anterior indisponível: não há registros de anos anteriores a {f.linhaDoTempo[0].contexto.anoLetivo}. Nenhuma lacuna foi inventada para esse período.</p>
+        <p className="card mt-6" role="note">ℹ Histórico anterior indisponível: não há registros de anos anteriores a {f.linhaDoTempo[0].contexto.anoLetivo}. Nenhuma lacuna foi inventada para esse período.</p>
       )}
 
-      <CartaoAtencao alunoId={f.aluno.id} a={f.atencao} />
-      <Lacunas f={f} />
+      <div id="atencao" className="scroll-mt-4"><CartaoAtencao alunoId={f.aluno.id} a={f.atencao} /></div>
+      <div id="lacunas" className="scroll-mt-4"><Lacunas f={f} /></div>
 
-      <h2 className="mt-8 text-xl font-extrabold">Linha do tempo</h2>
+      <h2 id="linha-do-tempo" className="mt-10 scroll-mt-4 text-2xl font-extrabold">Linha do tempo</h2>
       {[...f.linhaDoTempo].reverse().map((ano) => <Ano key={ano.contexto.id} ano={ano} />)}
     </section>
   );
@@ -55,8 +59,8 @@ function Lacunas({ f }: { f: FichaDto }) {
   const consolidadas = itens.filter((i) => !i.pendente);
   if (!itens.length) {
     return (
-      <div className="card mt-4">
-        <h2 className="text-lg font-extrabold">Lacunas herdadas</h2>
+      <div className="card mt-6">
+        <h2 className="text-2xl font-extrabold">Lacunas herdadas</h2>
         <p className="mt-1 text-muted">Não há ano anterior encerrado nesta escola para herdar habilidades.</p>
       </div>
     );
@@ -68,8 +72,8 @@ function Lacunas({ f }: { f: FichaDto }) {
   ].filter(Boolean);
 
   return (
-    <div className="card mt-4">
-      <h2 className="text-lg font-extrabold">Lacunas herdadas</h2>
+    <div className="card mt-6">
+      <h2 className="text-2xl font-extrabold">Lacunas herdadas</h2>
       <p className="mt-1 font-bold">
         {d.total === 0 ? 'Nenhuma pendência herdada.' : `${d.total} ${d.total === 1 ? 'pendência' : 'pendências'}: ${partes.join(' + ')}`}
       </p>
@@ -121,7 +125,7 @@ function Ano({ ano }: { ano: FichaDto['linhaDoTempo'][number] }) {
   ].filter((x) => x.c && x.c.revisoes.length);
 
   return (
-    <article className="card mt-4">
+    <article className="card mt-6">
       <h3 className="text-lg font-extrabold">
         {contexto.anoLetivo} · {contexto.etapa}º ano {ano.anoEncerrado && <span className="text-sm font-semibold text-muted">· ano encerrado</span>}
       </h3>
