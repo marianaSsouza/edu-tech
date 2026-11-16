@@ -4,7 +4,7 @@ Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especific
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
 - **Testes automáticos:** 135 de 135 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 7.3 (calendário) e 8.2 (evolução da escrita); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
 
@@ -37,12 +37,12 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | historico-pedagogico | 6 | 6 | 0 | 0 | 0 |
 | lacunas-herdadas | 11 | 11 | 0 | 0 | 0 |
 | atencao-pedagogica | 13 | 12 | 1 | 0 | 0 |
-| paineis-e-indicadores | 15 | 14 | 0 | 1 | 0 |
+| paineis-e-indicadores | 15 | 15 | 0 | 0 | 0 |
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
 | gestao-escolar | 8 | 0 | 4 | 4 | 0 |
 | regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **74** | **12** | **6** | **1** |
+| **Total** | **93** | **75** | **12** | **5** | **1** |
 
 ---
 
@@ -140,7 +140,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | | Turma sem avaliações | ✅ | `painel.spec.ts` (domain e integração: 4º bimestre do 2º A, com 0,0% e aviso) |
 | Ocultação de agregados pequenos | Limite de apresentação | ✅ | `painel.spec.ts`: "CR-18", "ocultação vale para os dois perfis" e "com 5 crianças os agregados aparecem"; a ocultação acontece no servidor |
 | Atualização e legibilidade | Consolidação confirmada | ✅ | Depois de consolidar, a ficha e o painel são reconsultados (verificado no navegador; contagem e motivos testados em `historico/lacunas.spec.ts`). Barras: cinza NC, amarelo D, verde C, branco hachurado U, com legenda e contagens. |
-| Desempenho verificável | Medição de referência | ❌ | Tarefa 9.3 (P1) não feita |
+| Desempenho verificável | Medição de referência | ✅ | `npm run desempenho`: base sintética de 500 alunos e 5 anos (2022–2026), aplicação real via HTTP, inicialização fora da medição. **30 de 30** operações (10 painéis, 10 fichas, 10 salvamentos) em até 2 s; a mais lenta foi o painel da escola inteira (≈ 1 s). Ambiente, dados e os 30 tempos em [`docs/evidencias/desempenho-rnf06.md`](evidencias/desempenho-rnf06.md). |
 
 ## catalogo-pedagogico
 
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4, 9.3.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), grupo 9 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.1, 9.2, 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

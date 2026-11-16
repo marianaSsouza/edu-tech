@@ -11,7 +11,8 @@
     "start": "npm run start:prod -w server",
     "seed": "npm run seed -w server",
     "seed:reset": "npm run seed:reset -w server",
-    "test": "npm run test -w server"
+    "test": "npm run test -w server",
+    "desempenho": "npm run desempenho -w server"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

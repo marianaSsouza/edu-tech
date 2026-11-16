@@ -98,4 +98,4 @@ Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para prova
 
 ## Fechamento (fala sugerida)
 
-"O P0 está completo e verificado: 74 dos 93 cenários das specs estão feitos com evidência, 12 estão parciais e 6 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta e a tela de regras e casos; a gestão escolar ficou para depois, então a entrega está declarada como parcial."
+"O P0 está completo e verificado: 75 dos 93 cenários das specs estão feitos com evidência, 12 estão parciais e 5 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); a gestão escolar ficou para depois, então a entrega está declarada como parcial."

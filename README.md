@@ -28,6 +28,7 @@ Abra **http://localhost:5173** e entre com uma das contas de demonstração abai
 | --- | --- |
 | `npm test` | roda os testes do servidor (catálogo, regras puras, base fictícia, persistência, acesso e avaliação) |
 | `npm run seed:reset` | apaga os dados e recria a base fictícia do zero |
+| `npm run desempenho` | mede o RNF-06: cria uma base sintética de 500 alunos e 5 anos em `data/desempenho.sqlite` (fora do git), sobe a aplicação e cronometra 30 operações; o resultado vai para `docs/evidencias/desempenho-rnf06.md` |
 | `npm run build` e `npm start` | compila tudo e serve cliente e API juntos em http://localhost:3000 |
 
 ## Contas de demonstração (senha: `demo1234`)

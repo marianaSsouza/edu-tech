@@ -8,7 +8,8 @@
     "start:prod": "node dist/main",
     "seed": "ts-node src/database/seed/run-seed.ts",
     "seed:reset": "ts-node src/database/seed/run-seed.ts --reset",
-    "test": "jest"
+    "test": "jest",
+    "desempenho": "ts-node src/desempenho/medir.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
