@@ -55,3 +55,36 @@ export interface AvaliacaoDto {
 }
 
 export const papelLegivel = (p: Papel) => (p === 'COORDENACAO' ? 'Coordenação' : 'Professora');
+
+// ---- ficha do aluno (histórico e lacunas) ----
+export interface Revisao { versaoAnterior: number; nivelAnterior: number | null; nivelNovo: number | null; autorNome: string; justificativa: string; em: string }
+export interface Celula { nivel: number; autorNome: string; revisoes: Revisao[] }
+export type SituacaoLacuna = 'NAO_CONSOLIDADA' | 'EM_DESENVOLVIMENTO' | 'SEM_AVALIACAO' | 'CONSOLIDADA';
+
+export interface FichaDto {
+  aluno: { id: number; nome: string };
+  historicoAnteriorIndisponivel: boolean;
+  linhaDoTempo: Array<{
+    contexto: { id: number; anoLetivo: number; etapa: number; catalogo: string };
+    turmas: Array<{ id: number; nome: string; de: string; ate: string | null }>;
+    professoras: Array<{ nome: string; tipo: 'TITULAR' | 'SUBSTITUTA'; de: string; ate: string | null }>;
+    periodos: Array<{ bimestre: number; estado: string; situacao: Situacao }>;
+    anoEncerrado: boolean;
+    habilidades: Array<{ id: string; area: string; texto: string; porBimestre: Array<Celula | null>; resumoAnual: { nivel: number; bimestre: number } | null }>;
+    escrita: Array<Celula | null>;
+    observacoes: Array<{ id: number; bimestre: number; texto: string; autorNome: string }>;
+    ultimaObservacao: { bimestre: number; texto: string; autorNome: string } | null;
+  }>;
+  lacunas: {
+    referencia: { anoLetivo: number; bimestre: number };
+    decomposicao: { total: number; naoConsolidada: number; emDesenvolvimento: number; semAvaliacao: number };
+    itens: Array<{
+      skillId: string; texto: string; origem: { anoLetivo: number; etapa: number }; situacao: SituacaoLacuna; pendente: boolean;
+      ultima: { nivel: number; anoLetivo: number; bimestre: number; tipo: string; autorNome: string } | null;
+    }>;
+    eventos: Array<{
+      id: number; tipo: string; skillId: string; texto: string; nivel: number; anoLetivo: number; bimestre: number;
+      autorNome: string; justificativa: string; em: string; origemAnoLetivo: number | null;
+    }>;
+  };
+}

@@ -30,5 +30,5 @@ body {
   .btn-sec { @apply rounded-xl border border-line bg-white px-3 py-1.5 font-bold text-ink hover:border-brand disabled:opacity-50; }
   .campo { @apply w-full rounded-lg border border-line bg-white px-3 py-2; }
 }
-a { color: var(--color-brand); }
+@layer base { a { color: var(--color-brand); } }
 :focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; }

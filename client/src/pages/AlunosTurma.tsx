@@ -25,14 +25,9 @@ export default function AlunosTurma() {
           ) : (
             <ul className="card mt-4 divide-y divide-line p-0">
               {q.data.alunos.map((a) => (
-                <li key={a.id}>
-                  <Link
-                    to={`/alunos/${a.id}/avaliacao?ano=${q.data.turma.anoLetivo}`}
-                    className="flex items-center justify-between px-4 py-3 font-bold text-ink no-underline hover:bg-brand-soft"
-                  >
-                    {a.nome}
-                    <span className="text-sm font-semibold text-brand">Avaliação →</span>
-                  </Link>
+                <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+                  <Link to={`/alunos/${a.id}`} className="font-bold">{a.nome}</Link>
+                  <Link to={`/alunos/${a.id}/avaliacao?ano=${q.data.turma.anoLetivo}`} className="text-sm font-semibold">Avaliação →</Link>
                 </li>
               ))}
             </ul>

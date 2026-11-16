@@ -6,9 +6,10 @@ import { CatalogoModule } from './modules/catalogo/catalogo.module';
 import { AcessoModule } from './modules/acesso/acesso.module';
 import { EscolaModule } from './modules/escola/escola.module';
 import { AvaliacaoModule } from './modules/avaliacao/avaliacao.module';
+import { HistoricoModule } from './modules/historico/historico.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(buildDataSourceOptions()), AcessoModule, CatalogoModule, EscolaModule, AvaliacaoModule],
+  imports: [TypeOrmModule.forRoot(buildDataSourceOptions()), AcessoModule, CatalogoModule, EscolaModule, AvaliacaoModule, HistoricoModule],
   controllers: [HealthController],
 })
 export class AppModule {}

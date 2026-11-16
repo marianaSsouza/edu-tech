@@ -167,6 +167,7 @@ function Formulario({ dados, recarregar, irPara }: {
     <div className="mt-2 pb-24">
       {/* ---- cabeçalho: distingue etapa escolar de ano letivo (spec "Troca de bimestre") ---- */}
       <h1 className="text-2xl font-extrabold">{dados.aluno.nome}</h1>
+      <Link to={`/alunos/${dados.aluno.id}`} className="text-sm">Ficha, histórico e lacunas →</Link>
       <p className="text-muted">
         {contexto.etapa}º ano (etapa escolar) · ano letivo {contexto.anoLetivo}
         {contexto.turma && ` · turma ${contexto.turma.nome}`} · catálogo {contexto.catalogo}

@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Turmas from './pages/Turmas';
 import AlunosTurma from './pages/AlunosTurma';
 import Avaliacao from './pages/Avaliacao';
+import Ficha from './pages/Ficha';
 
 /** Quem está logado. null = sem sessão. */
 export function useUsuario() {
@@ -67,6 +68,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Turmas /> },
       { path: 'turmas/:id', element: <AlunosTurma /> },
+      { path: 'alunos/:id', element: <Ficha /> },
       { path: 'alunos/:id/avaliacao', element: <Avaliacao /> },
       { path: '*', element: <p>Página não encontrada. <Link to="/">Voltar às turmas</Link></p> },
     ],
