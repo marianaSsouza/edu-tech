@@ -18,7 +18,7 @@ npm test
 npm run dev
 ```
 
-- O `npm test` deve terminar com `Tests: 137 passed`. Deixe esse terminal visível: ele é a prova automática.
+- O `npm test` deve terminar com `Tests: 149 passed`. Deixe esse terminal visível: ele é a prova automática.
 - Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
 - Senha de todas as contas: `demo1234`.
 - A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.
@@ -88,6 +88,17 @@ Clique em **Sair** e entre como `debora@escola.exemplo` (substituta do 2º A).
 3. Como **coordenação**, abra **Calendário** e clique em **Fechar** no 4º bimestre. Antes de confirmar aparecem as ausências por turma; não é preciso confirmar.
    - Spec **calendario-letivo**: "Fechar bimestre incompleto" (CA-13.2).
 
+## Gestão da escola (≈ 1 min)
+
+Como **coordenação**, abra **Gestão** no menu.
+
+1. Em **Alunos**, cadastre "Bernado" no 2º A: o sistema mostra "Possível duplicidade" com o Bernardo existente e só cadastra se você confirmar que é outra criança. Não pede CPF.
+   - Spec **gestao-escolar**: "Possível duplicidade".
+2. Em **Turmas e vínculos**, tente vincular outra professora como **Titular** no 2º A: é recusado. Como **Substituta**, é aceito, e as duas convivem.
+   - Spec **gestao-escolar**: "Substituição autorizada".
+3. Em **Contas**, crie uma conta: aparece uma senha temporária uma única vez. "Nova senha" resolve o "Esqueci minha senha".
+4. *Fala:* "Nada com histórico é apagado: aluno é arquivado, conta é desativada, vínculo é encerrado. A professora não vê esta tela (CA-12.4)."
+
 ## Regras e casos (≈ 30 s)
 
 Entre como **coordenação** e abra **Regras** no menu (a professora não vê essa tela). Na aba **Conferir os cálculos**, o sistema confere na hora os 24 exemplos dos requisitos, agrupados por assunto: deve aparecer "Todos os cálculos estão certos" (23 conferidos na tela e 1 sobre permissões, testado no servidor). Marque **Simular um erro**: o primeiro exemplo fica laranja, com a "Resposta certa" e o que "O sistema calculou" lado a lado. A aba **Como o sistema decide** explica as regras em linguagem simples.
@@ -98,4 +109,4 @@ Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para prova
 
 ## Fechamento (fala sugerida)
 
-"O P0 está completo e verificado: 76 dos 93 cenários das specs estão feitos com evidência, 11 estão parciais e 5 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos a cópia de segurança com restauração conferida e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); a gestão escolar ficou para depois, então a entrega está declarada como parcial."
+"O P0 está completo e verificado: 79 dos 93 cenários das specs estão feitos com evidência, 11 estão parciais e 2 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos a gestão da escola (cadastros, contas e vínculos), o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos, a cópia de segurança com restauração conferida e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); transferências e passagem de ano (7.2) ficaram para depois, então a entrega está declarada como parcial."

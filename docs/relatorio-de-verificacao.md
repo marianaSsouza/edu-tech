@@ -3,8 +3,8 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 137 de 137 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Testes automáticos:** 149 de 149 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 (gestão: cadastros e vínculos), 7.3 (calendário), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
 
@@ -40,9 +40,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | paineis-e-indicadores | 15 | 15 | 0 | 0 | 0 |
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
-| gestao-escolar | 8 | 1 | 3 | 4 | 0 |
+| gestao-escolar | 8 | 4 | 3 | 1 | 0 |
 | regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **76** | **11** | **5** | **1** |
+| **Total** | **93** | **79** | **11** | **2** | **1** |
 
 ---
 
@@ -50,7 +50,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 | Requisito | Cenário | Situação | Evidência / o que falta |
 | --- | --- | --- | --- |
-| Contas individuais e papéis | Desativação de professora | ✅ | `acesso.spec.ts`: "conta desativada dá 401 e a sessão aberta antes deixa de valer". A autoria fica preservada porque a conta não é apagada. Falta a tela da coordenação para desativar (grupo 7); no teste, a desativação é feita direto no banco. |
+| Contas individuais e papéis | Desativação de professora | ✅ | `acesso.spec.ts`: "conta desativada dá 401 e a sessão aberta antes deixa de valer". A autoria fica preservada porque a conta não é apagada. A coordenação desativa e reativa pela tela **Gestão → Contas** (`gestao.spec.ts`: "desativar corta o acesso sem apagar a conta"). |
 | | Elevação indevida | ⚠️ | Não existe nenhuma rota que altere o papel; o guard recarrega o papel do banco a cada requisição (`common/auth.ts`). Falta um teste dedicado. |
 | Consulta contextual autorizada | Histórico de aluno atual | ✅ | `avaliacao.spec.ts`: "histórico de 2025 fica disponível à professora atual, com autoria preservada"; `ficha.spec.ts`: "CA-05.1…" |
 | | Ex-aluno sem vínculo | ✅ | `acesso.spec.ts`: "Ana Paula não lê ex-aluna, mesmo sendo autora dos registros de 2025: 403"; também na ficha, na avaliação e no painel |
@@ -169,13 +169,13 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 | Requisito | Cenário | Situação | Evidência / o que falta |
 | --- | --- | --- | --- |
-| Cadastros escolares mínimos | Possível duplicidade | ❌ | Tarefa 7.1 (P1) |
+| Cadastros escolares mínimos | Possível duplicidade | ✅ | `gestao.spec.ts`: "sinaliza sem mesclar: só cadastra com confirmação, e o novo aluno nasce sem o histórico do outro" e "nome igual, com erro de digitação ou mesmo primeiro nome na turma é sinalizado; sem CPF". Tela **Gestão → Alunos** mostra os parecidos e pede confirmação (verificado no navegador). |
 | Matrícula única e transferência | Transferência durante o bimestre | ⚠️ | O cálculo trata a transferência sem copiar avaliação (`painel.spec.ts`, CA-10.3). Falta a tela para transferir (7.2). |
-| Vigência dos vínculos | Substituição autorizada | ❌ | Tarefa 7.1 (P1); titular e substituta já coexistem na base fictícia |
-| | Vínculo encerrado | ⚠️ | Vínculo vencido não dá leitura nem escrita (Ana Paula, `acesso.spec.ts`). Falta a tela para encerrar vínculo. |
+| Vigência dos vínculos | Substituição autorizada | ✅ | `gestao.spec.ts`: "segunda titular é recusada; substituta explícita coexiste e as duas acessam". Tela **Gestão → Turmas e vínculos**. |
+| | Vínculo encerrado | ✅ | `gestao.spec.ts`: "a professora deixa de registrar; a autoria passada continua" (vínculo encerrado pela coordenação, não apagado). Também `acesso.spec.ts` (Ana Paula). |
 | Passagem de ano e repetência | Repetência | ⚠️ | A regra de herança com repetência está testada (`lacunas.spec.ts`). Falta a operação de matrícula (7.2). |
 | | Mudança excepcional de etapa | ❌ | Tarefa 7.2 (P1) |
-| Transferência externa e arquivamento | Saída da escola | ❌ | Tarefa 7.2 (P1) |
+| Transferência externa e arquivamento | Saída da escola | ⚠️ | Arquivar aluno encerra a matrícula e mantém o histórico consultável pela coordenação (`gestao.spec.ts`: "arquivamento: encerra a matrícula e marca o aluno, sem apagar avaliações"). Falta registrar como "transferência externa" com motivo (7.2). |
 | Dados sintéticos e recuperação | Restauração antes da entrega | ✅ | Procedimento em [`docs/guia-operacional.md`](guia-operacional.md) (`npm run backup`, `npm run restaurar`). `npm run verificar-restauracao` restaurou a base de demonstração em ambiente separado: 18 tabelas idênticas (linhas e hash de todo o conteúdo), evidência em [`docs/evidencias/restauracao-rnf05.md`](evidencias/restauracao-rnf05.md). `copia-seguranca.spec.ts`: "restaura vínculos, matrículas, avaliações com versão, revisões e autoria exatamente como estavam". Reinício: `npm run seed:reset` (`seed.spec.ts`). |
 
 ## regras-e-casos-de-referencia
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2 a 8.4, 9.1 a 9.3.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1, 7.3, 8.2 a 8.4, 9.1 a 9.3.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.2, 7.4, 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

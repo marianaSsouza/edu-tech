@@ -1,6 +1,7 @@
 /** Erro padronizado da API ({ codigo, mensagem }, D16). status 0 = falha de rede. */
 export class ErroApi extends Error {
-  constructor(public readonly status: number, public readonly codigo: string, mensagem: string) {
+  /** detalhes: a resposta inteira do servidor (ex.: `parecidos` na possível duplicidade de aluno). */
+  constructor(public readonly status: number, public readonly codigo: string, mensagem: string, public readonly detalhes: Record<string, unknown> = {}) {
     super(mensagem);
   }
 }
@@ -19,7 +20,7 @@ export async function api<T>(caminho: string, opcoes: { method?: string; body?: 
   }
   const dados = await r.json().catch(() => null);
   if (!r.ok) {
-    throw new ErroApi(r.status, dados?.codigo ?? 'ERRO', dados?.mensagem ?? dados?.message ?? `O servidor respondeu ${r.status}.`);
+    throw new ErroApi(r.status, dados?.codigo ?? 'ERRO', dados?.mensagem ?? dados?.message ?? `O servidor respondeu ${r.status}.`, dados ?? {});
   }
   return dados as T;
 }

@@ -11,8 +11,9 @@ import Calendario from './pages/Calendario';
 import Painel from './pages/Painel';
 import Regras from './pages/Regras';
 import { Avatar } from './components/ui';
-import { IconeAluno, IconeCalendario, IconeMenu, IconePainel, IconeRegras, IconeTurmas, Marca } from './components/Icones';
+import { IconeAluno, IconeCalendario, IconeGestao, IconeMenu, IconePainel, IconeRegras, IconeTurmas, Marca } from './components/Icones';
 import Alunos from './pages/Alunos';
+import Gestao from './pages/Gestao';
 import { BotaoVoltar } from './components/BotaoVoltar';
 
 /** Quem está logado. null = sem sessão. */
@@ -56,6 +57,7 @@ function Layout() {
     { para: '/alunos', rotulo: 'Alunos', icone: <IconeAluno />, ativo: pathname.startsWith('/alunos') },
     ...(coord ? [
       { para: '/calendario', rotulo: 'Calendário', icone: <IconeCalendario />, ativo: pathname.startsWith('/calendario') },
+      { para: '/gestao', rotulo: 'Gestão', icone: <IconeGestao />, ativo: pathname.startsWith('/gestao') },
       { para: '/regras', rotulo: 'Regras', icone: <IconeRegras />, ativo: pathname.startsWith('/regras') },
     ] : []),
   ];
@@ -125,6 +127,7 @@ export const router = createBrowserRouter([
       { path: 'calendario', element: <Calendario /> },
       { path: 'painel', element: <Painel /> },
       { path: 'regras', element: <Regras /> },
+      { path: 'gestao', element: <Gestao /> },
       { path: 'alunos/:id/avaliacao', element: <Avaliacao /> },
       { path: '*', element: <p>Página não encontrada. <Link to="/">Voltar às turmas</Link></p> },
     ],

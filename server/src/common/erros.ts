@@ -6,8 +6,9 @@ import { HttpException } from '@nestjs/common';
  * 422 PERIODO_FECHADO/PERIODO_FUTURO/JUSTIFICATIVA_OBRIGATORIA/LIMITE_OBSERVACOES/DADOS_INVALIDOS
  */
 export class ErroApi extends HttpException {
-  constructor(status: number, public readonly codigo: string, mensagem: string) {
-    super({ codigo, mensagem }, status);
+  /** detalhes: dados extras para a tela (ex.: lista de nomes parecidos na possível duplicidade). */
+  constructor(status: number, public readonly codigo: string, mensagem: string, detalhes?: Record<string, unknown>) {
+    super({ codigo, mensagem, ...(detalhes ?? {}) }, status);
   }
 }
 
