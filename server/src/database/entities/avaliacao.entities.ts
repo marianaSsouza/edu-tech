@@ -66,6 +66,10 @@ export class ResponseRevision {
   @Column({ type: 'integer' }) versaoAnterior: number;
   @Column({ type: 'integer', nullable: true }) nivelAnterior: number | null;
   @Column({ type: 'integer', nullable: true }) nivelNovo: number | null; // null = resposta limpa
+  // onde a resposta estava (permite mostrar a resposta limpa, cuja linha deixa de existir — tarefa 3.4)
+  @Column({ type: 'integer', nullable: true }) contextId: number | null;
+  @Column({ type: 'varchar', nullable: true }) skillId: string | null;
+  @Column({ type: 'integer', nullable: true }) bimestre: number | null;
   @Column({ type: 'integer' }) autorId: number;
   @Column({ type: 'text' }) justificativa: string;
   @CreateDateColumn() criadoEm: Date;

@@ -59,7 +59,7 @@ export const papelLegivel = (p: Papel) => (p === 'COORDENACAO' ? 'Coordenação'
 
 // ---- ficha do aluno (histórico e lacunas) ----
 export interface Revisao { versaoAnterior: number; nivelAnterior: number | null; nivelNovo: number | null; autorNome: string; justificativa: string; em: string }
-export interface Celula { nivel: number; autorNome: string; revisoes: Revisao[] }
+export interface Celula { nivel: number | null; autorNome: string; revisoes: Revisao[] } // null = resposta limpa
 export type SituacaoLacuna = 'NAO_CONSOLIDADA' | 'EM_DESENVOLVIMENTO' | 'SEM_AVALIACAO' | 'CONSOLIDADA';
 
 export interface AtencaoManual {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, In } from 'typeorm';
+import { DataSource, In, IsNull } from 'typeorm';
 import {
   AttentionEvent, CatalogSkill, Enrollment, ManualAttention, Observation, PedagogicalContext, PedagogicalEvent, Period, ResponseRevision,
   SchoolClass, SkillResponse, TeacherLink, User, WritingResponse, YearClosure,
@@ -12,7 +12,7 @@ import { avaliarAtencao, LIMITE_LACUNAS } from '../../domain/atencao';
 import { PolicyService } from '../acesso/policy.service';
 
 interface Revisao { versaoAnterior: number; nivelAnterior: number | null; nivelNovo: number | null; autorNome: string; justificativa: string; em: string }
-interface Celula { nivel: number; autorNome: string; revisoes: Revisao[] }
+interface Celula { nivel: number | null; autorNome: string; revisoes: Revisao[] } // nivel null = resposta limpa
 
 /**
  * spec historico-pedagogico + lacunas-herdadas (tarefas 4.1, 4.2): ficha do aluno com linha do tempo por ano,
@@ -58,6 +58,20 @@ export class FichaService {
         versaoAnterior: r.versaoAnterior, nivelAnterior: r.nivelAnterior, nivelNovo: r.nivelNovo,
         autorNome: nome(r.autorId), justificativa: r.justificativa, em: new Date(r.criadoEm).toISOString(),
       }));
+    // tarefa 3.4: resposta limpa não tem linha; a célula mostra "Sem avaliação" com a limpeza identificada
+    const limpezas = await ds.getRepository(ResponseRevision).find({
+      where: { contextId: In(ctxIds), nivelNovo: IsNull() }, order: { id: 'ASC' },
+    });
+    const celulaLimpa = (tipo: 'HABILIDADE' | 'ESCRITA', contextId: number, bimestre: number, skillId?: string): Celula | null => {
+      const l = limpezas.filter((x) => x.tipo === tipo && x.contextId === contextId && x.bimestre === bimestre && (tipo === 'ESCRITA' || x.skillId === skillId));
+      if (!l.length) return null;
+      return {
+        nivel: null, autorNome: '', revisoes: l.map((r) => ({
+          versaoAnterior: r.versaoAnterior, nivelAnterior: r.nivelAnterior, nivelNovo: null,
+          autorNome: nome(r.autorId), justificativa: r.justificativa, em: new Date(r.criadoEm).toISOString(),
+        })),
+      };
+    };
     const turmas = await ds.getRepository(SchoolClass).findBy({ id: In(matriculas.map((m) => m.classId).concat(-1)) });
     const vinculos = await ds.getRepository(TeacherLink).findBy({ classId: In(turmas.map((t) => t.id).concat(-1)) });
 
@@ -99,14 +113,14 @@ export class FichaService {
         habilidades: skillsCtx.map((s) => {
           const porBimestre: Array<Celula | null> = [1, 2, 3, 4].map((b) => {
             const r = respostas.find((x) => x.contextId === c.id && x.skillId === s.id && x.bimestre === b);
-            return r ? { nivel: r.nivel, autorNome: nome(r.autorId), revisoes: revDe('HABILIDADE', r.id) } : null;
+            return r ? { nivel: r.nivel, autorNome: nome(r.autorId), revisoes: revDe('HABILIDADE', r.id) } : celulaLimpa('HABILIDADE', c.id, b, s.id);
           });
           const ra = resumo.get(s.id);
           return { id: s.id, area: s.area, texto: s.texto, porBimestre, resumoAnual: ra ? { nivel: ra.nivel, bimestre: ra.bimestre } : null };
         }),
         escrita: [1, 2, 3, 4].map((b) => {
           const r = escritas.find((x) => x.contextId === c.id && x.bimestre === b);
-          return r ? { nivel: r.nivel, autorNome: nome(r.autorId), revisoes: revDe('ESCRITA', r.id) } : null;
+          return r ? { nivel: r.nivel, autorNome: nome(r.autorId), revisoes: revDe('ESCRITA', r.id) } : celulaLimpa('ESCRITA', c.id, b);
         }),
         observacoes: obsCtx.map((o) => ({ id: o.id, bimestre: o.bimestre, texto: o.texto, autorNome: nome(o.autorId) })),
         ultimaObservacao: ultima ? { bimestre: ultima.bimestre, texto: ultima.texto, autorNome: nome(ultima.autorId) } : null,

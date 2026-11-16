@@ -14,6 +14,8 @@ const NIVEIS_HAB = [
 const NIVEIS_ESCRITA = ['Pré-silábico', 'Silábico', 'Silábico-alfabético', 'Alfabético'].map((rotulo, v) => ({ v, rotulo, simbolo: `${v + 1}` }));
 const SITUACAO: Record<Situacao, string> = { DISPONIVEL: 'Aberto', FECHADO: 'Fechado', FUTURO: 'Ainda não começou' };
 const ESCRITA = '__escrita';
+const LIMPAR = -1; // pendência especial: limpar a resposta salva (tarefa 3.4)
+const nivelEfetivo = (p: Pendente | undefined, salvo: number | undefined) => (p ? (p.nivel === LIMPAR ? undefined : p.nivel) : salvo);
 const caracteres = (t: string) => Array.from(t).length;
 
 interface Pendente { nivel: number; justificativa: string }
@@ -90,7 +92,7 @@ function Formulario({ dados, recarregar, irPara }: {
   };
 
   // ---- completude e limite de observações ----
-  const respondidas = dados.habilidades.filter((h) => (pendentes[h.id]?.nivel ?? h.resposta?.nivel) !== undefined).length;
+  const respondidas = dados.habilidades.filter((h) => nivelEfetivo(pendentes[h.id], h.resposta?.nivel) !== undefined).length;
   const usadoObs = useMemo(() => {
     const vigentes = dados.observacoes.reduce((s, o) => s + caracteres(edicoes[o.id] ?? o.texto), 0);
     return vigentes + caracteres(novaObs.trim());
@@ -101,7 +103,7 @@ function Formulario({ dados, recarregar, irPara }: {
   const salvar = async () => {
     const semJustificativa = Object.entries(pendentes).filter(([chave, p]) => respostaDe(chave) && !p.justificativa.trim());
     if (semJustificativa.length) {
-      setAviso({ tipo: 'erro', texto: 'Para corrigir uma resposta já salva, preencha a justificativa da correção.' });
+      setAviso({ tipo: 'erro', texto: 'Para corrigir ou limpar uma resposta já salva, preencha a justificativa.' });
       return;
     }
     if (usadoObs > max) {
@@ -129,6 +131,10 @@ function Formulario({ dados, recarregar, irPara }: {
       };
       const rotulo = chave === ESCRITA ? 'Escrita' : chave;
       const caminho = chave === ESCRITA ? `/contextos/${contexto.id}/escrita` : `/contextos/${contexto.id}/habilidades/${chave}`;
+      if (p.nivel === LIMPAR) {
+        await tentar(rotulo, () => api(`${caminho}/limpar`, { method: 'POST', body: { bimestre: periodo.bimestre, version: atual!.version, justificativa: p.justificativa.trim() } }), () => delete restantes[chave]);
+        continue;
+      }
       await tentar(rotulo, () => api(caminho, { method: 'PUT', body }), () => delete restantes[chave]);
     }
     for (const [obsId, texto] of Object.entries(edicoes)) {
@@ -165,7 +171,7 @@ function Formulario({ dados, recarregar, irPara }: {
   };
 
   const nAlteracoes = Object.keys(pendentes).length + (novaObs.trim() ? 1 : 0) + Object.keys(edicoes).length;
-  const escritaValor = pendentes[ESCRITA]?.nivel ?? dados.escrita?.nivel;
+  const escritaValor = nivelEfetivo(pendentes[ESCRITA], dados.escrita?.nivel);
   const situacaoChip =
     periodo.situacao === 'FECHADO' ? <span className="chip chip-cinza">🔒 Período fechado</span>
     : periodo.situacao === 'FUTURO' ? <span className="chip chip-cinza">Ainda não começou</span>
@@ -311,8 +317,11 @@ function CampoNivel({ nome, titulo, dica, opcoes, resposta, pendente, usuarioId,
 }) {
   const alheia = !!resposta && resposta.autorId !== usuarioId;
   const desabilitado = !podeEditar || alheia;
-  const valor = pendente?.nivel ?? resposta?.nivel ?? null;
-  const estado = pendente
+  const limpando = pendente?.nivel === LIMPAR;
+  const valor = limpando ? null : pendente?.nivel ?? resposta?.nivel ?? null;
+  const estado = limpando
+    ? '✎ Será limpa ao salvar (volta para Sem avaliação)'
+    : pendente
     ? '✎ Alteração não salva'
     : valor === null ? 'Sem avaliação'
     : alheia ? `Registrado por ${resposta!.autorNome} · só ela pode corrigir.${podeEditar ? ' Você pode acrescentar uma observação.' : ''}`
@@ -333,9 +342,24 @@ function CampoNivel({ nome, titulo, dica, opcoes, resposta, pendente, usuarioId,
       {!(vertical && valor === null && !pendente) && (
         <p className={`mt-2 text-sm ${pendente ? 'font-bold text-azul-escuro' : 'text-muted'}`}>{estado}</p>
       )}
+      {resposta && !alheia && podeEditar && (
+        <div className="mt-1 flex flex-wrap gap-4">
+          {/* sempre visível para a autora, mesmo durante uma correção: troca a correção por limpeza */}
+          {!limpando && (
+            <button type="button" className="text-sm font-bold text-azul-escuro underline" onClick={() => onEscolher(LIMPAR)}>
+              Limpar resposta
+            </button>
+          )}
+          {pendente && (
+            <button type="button" className="text-sm font-bold text-azul-escuro underline" onClick={() => onEscolher(resposta.nivel)}>
+              {limpando ? 'Desfazer limpeza' : 'Desfazer alteração'}
+            </button>
+          )}
+        </div>
+      )}
       {pendente && resposta && !alheia && (
         <div className="mt-2">
-          <label className="text-sm font-bold" htmlFor={`just-${nome}`}>Justificativa da correção (obrigatória)</label>
+          <label className="text-sm font-bold" htmlFor={`just-${nome}`}>{limpando ? 'Justificativa da limpeza (obrigatória)' : 'Justificativa da correção (obrigatória)'}</label>
           <input id={`just-${nome}`} className="campo mt-1" value={pendente.justificativa} required
             onChange={(e) => onJustificar(e.target.value)} />
         </div>

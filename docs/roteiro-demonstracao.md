@@ -18,7 +18,7 @@ npm test
 npm run dev
 ```
 
-- O `npm test` deve terminar com `Tests: 129 passed`. Deixe esse terminal visível: ele é a prova automática.
+- O `npm test` deve terminar com `Tests: 132 passed`. Deixe esse terminal visível: ele é a prova automática.
 - Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
 - Senha de todas as contas: `demo1234`.
 - A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.
@@ -94,4 +94,4 @@ Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para prova
 
 ## Fechamento (fala sugerida)
 
-"O P0 está completo e verificado: 69 dos 93 cenários das specs estão feitos com evidência, 13 estão parciais e 10 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos o calendário (fechar e reabrir bimestres) e a evolução da escrita; a gestão escolar e a tela de regras ficaram para depois, então a entrega está declarada como parcial."
+"O P0 está completo e verificado: 70 dos 93 cenários das specs estão feitos com evidência, 13 estão parciais e 9 não foram feitos. Isso está detalhado no relatório de verificação. Do P1, fizemos o calendário (fechar e reabrir bimestres) e a evolução da escrita; a gestão escolar e a tela de regras ficaram para depois, então a entrega está declarada como parcial."

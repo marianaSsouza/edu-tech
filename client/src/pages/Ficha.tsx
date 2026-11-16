@@ -108,6 +108,10 @@ function Lacunas({ f }: { f: FichaDto }) {
 
 function CelulaNivel({ c, escrita }: { c: Celula | null; escrita?: boolean }) {
   if (!c) return <span className="text-muted" title="Sem avaliação">—<span className="sr-only"> Sem avaliação</span></span>;
+  if (c.nivel === null) {
+    // tarefa 3.4: resposta limpa — hoje é "Sem avaliação", mas a versão anterior fica em "Correções neste ano"
+    return <span className="text-muted" title="Sem avaliação (resposta limpa; veja as correções)">— ✎<span className="sr-only"> Sem avaliação, resposta limpa</span></span>;
+  }
   const rotulo = escrita ? ESCRITA[c.nivel] : HAB[c.nivel];
   return (
     <span title={`${rotulo} · ${c.autorNome}`}>

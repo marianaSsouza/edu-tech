@@ -36,6 +36,21 @@ export class AvaliacaoController {
     return this.avaliacao.salvarHabilidade(u, ctxId, skillId, body);
   }
 
+  @Post('contextos/:ctxId/habilidades/:skillId/limpar')
+  limparHabilidade(
+    @UsuarioAtual() u: User,
+    @Param('ctxId', ParseIntPipe) ctxId: number,
+    @Param('skillId') skillId: string,
+    @Body() body: SalvarRespostaBody,
+  ) {
+    return this.avaliacao.limpar(u, ctxId, { tipo: 'HABILIDADE', skillId }, body);
+  }
+
+  @Post('contextos/:ctxId/escrita/limpar')
+  limparEscrita(@UsuarioAtual() u: User, @Param('ctxId', ParseIntPipe) ctxId: number, @Body() body: SalvarRespostaBody) {
+    return this.avaliacao.limpar(u, ctxId, { tipo: 'ESCRITA' }, body);
+  }
+
   @Put('contextos/:ctxId/escrita')
   salvarEscrita(@UsuarioAtual() u: User, @Param('ctxId', ParseIntPipe) ctxId: number, @Body() body: SalvarRespostaBody) {
     return this.avaliacao.salvarEscrita(u, ctxId, body);

@@ -130,6 +130,37 @@ export class AvaliacaoService {
     });
   }
 
+  /**
+   * Tarefa 3.4 (RF-13, cenário "Limpeza de resposta"): a autora atualmente vinculada limpa, com justificativa,
+   * uma resposta equivocada em período aberto. A vigente passa a "Sem avaliação" (ausência = sem linha, D08)
+   * e a versão anterior fica em ResponseRevision com nivelNovo = null. Ausência não é regressão.
+   */
+  async limpar(u: User, contextId: number, alvo: { tipo: 'HABILIDADE'; skillId: string } | { tipo: 'ESCRITA' }, body: SalvarRespostaBody) {
+    const bimestre = inteiro(body?.bimestre, 1, 4, 'bimestre');
+    const versao = versaoOpcional(body?.version);
+    if (versao === null) throw dadosInvalidos('Informe a versão da resposta que será limpa.');
+    const justificativa = textoOpcional(body?.justificativa);
+    return this.gravar(async (m) => {
+      const ctx = await this.contextoOu404(m, contextId);
+      await this.policy.exigirEscrita(u, ctx, bimestre, m);
+      const Entidade = alvo.tipo === 'HABILIDADE' ? SkillResponse : WritingResponse;
+      const existente = alvo.tipo === 'HABILIDADE'
+        ? await m.findOneBy(SkillResponse, { contextId, skillId: alvo.skillId, bimestre })
+        : await m.findOneBy(WritingResponse, { contextId, bimestre });
+      if (!existente) throw conflitoVersao('Esta resposta já não existe. Atualize a tela e confira.');
+      const decisao = decidirEscritaResposta({ existente, usuarioId: u.id, versaoRecebida: versao, justificativa });
+      if (!decisao.ok) throw new ErroApi(decisao.status, decisao.codigo, decisao.mensagem);
+
+      await m.insert(ResponseRevision, {
+        tipo: alvo.tipo, responseId: existente.id, versaoAnterior: existente.version, nivelAnterior: existente.nivel, nivelNovo: null,
+        contextId, skillId: alvo.tipo === 'HABILIDADE' ? alvo.skillId : null, bimestre, autorId: u.id, justificativa: justificativa!.trim(),
+      });
+      const r = await m.delete(Entidade, { id: existente.id, version: existente.version });
+      if (r.affected !== 1) throw conflitoVersao();
+      return { limpa: true, tipo: alvo.tipo, ...(alvo.tipo === 'HABILIDADE' ? { skillId: alvo.skillId } : {}), bimestre };
+    });
+  }
+
   /** D03/D04: cria, ou corrige preservando a versão anterior em ResponseRevision (mesma transação). */
   private async criarOuCorrigir(
     m: EntityManager,
@@ -155,6 +186,7 @@ export class AvaliacaoService {
     const e = existente!;
     await m.insert(ResponseRevision, {
       tipo, responseId: e.id, versaoAnterior: e.version, nivelAnterior: e.nivel, nivelNovo: nivel,
+      contextId: e.contextId, skillId: tipo === 'HABILIDADE' ? (e as SkillResponse).skillId : null, bimestre: e.bimestre,
       autorId: u.id, justificativa: justificativa!.trim(),
     });
     const Entidade = tipo === 'HABILIDADE' ? SkillResponse : WritingResponse;

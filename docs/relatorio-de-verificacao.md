@@ -3,7 +3,7 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 129 de 129 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Testes automáticos:** 132 de 132 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
 - **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 7.3 (calendário) e 8.2 (evolução da escrita); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
@@ -33,7 +33,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Spec | Cenários | ✅ | ⚠️ | ❌ | N/A |
 | --- | --- | --- | --- | --- | --- |
 | acesso-e-permissoes | 9 | 6 | 1 | 1 | 1 |
-| avaliacao-bimestral | 12 | 8 | 3 | 1 | 0 |
+| avaliacao-bimestral | 12 | 9 | 3 | 0 | 0 |
 | historico-pedagogico | 6 | 6 | 0 | 0 | 0 |
 | lacunas-herdadas | 11 | 11 | 0 | 0 | 0 |
 | atencao-pedagogica | 13 | 12 | 1 | 0 | 0 |
@@ -42,7 +42,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
 | gestao-escolar | 8 | 0 | 4 | 4 | 0 |
 | regras-e-casos-de-referencia | 6 | 1 | 2 | 3 | 0 |
-| **Total** | **93** | **69** | **13** | **10** | **1** |
+| **Total** | **93** | **70** | **13** | **9** | **1** |
 
 ---
 
@@ -72,7 +72,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Salvamento explícito e persistente | Reabrir sessão | ✅ | Verificado manualmente: salvar, sair, entrar de novo e ver os valores. A persistência é em SQLite, com transação (`seed.spec.ts`: "grava de forma atômica"). |
 | | Falha de gravação | ⚠️ | A tela só mostra "Tudo salvo" se todas as chamadas derem certo; em erro, lista as falhas e mantém as alterações (`Avaliacao.tsx`). Falta teste automático de interface. |
 | | Saída com alterações | ⚠️ | Implementado (`beforeunload` e confirmação ao trocar de tela, em `Avaliacao.tsx`). Não verificado no navegador. |
-| Revisões e limpeza justificada | Limpeza de resposta | ❌ | Tarefa 3.4 não feita. A correção de nível com justificativa e revisão preservada está feita e testada. |
+| Revisões e limpeza justificada | Limpeza de resposta | ✅ | `limpar.spec.ts`: "a autora limpa com justificativa: vigente fica Sem avaliação e a versão anterior continua consultável"; regras (justificativa, autoria, versão, coordenação, período fechado) testadas. Na ficha, a célula mostra "— ✎" e a versão anterior aparece em "Correções neste ano". |
 | | Retificação pela sucessora | ✅ | A sucessora registra observação própria sem alterar o registro alheio: `avaliacao.spec.ts` (AUTORIA 403 e observações de duas autoras) |
 | Concorrência sem perda silenciosa | Duas professoras na mesma resposta ausente | ✅ | `avaliacao.spec.ts`: "duas criações simultâneas da mesma habilidade: um sucesso e um 409 (CA-13.5)" |
 | Interface acessível e estados claros | Registro por teclado em 360 px | ⚠️ | Rádios nativos dentro de `fieldset`/`legend`, foco visível, estados em texto e símbolo; em 360 px não há rolagem lateral (verificado manualmente). Falta o registro formal da tarefa 3.6 (teclado completo, dois navegadores). |
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1, 3.2, 3.3, 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2.
+- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.3, 8.2.
 - **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 3.4, 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 8.3, 8.4, grupo 9 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 7.1, 7.2, 7.4, 8.1 (parte já coberta pelo painel), 8.3, 8.4, grupo 9 e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

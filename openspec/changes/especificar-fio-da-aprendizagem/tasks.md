@@ -20,7 +20,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 - [x] 3.1 Implementar seleção de aluno/etapa/ano/bimestre, catálogo, três níveis de habilidade e quatro níveis de escrita; verificar CA-01.1–01.3, CA-02.2/02.3 e CA-03.1–03.3 sem transporte automático de respostas.
 - [x] 3.2 Implementar observações por autora e limite compartilhado de 4.000 caracteres vigentes; verificar CA-04.1–04.3, vazio permitido, correção própria e rejeição do excesso com duas autoras.
 - [x] 3.3 Implementar salvamento parcial, confirmação após persistência, aviso de saída e erro recuperável; verificar CA-13.1, RNF-07 e releitura depois de reabrir a sessão.
-- [ ] 3.4 Implementar revisão justificada e limpeza de resposta, preservando versões; verificar CA-13.4, RNF-01/03 e retificação pela sucessora sem alterar o indicador antigo.
+- [x] 3.4 Implementar revisão justificada e limpeza de resposta, preservando versões; verificar CA-13.4, RNF-01/03 e retificação pela sucessora sem alterar o indicador antigo.
 - [x] 3.5 Implementar conflito por versão desatualizada e unicidade sob gravação simultânea; verificar CA-13.5, disputa de duas autoras pelo campo ausente e limite de observações sob concorrência.
 - [ ] 3.6 Verificar fluxo de registro por teclado em desktop e 360 px, foco, rótulos e estados de PRO-04; registrar evidências de RNF-04 e documentar salvamento, correção e conflito. _(Parcial: teclado, foco e 360 px conferidos manualmente; falta o registro formal em dois navegadores.)_
 
