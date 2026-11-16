@@ -19,7 +19,7 @@ export function SeletorBimestre({ periodos, atual, onEscolher }: {
       {periodos.map((p) => (
         <button key={p.bimestre} type="button" aria-current={p.bimestre === atual ? 'page' : undefined} onClick={() => onEscolher(p.bimestre)}
           className="aba">
-          {p.bimestre}º bim. <span className="text-xs text-muted">({rotulo[p.situacao]})</span>
+          {p.bimestre}º bim. <span className="text-xs opacity-75">({rotulo[p.situacao]})</span>
         </button>
       ))}
     </nav>

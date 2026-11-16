@@ -12,7 +12,7 @@ const SIT = { DISPONIVEL: 'aberto', FECHADO: 'fechado', FUTURO: 'ainda não come
 const NOMES_BIM = ['1º', '2º', '3º', '4º'];
 
 /** Um selo por aluno: atenção tem prioridade; senão, a situação do preenchimento no bimestre. */
-function Selo({ a }: { a: Aluno }) {
+export function Selo({ a }: { a: Aluno }) {
   if (a.atencao.estado === 'EM_ATENCAO') {
     const m = a.atencao.motivos;
     const texto = m.length > 1 ? `Em atenção: ${m.length} motivos`

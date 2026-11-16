@@ -107,4 +107,21 @@ body {
     @apply rounded-2xl border-2 border-line bg-white px-4 py-2 font-bold text-ink transition hover:border-azul/60;
   }
   .aba[aria-current] { @apply border-transparent text-white; background-image: linear-gradient(100deg, #0f766e, #1f6fd6); }
+
+  /* menu lateral: degradê vertical verde-azulado → azul */
+  .lateral { background-image: linear-gradient(180deg, #0f766e 0%, #13708f 45%, #1f6fd6 100%); }
+
+  /* botão-pílula de filtro (Todas / LP / MAT / turmas) */
+  .pilula {
+    @apply rounded-full border-2 border-line bg-white px-5 py-2 font-bold text-ink transition hover:border-azul/60;
+  }
+  .pilula[aria-pressed="true"] { @apply border-transparent text-white; background-image: linear-gradient(100deg, #0f766e, #1f6fd6); }
+
+  /* barra laranja para habilidades com pouca consolidação (abaixo de 50%) */
+  .barra-baixa { @apply h-full rounded-full; background-image: linear-gradient(90deg, #f08a24, #f6b23d); }
+
+  /* faixa colorida no topo dos cartões */
+  .faixa-1 { background-image: linear-gradient(90deg, #0f766e, #22c08f); }
+  .faixa-2 { background-image: linear-gradient(90deg, #1f6fd6, #7c5cf0); }
+  .faixa-3 { background-image: linear-gradient(90deg, #f6a823, #fdd34d); }
 }

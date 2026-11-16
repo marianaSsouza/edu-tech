@@ -29,6 +29,9 @@ export async function api<T>(caminho: string, opcoes: { method?: string; body?: 
 export type Papel = 'PROFESSOR' | 'COORDENACAO';
 export interface Usuario { id: number; nome: string; email: string; papel: Papel }
 
+export interface PeriodoAtual { anoLetivo: number; bimestre: number; inicio: string; fim: string; situacao: Situacao }
+export interface RespostaTurmas { turmas: Turma[]; periodoAtual: PeriodoAtual | null }
+
 export interface Turma {
   id: number; nome: string; etapa: number; anoLetivo: number; alunos: number; meuVinculo: 'TITULAR' | 'SUBSTITUTA' | null;
   professores?: Array<{ nome: string; tipo: 'TITULAR' | 'SUBSTITUTA' }>; anoEncerrado?: boolean;
@@ -124,6 +127,7 @@ export interface PainelTurma {
   turma: { id: number; nome: string; etapa: number; anoLetivo: number };
   referencia: ReferenciaPainel; periodos: Array<{ bimestre: number; situacao: Situacao }>; grupoMinimo: number; limiteLacunas: number;
   N: number; oculto: boolean; indicadores: Indicadores | null;
+  habilidades: Array<{ id: string; area: string; texto: string }>;
   evolucao: null | { a: number; b: number; mensagem: string | null; E?: number; V?: number; semComparacao?: number; N?: number; fracao?: Fracao };
   alunos: Array<{
     id: number; nome: string; escrita: number | null; habilidadesAvaliadas: number; habilidadesPrevistas: number;

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createBrowserRouter, Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { createBrowserRouter, Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api, ErroApi, papelLegivel, Usuario } from './api';
 import Login from './pages/Login';
 import Turmas from './pages/Turmas';
@@ -10,6 +11,8 @@ import Calendario from './pages/Calendario';
 import Painel from './pages/Painel';
 import Regras from './pages/Regras';
 import { Avatar } from './components/ui';
+import { IconeAluno, IconeCalendario, IconeMenu, IconePainel, IconeRegras, IconeTurmas, Marca } from './components/Icones';
+import Alunos from './pages/Alunos';
 
 /** Quem está logado. null = sem sessão. */
 export function useUsuario() {
@@ -32,6 +35,7 @@ function Layout() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [menuAberto, setMenuAberto] = useState(false);
 
   if (isLoading) return <p className="p-6 text-muted" role="status">⏳ Carregando…</p>;
   if (error) return <p className="m-6 rounded-lg bg-warn-soft p-4 text-warn" role="alert">{(error as Error).message}</p>;
@@ -46,39 +50,62 @@ function Layout() {
 
   const coord = usuario.papel === 'COORDENACAO';
   const itensMenu = [
-    { para: '/', rotulo: 'Turmas', fim: true },
-    ...(coord ? [{ para: '/painel', rotulo: 'Painel', fim: false }, { para: '/calendario', rotulo: 'Calendário', fim: false }, { para: '/regras', rotulo: 'Regras', fim: false }] : []),
+    { para: '/painel', rotulo: 'Painel', icone: <IconePainel />, ativo: pathname.startsWith('/painel') },
+    { para: '/', rotulo: 'Turmas', icone: <IconeTurmas />, ativo: pathname === '/' || pathname.startsWith('/turmas/') },
+    { para: '/alunos', rotulo: 'Alunos', icone: <IconeAluno />, ativo: pathname.startsWith('/alunos') },
+    ...(coord ? [
+      { para: '/calendario', rotulo: 'Calendário', icone: <IconeCalendario />, ativo: pathname.startsWith('/calendario') },
+      { para: '/regras', rotulo: 'Regras', icone: <IconeRegras />, ativo: pathname.startsWith('/regras') },
+    ] : []),
   ];
 
-  return (
-    <div className="min-h-screen">
-      <header className="degrade text-white shadow-lg">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-6">
-            <Link to="/" className="text-xl font-extrabold text-white no-underline sm:text-2xl">Fio da Aprendizagem</Link>
-            <nav aria-label="Menu principal" className="flex flex-wrap gap-1">
-              {itensMenu.map((m) => (
-                <NavLink key={m.para} to={m.para} end={m.fim}
-                  className={({ isActive }) => `rounded-full px-4 py-1.5 text-base font-bold text-white no-underline transition hover:bg-white/15 ${isActive || (m.para === '/' && (pathname.startsWith('/turmas/') || pathname.startsWith('/alunos/'))) ? 'bg-white/25' : ''}`}>
-                  {m.rotulo}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
-            <Avatar nome={usuario.nome} cor="amarelo" />
-            <div className="hidden leading-tight sm:block">
-              <div className="font-extrabold">{usuario.nome}</div>
-              <div className="text-sm text-white/85">{papelLegivel(usuario.papel)}</div>
-            </div>
-            <button type="button" onClick={sair} className="rounded-2xl border-2 border-white/90 px-4 py-2 font-extrabold text-white transition hover:bg-white/15">Sair</button>
+  const menu = (
+    <>
+      <Link to="/" onClick={() => setMenuAberto(false)} className="hidden items-center gap-3 px-2 text-white no-underline md:flex">
+        <Marca tamanho={52} />
+        <span className="text-xl font-extrabold leading-tight">Fio da<br />Aprendizagem</span>
+      </Link>
+      <nav aria-label="Menu principal" className="flex flex-col gap-1.5 md:mt-8">
+        {itensMenu.map((m) => (
+          <Link key={m.para} to={m.para} onClick={() => setMenuAberto(false)} aria-current={m.ativo ? 'page' : undefined}
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-lg font-bold text-white no-underline transition hover:bg-white/15 ${m.ativo ? 'bg-white/20 shadow-sm' : ''}`}>
+            {m.icone}{m.rotulo}
+          </Link>
+        ))}
+      </nav>
+      <div className="mt-auto rounded-3xl bg-white/15 p-4">
+        <div className="flex items-center gap-3">
+          <Avatar nome={usuario.nome} cor="amarelo" />
+          <div className="min-w-0 leading-tight">
+            <div className="truncate font-extrabold">{usuario.nome}</div>
+            <div className="text-sm text-white/85">{papelLegivel(usuario.papel)}</div>
           </div>
         </div>
+        <button type="button" onClick={sair} className="mt-3 rounded-xl border-2 border-white/90 px-4 py-1.5 font-extrabold text-white transition hover:bg-white/15">Sair</button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen md:flex">
+      {/* menu lateral (computador) */}
+      <aside className="lateral sticky top-0 hidden h-screen w-72 shrink-0 flex-col p-5 text-white md:flex">{menu}</aside>
+
+      {/* barra de cima (celular) */}
+      <header className="lateral flex items-center justify-between px-4 py-3 text-white md:hidden">
+        <Link to="/" className="flex items-center gap-2 font-extrabold text-white no-underline"><Marca tamanho={36} /> Fio da Aprendizagem</Link>
+        <button type="button" className="rounded-xl p-2 hover:bg-white/15" aria-expanded={menuAberto} aria-controls="menu-celular" onClick={() => setMenuAberto((v) => !v)}>
+          <IconeMenu /><span className="sr-only">{menuAberto ? 'Fechar menu' : 'Abrir menu'}</span>
+        </button>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-        <Outlet />
-      </main>
-      <footer className="px-4 pb-6 text-center text-xs text-muted">Escola fictícia · somente dados sintéticos</footer>
+      {menuAberto && <div id="menu-celular" className="lateral flex flex-col gap-4 px-4 pb-5 text-white md:hidden">{menu}</div>}
+
+      <div className="min-w-0 flex-1">
+        <main className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
+          <Outlet />
+        </main>
+        <footer className="px-4 pb-6 text-center text-xs text-muted">Escola fictícia · somente dados sintéticos</footer>
+      </div>
     </div>
   );
 }
@@ -91,6 +118,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Turmas /> },
       { path: 'turmas/:id', element: <AlunosTurma /> },
+      { path: 'alunos', element: <Alunos /> },
       { path: 'alunos/:id', element: <Ficha /> },
       { path: 'calendario', element: <Calendario /> },
       { path: 'painel', element: <Painel /> },

@@ -8,9 +8,16 @@ export function iniciais(nome: string, max = 2): string {
   return partes.slice(0, max).map((p) => p[0]!.toUpperCase()).join('');
 }
 
-export function Avatar({ nome, tamanho = 'md', cor = 'degrade' }: { nome: string; tamanho?: 'sm' | 'md' | 'lg'; cor?: 'degrade' | 'amarelo' }) {
-  const t = tamanho === 'lg' ? 'h-16 w-16 text-xl' : tamanho === 'sm' ? 'h-9 w-9 text-sm' : 'h-12 w-12 text-base';
-  const c = cor === 'amarelo' ? 'bg-amarelo text-ink' : 'degrade text-white';
+/** Fundos claros para o avatar de criança; a cor sai do nome (sempre a mesma para a mesma criança). */
+const PASTEIS = [
+  'bg-[#fde9a8] text-amarelo-texto', 'bg-[#d6e8ff] text-azul-escuro', 'bg-lilas text-lilas-texto',
+  'bg-menta text-menta-texto', 'bg-[#fde0dc] text-[#9c3b2e]', 'bg-[#e6e1ff] text-[#4b3aa8]',
+];
+const corDoNome = (nome: string) => PASTEIS[[...nome].reduce((s, c) => s + c.charCodeAt(0), 0) % PASTEIS.length];
+
+export function Avatar({ nome, tamanho = 'md', cor = 'degrade' }: { nome: string; tamanho?: 'sm' | 'md' | 'lg' | 'xl'; cor?: 'degrade' | 'amarelo' | 'pastel' }) {
+  const t = tamanho === 'xl' ? 'h-28 w-28 text-4xl' : tamanho === 'lg' ? 'h-16 w-16 text-xl' : tamanho === 'sm' ? 'h-9 w-9 text-sm' : 'h-12 w-12 text-base';
+  const c = cor === 'amarelo' ? 'bg-amarelo text-ink' : cor === 'pastel' ? corDoNome(nome) : 'degrade text-white';
   return (
     <span aria-hidden="true" className={`inline-flex shrink-0 items-center justify-center rounded-full font-extrabold ${t} ${c}`}>
       {iniciais(nome, cor === 'amarelo' ? 1 : 2)}
@@ -38,7 +45,7 @@ export function Titulo({ sobre, titulo, sub, acoes, avatar }: { sobre?: ReactNod
         {avatar && <Avatar nome={avatar} tamanho="lg" />}
         <div>
           {sobre && <p className="text-sm text-muted">{sobre}</p>}
-          <h1 className="text-3xl font-extrabold sm:text-4xl">{titulo}</h1>
+          <h1 className="text-4xl font-extrabold sm:text-5xl">{titulo}</h1>
           {sub && <p className="mt-1 text-muted sm:text-lg">{sub}</p>}
         </div>
       </div>

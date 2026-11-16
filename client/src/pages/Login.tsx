@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { api, ErroApi, Usuario } from '../api';
 import { useUsuario } from '../App';
+import { Marca } from '../components/Icones';
 
 export default function Login() {
   const { data: usuario } = useUsuario();
@@ -12,6 +13,7 @@ export default function Login() {
   const [senha, setSenha] = useState('');
   const [mostrar, setMostrar] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [esqueci, setEsqueci] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   if (usuario) return <Navigate to="/" replace />;
@@ -36,7 +38,7 @@ export default function Login() {
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* lado da marca */}
       <section className="degrade relative overflow-hidden px-8 py-12 text-white sm:px-16 lg:flex lg:flex-col lg:justify-center">
-        <span aria-hidden="true" className="flex h-16 w-16 items-center justify-center rounded-full bg-amarelo text-3xl font-extrabold text-ink">~</span>
+        <Marca tamanho={80} />
         <h1 className="mt-6 text-4xl font-extrabold sm:text-6xl">Fio da Aprendizagem</h1>
         <p className="mt-4 max-w-md text-lg sm:text-2xl">Acompanhe o aprendizado de cada criança, bimestre a bimestre.</p>
         <ul className="mt-6 flex flex-wrap gap-2" aria-label="O que o sistema acompanha">
@@ -71,9 +73,19 @@ export default function Login() {
                 </button>
               </div>
             </div>
+            <div>
+              <button type="button" className="font-bold text-azul-escuro underline" aria-expanded={esqueci} aria-controls="ajuda-senha" onClick={() => setEsqueci((v) => !v)}>
+                Esqueci minha senha
+              </button>
+              {esqueci && (
+                <p id="ajuda-senha" className="mt-2 rounded-2xl bg-lilas px-4 py-2 text-sm text-lilas-texto">
+                  O sistema não troca senha sozinho, por segurança. Peça à coordenação para gerar uma nova senha para a sua conta.
+                </p>
+              )}
+            </div>
             {erro && <p role="alert" className="rounded-2xl bg-alerta-claro px-4 py-2 font-bold text-alerta">⚠ {erro}</p>}
-            <button type="submit" className="btn w-full py-3 text-lg" disabled={enviando}>{enviando ? 'Entrando…' : 'Entrar'}</button>
-            <p className="text-sm text-muted">Não há cadastro público. Esqueceu a senha ou precisa de conta? Fale com a coordenação.</p>
+            <button type="submit" className="btn w-full py-3.5 text-lg" disabled={enviando}>{enviando ? 'Entrando…' : 'Entrar'}</button>
+            <p className="text-sm text-muted">Não há cadastro público. Peça a sua conta à coordenação.</p>
           </form>
           <details className="mt-6 text-sm text-muted">
             <summary className="cursor-pointer font-bold">Contas de demonstração (escola fictícia)</summary>

@@ -50,6 +50,10 @@ export class PainelService {
       turma: { id: t.id, nome: t.nome, etapa: t.etapa, anoLetivo: t.anoLetivo },
       referencia: ref, periodos, grupoMinimo: GRUPO_MINIMO, limiteLacunas: LIMITE_LACUNAS,
       N: r.N, oculto: r.oculto, indicadores: r.indicadores, alunos: r.alunos,
+      // nomes e áreas das habilidades do ano da turma (só para exibição; os cálculos usam os ids)
+      habilidades: (await this.ds.getRepository(CatalogSkill).find({ where: { etapa: t.etapa }, order: { ordem: 'ASC' } }))
+        .filter((h, i, todos) => todos.findIndex((x) => x.id === h.id) === i)
+        .map((h) => ({ id: h.id, area: h.area, texto: h.texto })),
       evolucao: r.oculto || ref.situacao === 'FUTURO' ? null : await this.evolucao(r.contextos, ref.bimestre, compararParam ?? 1),
     };
   }

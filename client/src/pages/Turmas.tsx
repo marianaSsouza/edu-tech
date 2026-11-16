@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { api, Turma } from '../api';
+import { api, PainelGeral, Turma } from '../api';
 import { useUsuario } from '../App';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { Titulo } from '../components/ui';
@@ -10,11 +10,6 @@ interface Resposta {
   periodoAtual: { anoLetivo: number; bimestre: number; inicio: string; fim: string; situacao: 'DISPONIVEL' | 'FECHADO' | 'FUTURO' } | null;
 }
 
-const FAIXAS = [
-  'linear-gradient(90deg, #0f766e, #22c08f)',
-  'linear-gradient(90deg, #1f6fd6, #7c5cf0)',
-  'linear-gradient(90deg, #f6a823, #fdd34d)',
-];
 const GRUPO_MINIMO = 5;
 const dm = (d: string) => d.slice(8, 10) + '/' + d.slice(5, 7);
 
@@ -22,6 +17,9 @@ const dm = (d: string) => d.slice(8, 10) + '/' + d.slice(5, 7);
 export default function Turmas() {
   const { data: usuario } = useUsuario();
   const q = useQuery({ queryKey: ['turmas'], queryFn: () => api<Resposta>('/turmas') });
+  // quantas crianças em atenção por turma (só quando o grupo permite mostrar agregados)
+  const geral = useQuery({ queryKey: ['painel', 'geral', '', ''], queryFn: () => api<PainelGeral>('/painel?ano=&bimestre=') });
+  const atencaoDa = (id: number) => geral.data?.turmas.find((x) => x.turma.id === id)?.indicadores?.emAtencao.n;
   const coord = usuario?.papel === 'COORDENACAO';
   const p = q.data?.periodoAtual;
 
@@ -49,13 +47,14 @@ export default function Turmas() {
           const passado = p ? t.anoLetivo < p.anoLetivo : false;
           return (
             <li key={t.id} className="card flex flex-col overflow-hidden p-0">
-              <div aria-hidden="true" className="h-6" style={{ backgroundImage: FAIXAS[i % FAIXAS.length] }} />
+              <div aria-hidden="true" className={`h-4 faixa-${(i % 3) + 1}`} />
               <div className="flex flex-1 flex-col p-6 pt-5">
                 <h2 className="text-3xl font-extrabold">{t.nome}</h2>
                 <p className="mt-1 text-lg text-muted">{t.etapa}º ano · {t.anoLetivo}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="chip chip-lilas">{t.alunos} {t.alunos === 1 ? 'aluno' : 'alunos'}</span>
-                  {t.anoEncerrado && <span className="chip chip-amarelo">Ano encerrado</span>}
+                  {(atencaoDa(t.id) ?? 0) > 0 && <span className="chip chip-amarelo">{atencaoDa(t.id)} em atenção</span>}
+                  {t.anoEncerrado && <span className="chip chip-cinza">Ano encerrado</span>}
                   {!t.anoEncerrado && t.alunos > 0 && t.alunos < GRUPO_MINIMO && <span className="chip chip-amarelo">Agregado oculto: grupo menor que {GRUPO_MINIMO}</span>}
                   {t.meuVinculo && <span className="chip chip-menta">Você é {t.meuVinculo === 'TITULAR' ? 'titular' : 'substituta'}</span>}
                 </div>

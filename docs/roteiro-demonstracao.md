@@ -27,13 +27,13 @@ npm run dev
 
 Entre como `coordenacao@escola.exemplo`.
 
-1. Na tela inicial, clique em **3º bim.**
+1. No menu lateral, abra **Painel**. Em **Turma**, escolha **Escola inteira** e clique em **3º bim.**
    - *Fala:* "A população é a matrícula no último dia do bimestre. O 2º A tem 8 crianças e mostra os indicadores; o 2º B tem 4, então o agregado fica oculto, para a coordenação e para o professor."
    - Spec **paineis-e-indicadores**: "População do período" e "Limite de apresentação" (CR-18).
-2. Abra o **2º A**. Mostre consolidação 48,4% (31/64), cobertura 100,0%, escrita alfabética 75,0% (6/8) e em atenção 50,0% (4/8).
+2. Em **Turma**, escolha **2º A** e, em **Período**, o **3º bimestre**: aparecem os números da turma, as habilidades com menos consolidação, os alunos para acompanhar, a consolidação por bimestre e os níveis de escrita. Depois vá em **Turmas → 2º A → Abrir turma** e mostre consolidação 48,4% (31/64), cobertura 100,0%, escrita alfabética 75,0% (6/8) e em atenção 50,0% (4/8).
    - *Fala:* "Toda porcentagem vem com a fração. A ausência entra no denominador e aparece hachurada na barra; não vira 'não consolidada'."
    - Spec **paineis-e-indicadores**: "Consolidação e cobertura" e "Frações e arredondamento".
-3. Clique em **4º bim.**: aparece o aviso "Sem avaliações registradas" e 0,0%.
+3. Na página da turma, troque para o **4º bimestre**: aparece o aviso "Sem avaliações registradas" e 0,0%.
    - *Fala:* "Aqui o 0,0% é falta de registro, não desempenho."
    - Cenário "Turma sem avaliações" (CR-13).
 4. Volte ao 3º bimestre e abra o **2º B**: aparece "Agregado oculto", mas os 4 alunos continuam na lista e podem ser abertos.
@@ -83,7 +83,7 @@ Clique em **Sair** e entre como `debora@escola.exemplo` (substituta do 2º A).
 
 1. Como **Beatriz**, na ficha do **Bernardo**, clique em **Consolidar** em H01-LP03 e escreva a evidência. A contagem cai de 6 para 5 e o evento aparece com origem 2025.
    - Spec **lacunas-herdadas**: "Consolidação e reavaliação com origem" (CR-06).
-2. No painel do **2º A**, 3º bimestre, mostre **Evolução da escrita**: "3 de 8 avaliáveis avançaram (37,5%)" em relação ao 1º bimestre.
+2. Na página da turma **2º A** (Turmas → Abrir turma), 3º bimestre, mostre **Evolução da escrita**: "3 de 8 avaliáveis avançaram (37,5%)" em relação ao 1º bimestre.
    - Spec **paineis-e-indicadores**: "Evolução entre bimestres" (CR-11).
 3. Como **coordenação**, abra **Calendário** e clique em **Fechar** no 4º bimestre. Antes de confirmar aparecem as ausências por turma; não é preciso confirmar.
    - Spec **calendario-letivo**: "Fechar bimestre incompleto" (CA-13.2).
