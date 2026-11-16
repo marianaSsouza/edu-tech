@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* Paleta do protótipo de referência (artefato "Fio da Aprendizagem — prova de conceito"). */
+@theme {
+  --font-sans: Nunito, system-ui, sans-serif;
+  --color-bg: #f6f4ef;
+  --color-ink: #1f2a26;
+  --color-muted: #66736d;
+  --color-line: #e4e0d6;
+  --color-brand: #2f6f5e;
+  --color-brand-soft: #e3efe9;
+  --color-warn: #b4541e;
+  --color-warn-soft: #fbeadf;
+  --color-nivel0: #d5dbd8;
+  --color-nivel1: #f2b545;
+  --color-nivel2: #3f9b6e;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}

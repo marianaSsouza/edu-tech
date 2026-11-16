@@ -1,0 +1,19 @@
+{
+  "name": "fio-da-aprendizagem",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fio da Aprendizagem — MVP acadêmico (aplicação web única: NestJS + SQLite + React)",
+  "workspaces": ["server", "client"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "concurrently -n servidor,cliente -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "npm run start:prod -w server",
+    "seed": "npm run seed -w server",
+    "seed:reset": "npm run seed:reset -w server",
+    "test": "npm run test -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
