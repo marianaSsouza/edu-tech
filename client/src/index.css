@@ -56,6 +56,10 @@ body {
 }
 
 :focus-visible { outline: 3px solid var(--color-azul); outline-offset: 2px; }
+/* RNF-04: no menu lateral (fundo azul) o foco fica branco para continuar visível */
+.lateral :focus-visible { outline-color: #fff; }
+/* textos só para leitor de tela dentro de tabelas roláveis não podem escapar da rolagem e alargar a página no celular */
+.overflow-x-auto { position: relative; }
 
 @layer components {
   .degrade { background-image: linear-gradient(100deg, #0f766e 0%, #1683a0 50%, #1f6fd6 100%); }

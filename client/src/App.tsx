@@ -91,6 +91,8 @@ function Layout() {
 
   return (
     <div className="min-h-screen md:flex">
+      {/* RNF-04: atalho de teclado para pular o menu (aparece ao receber foco) */}
+      <a href="#conteudo" className="sr-only z-50 rounded-xl bg-white px-4 py-2 font-bold text-azul-escuro shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Pular para o conteúdo</a>
       {/* menu lateral (computador) */}
       <aside className="lateral sticky top-0 hidden h-screen w-72 shrink-0 flex-col p-5 text-white md:flex">{menu}</aside>
 
@@ -104,7 +106,7 @@ function Layout() {
       {menuAberto && <div id="menu-celular" className="lateral flex flex-col gap-4 px-4 pb-5 text-white md:hidden">{menu}</div>}
 
       <div className="min-w-0 flex-1">
-        <main className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
+        <main id="conteudo" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-6 focus:outline-none sm:px-8 sm:py-8">
           {pathname !== '/' && <BotaoVoltar />}
           <Outlet />
         </main>

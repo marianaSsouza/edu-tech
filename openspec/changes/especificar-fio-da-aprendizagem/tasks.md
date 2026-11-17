@@ -11,7 +11,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 
 ## 2. Autenticação e autorização — P0
 
-- [ ] 2.1 Implementar contas individuais, entrada, saída, coordenação inicial e bloqueio de conta desativada; verificar ausência de cadastro público, elevação de perfil negada e autoria preservada após desativação. _(Parcial: falta teste dedicado de elevação de perfil e desativação de conta pela tela (grupo 7).)_
+- [x] 2.1 Implementar contas individuais, entrada, saída, coordenação inicial e bloqueio de conta desativada; verificar ausência de cadastro público, elevação de perfil negada e autoria preservada após desativação. _(Concluída em 17/11: teste de elevação em `gestao.spec.ts`; desativação pela tela Gestão → Contas.)_
 - [x] 2.2 Aplicar autorização em leituras e alterações por papel, vínculo atual, autoria e período; verificar CR-21, CA-11.4 e CA-12.4 por acesso direto, além da consulta histórica permitida de aluno atual.
 - [x] 2.3 Implementar proteção de respostas entre titular/substituta e correção antiga pela autora atualmente vinculada; verificar cenários de autoria e atualizar o guia de permissões com exemplos de transferência.
 
@@ -22,7 +22,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 - [x] 3.3 Implementar salvamento parcial, confirmação após persistência, aviso de saída e erro recuperável; verificar CA-13.1, RNF-07 e releitura depois de reabrir a sessão.
 - [x] 3.4 Implementar revisão justificada e limpeza de resposta, preservando versões; verificar CA-13.4, RNF-01/03 e retificação pela sucessora sem alterar o indicador antigo.
 - [x] 3.5 Implementar conflito por versão desatualizada e unicidade sob gravação simultânea; verificar CA-13.5, disputa de duas autoras pelo campo ausente e limite de observações sob concorrência.
-- [ ] 3.6 Verificar fluxo de registro por teclado em desktop e 360 px, foco, rótulos e estados de PRO-04; registrar evidências de RNF-04 e documentar salvamento, correção e conflito. _(Parcial: teclado, foco e 360 px conferidos manualmente; falta o registro formal em dois navegadores.)_
+- [ ] 3.6 Verificar fluxo de registro por teclado em desktop e 360 px, foco, rótulos e estados de PRO-04; registrar evidências de RNF-04 e documentar salvamento, correção e conflito. _(Parcial: pré-checagem registrada em `docs/evidencias/acessibilidade-rnf04.md`; falta a verificação manual em dois navegadores, parte 2 do mesmo arquivo.)_
 
 ## 4. Histórico e lacunas — P0
 
@@ -53,7 +53,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 
 ## 8. Indicadores completos e referência — P1
 
-- [ ] 8.1 Implementar consolidação total/por habilidade, lacunas por habilidade, frações e arredondamento; verificar CR-01–04/12/13/19/24, cobertura, denominador zero, ausência total e barras acessíveis sem ajuste artificial da soma.
+- [x] 8.1 Implementar consolidação total/por habilidade, lacunas por habilidade, frações e arredondamento; verificar CR-01–04/12/13/19/24, cobertura, denominador zero, ausência total e barras acessíveis sem ajuste artificial da soma.
 - [x] 8.2 Implementar evolução da escrita usando população B e registros A inclusive após transferência; verificar CR-11/20, nível igual/menor, ausência e mensagem no primeiro bimestre; documentar denominadores.
 - [x] 8.3 Implementar tela de regras com execução sintética isolada, estado Executando e detalhes de falha; verificar CA-14.1–14.4 e injetar falha controlada para comprovar ausência de sucesso fictício e de gravação pedagógica.
 - [x] 8.4 Consolidar execução de CR-01–CR-24 nas camadas adequadas, distinguindo testes de integração dos casos da tela; verificar cada resultado contra a tabela da spec e registrar evidências por ID.

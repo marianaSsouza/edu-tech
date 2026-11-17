@@ -102,7 +102,7 @@ export default function Calendario() {
             ))}
           </nav>
 
-          <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+          <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr] [&>*]:min-w-0">
             <Mes ano={mes.ano} mes={mes.mes} hoje={hoje} periodos={a.periodos} bim={bimDoMes} andar={andar} />
 
             <div className="space-y-6">

@@ -39,6 +39,15 @@ describe('gestão escolar — cadastros e vínculos', () => {
     for (const t of tentativas) await expect(t()).rejects.toMatchObject({ status: 403 });
   });
 
+  it('cenário "Elevação indevida" (acesso-e-permissoes): professora não cria conta de coordenação nem muda o próprio papel', async () => {
+    await expect(g.criarConta(b.beatriz, { nome: 'Beatriz 2', email: 'beatriz2@escola.exemplo', papel: 'COORDENACAO' })).rejects.toMatchObject({ status: 403 });
+    await expect(g.novaSenha(b.beatriz, b.coord.id)).rejects.toMatchObject({ status: 403 });
+    expect(await b.ds.getRepository(User).findOneByOrFail({ id: b.beatriz.id })).toMatchObject({ papel: 'PROFESSOR' });
+    expect(await b.ds.getRepository(User).countBy({ email: 'beatriz2@escola.exemplo' })).toBe(0);
+    // não existe operação que altere o papel de uma conta: nem a coordenação troca o papel depois de criada
+    expect(Object.getOwnPropertyNames(GestaoService.prototype).filter((m) => /papel/i.test(m))).toEqual([]);
+  });
+
   it('CA-12.1: coordenação cria turma e vínculo; a professora passa a ver a turma', async () => {
     const t = await g.criarTurma(b.coord, { nome: '3º C', etapa: 3, anoLetivo: 2026 });
     await expect(g.criarTurma(b.coord, { nome: '3º c', etapa: 3, anoLetivo: 2026 })).rejects.toMatchObject({ status: 409, codigo: 'TURMA_DUPLICADA' });

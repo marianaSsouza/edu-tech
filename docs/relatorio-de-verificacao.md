@@ -3,7 +3,7 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 161 de 161 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Testes automáticos:** 162 de 162 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
 - **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 a 7.4 (gestão: cadastros, vínculos, movimentações, calendário e reabertura depois da passagem de ano, com os documentos-base conciliados na v1.3), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
@@ -32,7 +32,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 | Spec | Cenários | ✅ | ⚠️ | ❌ | N/A |
 | --- | --- | --- | --- | --- | --- |
-| acesso-e-permissoes | 9 | 6 | 1 | 1 | 1 |
+| acesso-e-permissoes | 9 | 7 | 0 | 1 | 1 |
 | avaliacao-bimestral | 12 | 9 | 3 | 0 | 0 |
 | historico-pedagogico | 6 | 6 | 0 | 0 | 0 |
 | lacunas-herdadas | 11 | 11 | 0 | 0 | 0 |
@@ -42,7 +42,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | calendario-letivo | 7 | 6 | 1 | 0 | 0 |
 | gestao-escolar | 8 | 8 | 0 | 0 | 0 |
 | regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **83** | **8** | **1** | **1** |
+| **Total** | **93** | **84** | **7** | **1** | **1** |
 
 ---
 
@@ -51,7 +51,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Requisito | Cenário | Situação | Evidência / o que falta |
 | --- | --- | --- | --- |
 | Contas individuais e papéis | Desativação de professora | ✅ | `acesso.spec.ts`: "conta desativada dá 401 e a sessão aberta antes deixa de valer". A autoria fica preservada porque a conta não é apagada. A coordenação desativa e reativa pela tela **Gestão → Contas** (`gestao.spec.ts`: "desativar corta o acesso sem apagar a conta"). |
-| | Elevação indevida | ⚠️ | Não existe nenhuma rota que altere o papel; o guard recarrega o papel do banco a cada requisição (`common/auth.ts`). Falta um teste dedicado. |
+| | Elevação indevida | ✅ | `gestao.spec.ts`: "professora não cria conta de coordenação nem muda o próprio papel" (403, papel continua PROFESSOR e não existe operação que altere papel). O guard recarrega o papel do banco a cada requisição (`common/auth.ts`). |
 | Consulta contextual autorizada | Histórico de aluno atual | ✅ | `avaliacao.spec.ts`: "histórico de 2025 fica disponível à professora atual, com autoria preservada"; `ficha.spec.ts`: "CA-05.1…" |
 | | Ex-aluno sem vínculo | ✅ | `acesso.spec.ts`: "Ana Paula não lê ex-aluna, mesmo sendo autora dos registros de 2025: 403"; também na ficha, na avaliação e no painel |
 | Edição pedagógica por autoria | Titular e substituta simultâneas | ✅ | `avaliacao.spec.ts`: "Beatriz salva; Débora sem versão recebe 409; com versão recebe 403 AUTORIA; mas salva uma habilidade ausente" |
@@ -75,7 +75,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Revisões e limpeza justificada | Limpeza de resposta | ✅ | `limpar.spec.ts`: "a autora limpa com justificativa: vigente fica Sem avaliação e a versão anterior continua consultável"; regras (justificativa, autoria, versão, coordenação, período fechado) testadas. Na ficha, a célula mostra "— ✎" e a versão anterior aparece em "Correções neste ano". |
 | | Retificação pela sucessora | ✅ | A sucessora registra observação própria sem alterar o registro alheio: `avaliacao.spec.ts` (AUTORIA 403 e observações de duas autoras) |
 | Concorrência sem perda silenciosa | Duas professoras na mesma resposta ausente | ✅ | `avaliacao.spec.ts`: "duas criações simultâneas da mesma habilidade: um sucesso e um 409 (CA-13.5)" |
-| Interface acessível e estados claros | Registro por teclado em 360 px | ⚠️ | Rádios nativos dentro de `fieldset`/`legend`, foco visível, estados em texto e símbolo; em 360 px não há rolagem lateral (verificado manualmente). Falta o registro formal da tarefa 3.6 (teclado completo, dois navegadores). |
+| Interface acessível e estados claros | Registro por teclado em 360 px | ⚠️ | Rádios nativos dentro de `fieldset`/`legend`, foco visível, estados em texto e símbolo; pré-checagem registrada em [`docs/evidencias/acessibilidade-rnf04.md`](evidencias/acessibilidade-rnf04.md) (17/11): ordem do Tab, foco visível, nomes acessíveis em 8 telas e 10 telas sem rolagem lateral em 360 px; três problemas encontrados e corrigidos (Ficha e Calendário passavam de 360 px, foco no menu lateral, atalho "Pular para o conteúdo"). Falta a verificação manual em dois navegadores (parte 2 do mesmo arquivo, tarefa 9.4). |
 
 ## historico-pedagogico
 
@@ -213,9 +213,9 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.2, 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1 a 7.4, 8.2 a 8.4, 9.1 a 9.3.
-- **Parciais:** 2.1 (falta o teste de elevação de perfil e a desativação pela tela), 3.6 (acessibilidade sem registro formal), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
-- **Não feitas:** 8.1 (parte já coberta pelo painel), 9.4 e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Concluídas:** 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.3.
+- **Parciais:** 3.6 (pré-checagem automática registrada; falta a verificação manual em dois navegadores), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
+- **Não feitas:** 9.4 (roteiro pronto para preencher em `docs/evidencias/acessibilidade-rnf04.md`) e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas
 

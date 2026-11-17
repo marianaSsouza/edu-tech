@@ -18,7 +18,7 @@ npm test
 npm run dev
 ```
 
-- O `npm test` deve terminar com `Tests: 161 passed`. Deixe esse terminal visível: ele é a prova automática.
+- O `npm test` deve terminar com `Tests: 162 passed`. Deixe esse terminal visível: ele é a prova automática.
 - Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
 - Senha de todas as contas: `demo1234`.
 - A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.
@@ -112,4 +112,4 @@ Entre como `carlos@escola.exemplo` (2º B): só aparece a turma dele. Para prova
 
 ## Fechamento (fala sugerida)
 
-"O P0 está completo e verificado: 83 dos 93 cenários das specs estão feitos com evidência, 8 estão parciais e 1 não foi feito. Isso está detalhado no relatório de verificação. Do P1, fizemos a gestão da escola (cadastros, contas, vínculos, transferências, passagem de ano e repetência), o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos, a cópia de segurança com restauração conferida e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); ficaram para depois parte das verificações finais (acessibilidade em dois navegadores e o relatório final), então a entrega está declarada como parcial."
+"O P0 está completo e verificado: 84 dos 93 cenários das specs estão feitos com evidência, 7 estão parciais e 1 não foi feito. Isso está detalhado no relatório de verificação. Do P1, fizemos a gestão da escola (cadastros, contas, vínculos, transferências, passagem de ano e repetência), o calendário (fechar e reabrir bimestres), a evolução da escrita, a limpeza justificada de resposta, a tela de regras e casos, a cópia de segurança com restauração conferida e a medição de desempenho (30 de 30 operações em até 2 segundos com 500 alunos e 5 anos); ficaram para depois parte das verificações finais (acessibilidade em dois navegadores e o relatório final), então a entrega está declarada como parcial."
