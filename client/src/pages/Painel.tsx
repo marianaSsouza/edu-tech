@@ -5,8 +5,9 @@ import { api, PainelTurma, RespostaTurmas } from '../api';
 import { useUsuario } from '../App';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { IconeBusca } from '../components/Icones';
-import { AgregadoOculto, textoReferencia } from '../components/Painel';
+import { AgregadoOculto } from '../components/Painel';
 import { AvatarCrianca } from '../components/AvatarCrianca';
+import { Disciplina } from '../components/ui';
 import PainelEscola from './PainelEscola';
 
 type Aluno = PainelTurma['alunos'][number];
@@ -119,7 +120,7 @@ export default function Painel() {
       {turmasQ.isLoading && <Carregando />}
       {turmasQ.error && <ErroCaixa erro={turmasQ.error} tentarDeNovo={() => turmasQ.refetch()} />}
       {turmasQ.data && !escolhida && (
-        <p className="card mt-6">Você não tem turmas vinculadas hoje. Se isso estiver errado, procure a coordenação.</p>
+        <p className="card mt-6">Você não tem turmas hoje. Fale com a coordenação.</p>
       )}
 
       {escolhida === 'escola' ? <div className="mt-6"><PainelEscola /></div> : (
@@ -140,7 +141,7 @@ function Conteudo({ d, busca, area, professoras, serie }: {
 }) {
   const termo = semAcento(busca.trim());
   if (d.referencia.situacao === 'FUTURO') return <p className="card mt-6">Este bimestre ainda não começou.</p>;
-  if (d.N === 0) return <p className="card mt-6">Esta turma não tem alunos matriculados na data de referência.</p>;
+  if (d.N === 0) return <p className="card mt-6">Turma sem alunos neste bimestre.</p>;
 
   const i = d.indicadores;
   const nomeHab = new Map(d.habilidades.map((h) => [h.id, h]));
@@ -148,14 +149,13 @@ function Conteudo({ d, busca, area, professoras, serie }: {
   const emAtencao = d.alunos.filter((a) => a.atencao.estado === 'EM_ATENCAO');
   const motivo = (m: 'LACUNAS' | 'ESCRITA' | 'MANUAL') => emAtencao.filter((a) => a.atencao.motivos.includes(m)).length;
   const textoMotivos = [
-    motivo('LACUNAS') && `${motivo('LACUNAS')} por lacunas herdadas`,
-    motivo('ESCRITA') && `${motivo('ESCRITA')} pela escrita`,
-    motivo('MANUAL') && `${motivo('MANUAL')} com atenção manual`,
+    motivo('LACUNAS') && `${motivo('LACUNAS')} lacunas`,
+    motivo('ESCRITA') && `${motivo('ESCRITA')} escrita`,
+    motivo('MANUAL') && `${motivo('MANUAL')} manual`,
   ].filter(Boolean).join(' · ');
 
   return (
     <>
-      <p className="mt-3 text-sm text-muted">Referência: {textoReferencia(d.referencia)}</p>
 
       {/* números principais */}
       {d.oculto || !i ? (
@@ -164,10 +164,10 @@ function Conteudo({ d, busca, area, professoras, serie }: {
         <dl className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Numero titulo="Alunos acompanhados" valor={String(d.N)} sub={`${d.turma.nome}${professoras ? ` · ${professoras}` : ''}`} />
           <Numero titulo="Avaliações registradas" valor={String(i.pares.T - i.pares.U)} de={i.pares.T}
-            sub={i.semAvaliacoes ? 'Nenhuma avaliação neste bimestre ainda' : undefined} barra={razao(i.pares.T - i.pares.U, i.pares.T)} />
-          <Numero titulo="Em atenção" valor={String(i.emAtencao.n)} destaque sub={textoMotivos || 'Nenhuma criança em atenção'} />
+            sub={i.semAvaliacoes ? 'Nenhuma ainda' : undefined} barra={razao(i.pares.T - i.pares.U, i.pares.T)} />
+          <Numero titulo="Em atenção" valor={String(i.emAtencao.n)} destaque sub={textoMotivos || 'Ninguém'} />
           <Numero titulo="Sem avaliação" valor={String(semAvaliacao.length)}
-            sub={semAvaliacao.length === 0 ? 'Todos têm algum registro' : `${semAvaliacao.slice(0, 3).map((a) => a.nome).join(', ')}${semAvaliacao.length > 3 ? '…' : ''} ainda sem registros`} />
+            sub={semAvaliacao.length === 0 ? 'Todos avaliados' : `${semAvaliacao.slice(0, 3).map((a) => a.nome).join(', ')}${semAvaliacao.length > 3 ? '…' : ''}`} />
         </dl>
       )}
 
@@ -183,7 +183,7 @@ function Conteudo({ d, busca, area, professoras, serie }: {
       {!d.oculto && i && (
         <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
           <PorBimestre serie={serie} turma={d.turma.nome} />
-          <Escrita alunos={d.alunos} grupoMinimo={d.grupoMinimo} />
+          <Escrita alunos={d.alunos} />
         </div>
       )}
     </>
@@ -220,7 +220,7 @@ function Habilidades({ porHabilidade, nomeHab, area, termo }: {
   return (
     <article className="card">
       <h2 className="text-2xl font-extrabold">Habilidades com menos consolidação</h2>
-      <p className="text-sm text-muted">% de alunos com "Consolidada" neste bimestre. "Sem avaliação" conta no total e não vira nota baixa.</p>
+      <p className="text-sm text-muted">% de alunos com "Consolidada"</p>
       {lista.length === 0 && <p className="mt-4 text-muted">Nenhuma habilidade com esse filtro.</p>}
       <ul className="mt-3 divide-y divide-line">
         {visiveis.map((h) => {
@@ -228,16 +228,15 @@ function Habilidades({ porHabilidade, nomeHab, area, termo }: {
           return (
             <li key={h.skillId} className="py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="min-w-0">
-                  <span className={`chip mr-2 px-2 py-0.5 text-xs ${h.info?.area === 'MAT' ? 'chip-amarelo' : 'chip-lilas'}`}>{h.info?.area ?? '—'}</span>
-                  <b>{h.info?.texto ?? h.skillId}</b> <span className="text-sm text-muted">{h.skillId}</span>
-                </p>
+                <div className="min-w-0">
+                  <Disciplina area={h.info?.area ?? h.skillId} />
+                  <p className="mt-1 font-bold">{h.info?.texto ?? h.skillId}</p>
+                </div>
                 <span className="shrink-0 text-lg font-extrabold">{h.consolidacao.percentual ?? 'Sem dados'}</span>
               </div>
               <div className="barra-trilho mt-2" role="img" aria-label={`${h.consolidacao.n} de ${h.consolidacao.d} consolidadas; ${h.U} sem avaliação`}>
                 <div className={r < 0.5 ? 'barra-baixa' : 'barra-cheia'} style={{ width: `${r * 100}%` }} />
               </div>
-              <p className="mt-1 text-xs text-muted">{h.C} consolidadas · {h.D} em desenvolvimento · {h.NC} não consolidadas · {h.U} sem avaliação</p>
             </li>
           );
         })}
@@ -261,10 +260,9 @@ function Acompanhar({ alunos, turma, termo }: { alunos: Aluno[]; turma: PainelTu
   return (
     <article className="card">
       <div className="flex items-start justify-between gap-2">
-        <h2 className="text-2xl font-extrabold">Alunos para acompanhar</h2>
+        <h2 className="text-2xl font-extrabold">Para acompanhar</h2>
         <Link to={`/turmas/${turma.id}?ano=${turma.anoLetivo}`} className="font-bold">Ver todos</Link>
       </div>
-      <p className="text-sm text-muted">Em atenção ou ainda sem nenhuma avaliação no bimestre (são coisas diferentes).</p>
       {lista.length === 0 && <p className="mt-4 text-muted">Ninguém em atenção ou sem avaliação{termo ? ' com esse nome' : ''}. 🎉</p>}
       <ul className="mt-3 divide-y divide-line">
         {(mais ? lista : lista.slice(0, 6)).map((a) => (
@@ -327,12 +325,12 @@ function PorBimestre({ serie, turma }: { serie: Array<{ b: number; dado?: Painel
           <span key={b} className="flex-1 text-center text-sm font-bold text-muted">{b}º bim.{emCurso && <span className="block font-normal">(em curso)</span>}</span>
         ))}
       </div>
-      <p className="mt-3 text-xs text-muted">Respostas "Consolidada" sobre todas as previstas no bimestre. Bimestre em curso aparece listrado: ainda pode mudar. "Sem registros" não é 0%: ninguém avaliou ainda.</p>
+      <p className="mt-3 text-xs text-muted">Listrado = bimestre em andamento.</p>
     </article>
   );
 }
 
-function Escrita({ alunos, grupoMinimo }: { alunos: Aluno[]; grupoMinimo: number }) {
+function Escrita({ alunos }: { alunos: Aluno[] }) {
   const cont = ESCRITA.map((_, nivel) => alunos.filter((a) => a.escrita === nivel).length);
   const semRegistro = alunos.filter((a) => a.escrita === null).length;
   const total = alunos.length;
@@ -356,7 +354,6 @@ function Escrita({ alunos, grupoMinimo }: { alunos: Aluno[]; grupoMinimo: number
           <b>{semRegistro} {semRegistro === 1 ? 'aluno' : 'alunos'}</b>
         </li>
       </ul>
-      <p className="mt-4 text-sm text-muted">Turmas com menos de {grupoMinimo} alunos têm os agregados ocultos.</p>
     </article>
   );
 }

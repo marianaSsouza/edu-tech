@@ -26,8 +26,15 @@ describe('calendário — integração', () => {
   });
   afterEach(() => b.ds.destroy());
 
-  it('só a coordenação gerencia o calendário (403 para professora)', async () => {
-    await expect(cal.visao(b.beatriz)).rejects.toMatchObject({ status: 403 });
+  it('professora consulta o calendário (só leitura); só a coordenação fecha, reabre e vê a trilha', async () => {
+    const v = await cal.visao(b.beatriz);
+    expect(v.podeGerenciar).toBe(false);
+    expect(v.anos.find((a) => a.anoLetivo === 2026)!.periodos).toHaveLength(4);
+    expect(v.anos.every((a) => a.trilha.length === 0)).toBe(true);
+    expect((await cal.visao(b.coord)).podeGerenciar).toBe(true);
+    await expect(cal.ausencias(b.beatriz, 2026, 4)).rejects.toMatchObject({ status: 403 });
+    await expect(cal.reabrirBimestre(b.beatriz, 2026, 1, 'x')).rejects.toMatchObject({ status: 403 });
+    await expect(cal.fecharAno(b.beatriz, 2026, 'x')).rejects.toMatchObject({ status: 403 });
     await expect(cal.fecharBimestre(b.beatriz, 2026, 4, 'x')).rejects.toMatchObject({ status: 403 });
   });
 

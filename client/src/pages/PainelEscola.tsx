@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api, PainelGeral } from '../api';
 import { useUsuario } from '../App';
 import { Carregando, ErroCaixa } from '../components/Estado';
-import { SeletorBimestre, textoReferencia } from '../components/Painel';
+import { SeletorBimestre } from '../components/Painel';
 
 /** PRO-02 / PRO-07: turmas com indicadores essenciais; filtros de ano e bimestre preservados na URL. */
 export default function PainelEscola() {
@@ -21,7 +21,7 @@ export default function PainelEscola() {
   return (
     <section>
       <h2 className="text-2xl font-extrabold">Escola inteira</h2>
-      <p className="text-muted">Indicadores do bimestre por turma. Grupos com menos de 5 crianças não mostram agregados.</p>
+      <p className="text-muted">Resumo do bimestre por turma.</p>
       {q.isLoading && <Carregando />}
       {q.error && <ErroCaixa erro={q.error} tentarDeNovo={() => q.refetch()} />}
       {d && (
@@ -39,7 +39,6 @@ export default function PainelEscola() {
             <SeletorBimestre periodos={d.periodos} atual={d.referencia.bimestre}
               onEscolher={(b) => setParams({ turma: 'escola', ano: String(d.referencia.anoLetivo), bimestre: String(b) })} />
           </div>
-          <p className="mt-2 text-sm text-muted">Referência: {textoReferencia(d.referencia)}</p>
 
           {d.turmas.length === 0 && (
             <p className="card mt-6">{coord ? 'Não há turmas neste ano letivo.' : 'Você não tem turmas vinculadas hoje. Se isso estiver errado, procure a coordenação.'}</p>
@@ -53,14 +52,14 @@ export default function PainelEscola() {
                   {d.referencia.situacao === 'FUTURO' ? (
                     <span className="mt-2 block text-sm text-muted">Bimestre ainda não começou.</span>
                   ) : N === 0 ? (
-                    <span className="mt-2 block text-sm text-muted">Turma sem alunos na data de referência.</span>
+                    <span className="mt-2 block text-sm text-muted">Sem alunos neste bimestre.</span>
                   ) : oculto ? (
-                    <span className="mt-2 block text-sm">🔒 Agregado oculto: grupo menor que {d.grupoMinimo}</span>
+                    <span className="mt-2 block text-sm">🔒 Números ocultos: menos de {d.grupoMinimo} alunos</span>
                   ) : i && (
                     <span className="mt-2 block space-y-0.5 text-sm">
-                      <span className="block">⚑ Em atenção: <b>{i.emAtencao.n}</b> de {i.N}{i.atencaoIncompleta > 0 && ` · ${i.atencaoIncompleta} com atenção não concluída`}</span>
-                      <span className="block">Escrita alfabética: <b>{i.escritaAlfabetica.percentual}</b> ({i.escritaAlfabetica.n}/{i.escritaAlfabetica.d}) · cobertura de escrita {i.coberturaEscrita.percentual}</span>
-                      <span className="block">Consolidação: <b>{i.consolidacao.percentual ?? 'Sem dados'}</b> · cobertura {i.coberturaHabilidades.percentual ?? 'Sem dados'}</span>
+                      <span className="block">⚑ Em atenção: <b>{i.emAtencao.n}</b> de {i.N}</span>
+                      <span className="block">Escrita alfabética: <b>{i.escritaAlfabetica.percentual}</b> ({i.escritaAlfabetica.n}/{i.escritaAlfabetica.d})</span>
+                      <span className="block">Consolidação: <b>{i.consolidacao.percentual ?? 'Sem dados'}</b></span>
                     </span>
                   )}
                 </Link>

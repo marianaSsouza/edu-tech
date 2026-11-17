@@ -3,43 +3,45 @@ import { useQueryClient } from '@tanstack/react-query';
 import { api, AtencaoManual, ErroApi, FichaDto } from '../api';
 
 const ESCRITA = ['Pré-silábico', 'Silábico', 'Silábico-alfabético', 'Alfabético'];
-const TIPO = { COMENTARIO: 'Comentário', ENCERRAMENTO: 'Encerramento', REABERTURA: 'Reabertura', CORRECAO: 'Texto corrigido pela autora · versão anterior' };
+const TIPO = { COMENTARIO: 'Comentário', ENCERRAMENTO: 'Encerrada', REABERTURA: 'Reaberta', CORRECAO: 'Texto anterior' };
 const data = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
 
-/** PRO-03 / PRO-06: todos os motivos de atenção e o ciclo da atenção manual (RN08, RN09). */
+/** PRO-03 / PRO-06: motivos de atenção e o ciclo da atenção manual (RN08, RN09), em poucas palavras. */
 export function CartaoAtencao({ alunoId, a }: { alunoId: number; a: FichaDto['atencao'] }) {
-  const ref = `${a.referencia.etapa}º ano, ${a.referencia.bimestre}º bimestre de ${a.referencia.anoLetivo}`;
   const ativas = a.manuais.filter((m) => m.situacao === 'ABERTA');
-  const titulo =
-    a.estado === 'EM_ATENCAO' ? '⚑ Em atenção'
-    : a.estado === 'INCOMPLETA' ? '… Atenção automática não concluída: escrita sem avaliação'
-    : '✓ Sem sinal de atenção nos dados disponíveis';
+  const emAtencao = a.estado === 'EM_ATENCAO';
+  const titulo = emAtencao ? '⚑ Em atenção' : a.estado === 'INCOMPLETA' ? '… Falta avaliar a escrita' : '✓ Nada a acompanhar agora';
 
   return (
-    <div className={`card mt-6 ${a.estado === 'EM_ATENCAO' ? 'border-2 border-amarelo' : ''}`}>
-      <h2 className="text-2xl font-extrabold">Atenção pedagógica</h2>
-      <p className={`mt-1 font-extrabold ${a.estado === 'EM_ATENCAO' ? 'text-warn' : ''}`}>{titulo}</p>
-      <p className="text-sm text-muted">Referência: {ref}.</p>
-      <ul className="mt-2 list-disc space-y-0.5 pl-5 text-sm">
-        {a.motivos.includes('LACUNAS') && <li><b>Lacunas herdadas:</b> {a.lacunasPendentes} pendências (sinaliza a partir de {a.limiteLacunas}).</li>}
-        {a.motivos.includes('ESCRITA') && a.escrita !== null && (
-          <li><b>Escrita:</b> {ESCRITA[a.escrita]}, abaixo do mínimo esperado ({ESCRITA[a.minimoEscrita]}).</li>
-        )}
-        {a.motivos.includes('MANUAL') && <li><b>Atenção manual:</b> {ativas.length} {ativas.length === 1 ? 'ativa' : 'ativas'}.</li>}
-        {a.escritaAusente && <li><b>Sem avaliação de escrita</b> neste bimestre: a comparação com o mínimo ({ESCRITA[a.minimoEscrita]}) está indeterminada.</li>}
-        {!a.motivos.includes('LACUNAS') && <li className="text-muted">Lacunas herdadas pendentes: {a.lacunasPendentes} (sinaliza a partir de {a.limiteLacunas}).</li>}
-        {!a.escritaAusente && !a.motivos.includes('ESCRITA') && a.escrita !== null && (
-          <li className="text-muted">Escrita: {ESCRITA[a.escrita]} (mínimo {ESCRITA[a.minimoEscrita]}).</li>
-        )}
-      </ul>
+    <div className={`card mt-6 ${emAtencao ? 'border-2 border-amarelo' : ''}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-2xl font-extrabold">Atenção</h2>
+        <span className={`chip px-4 py-1.5 text-base ${emAtencao ? 'chip-amarelo' : a.estado === 'INCOMPLETA' ? 'chip-lilas' : 'chip-menta'}`}>{titulo}</span>
+      </div>
+      <p className="mt-1 text-sm text-muted">{a.referencia.bimestre}º bimestre de {a.referencia.anoLetivo}</p>
+
+      {(emAtencao || a.escritaAusente) && (
+        <ul className="mt-3 flex flex-wrap gap-2 text-sm">
+          {a.motivos.includes('LACUNAS') && <li className="chip chip-amarelo">{a.lacunasPendentes} lacunas pendentes</li>}
+          {a.motivos.includes('ESCRITA') && a.escrita !== null && (
+            <li className="chip chip-amarelo">Escrita: {ESCRITA[a.escrita]} (esperado: {ESCRITA[a.minimoEscrita]})</li>
+          )}
+          {a.motivos.includes('MANUAL') && <li className="chip chip-amarelo">{ativas.length} atenção manual{ativas.length > 1 ? 's' : ''}</li>}
+          {a.escritaAusente && <li className="chip chip-lilas">Escrita sem avaliação neste bimestre</li>}
+        </ul>
+      )}
+      <details className="mt-2 text-sm text-muted">
+        <summary className="cursor-pointer">Quando aparece?</summary>
+        <p className="mt-1">Com {a.limiteLacunas} ou mais lacunas, escrita abaixo de {ESCRITA[a.minimoEscrita]} neste bimestre, ou atenção aberta por uma professora.</p>
+      </details>
 
       <h3 className="mt-4 font-extrabold">Atenções manuais</h3>
-      {a.manuais.length === 0 && <p className="text-sm text-muted">Nenhuma atenção manual registrada.</p>}
+      {a.manuais.length === 0 && <p className="text-sm text-muted">Nenhuma.</p>}
       <ul className="mt-1 space-y-2">
         {a.manuais.map((m) => <ItemManual key={m.id} m={m} podeAgir={a.podeAgir} />)}
       </ul>
       {a.podeAgir ? <NovaAtencao alunoId={alunoId} /> : (
-        <p className="mt-2 text-xs text-muted">Somente consulta. Abrir, comentar, encerrar e reabrir cabem à professora com vínculo atual.</p>
+        <p className="mt-2 text-xs text-muted">Só a professora da turma pode alterar.</p>
       )}
     </div>
   );
@@ -84,7 +86,7 @@ function ItemManual({ m, podeAgir }: { m: AtencaoManual; podeAgir: boolean }) {
   return (
     <li className="rounded-lg border border-line p-3 text-sm">
       <p>
-        <b>{m.situacao === 'ABERTA' ? '● Ativa' : '○ Encerrada'}</b> · aberta por {m.autorNome} em {data(m.em)} ({m.bimestre}º bim. {m.anoLetivo})
+        <b>{m.situacao === 'ABERTA' ? '● Ativa' : '○ Encerrada'}</b> <span className="text-muted">· {m.autorNome}, {data(m.em)}</span>
       </p>
       <p className="mt-1">{m.justificativa}</p>
       {m.eventos.length > 0 && (
@@ -106,8 +108,8 @@ function ItemManual({ m, podeAgir }: { m: AtencaoManual; podeAgir: boolean }) {
       {acao && (
         <div className="mt-2">
           <label htmlFor={`acao-${m.id}`} className="font-bold">
-            {acao === 'COMENTARIO' ? 'Comentário' : acao === 'ENCERRAMENTO' ? 'Justificativa do encerramento'
-              : acao === 'CORRECAO' ? 'Texto corrigido (a versão atual fica guardada no histórico)' : 'Motivo da reabertura'}
+            {acao === 'COMENTARIO' ? 'Comentário' : acao === 'ENCERRAMENTO' ? 'Por que encerrar?'
+              : acao === 'CORRECAO' ? 'Texto corrigido' : 'Motivo da reabertura'}
           </label>
           <textarea id={`acao-${m.id}`} autoFocus rows={2} maxLength={2000} className="campo mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
           {erro && <p role="alert" className="mt-1 text-warn">⚠ {erro}</p>}
@@ -125,7 +127,7 @@ function NovaAtencao({ alunoId }: { alunoId: number }) {
   const [aberto, setAberto] = useState(false);
   const [texto, setTexto] = useState('');
   const { erro, enviando, executar } = useAcao();
-  if (!aberto) return <button type="button" className="btn-sec mt-3 text-sm" onClick={() => setAberto(true)}>+ Abrir atenção manual</button>;
+  if (!aberto) return <button type="button" className="btn-sec mt-3 text-sm" onClick={() => setAberto(true)}>+ Nova atenção</button>;
   const enviar = async () => {
     if (await executar(() => api(`/alunos/${alunoId}/atencoes`, { method: 'POST', body: { justificativa: texto } }))) {
       setAberto(false);
@@ -134,7 +136,7 @@ function NovaAtencao({ alunoId }: { alunoId: number }) {
   };
   return (
     <div className="mt-3">
-      <label htmlFor="nova-atencao" className="font-bold">Justificativa da nova atenção (1 a 2.000 caracteres)</label>
+      <label htmlFor="nova-atencao" className="font-bold">Por que acompanhar?</label>
       <textarea id="nova-atencao" autoFocus rows={3} maxLength={2000} className="campo mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
       {erro && <p role="alert" className="mt-1 text-warn">⚠ {erro}</p>}
       <div className="mt-2 flex gap-2">

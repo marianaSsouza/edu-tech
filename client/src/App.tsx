@@ -55,8 +55,8 @@ function Layout() {
     { para: '/painel', rotulo: 'Painel', icone: <IconePainel />, ativo: pathname.startsWith('/painel') },
     { para: '/', rotulo: 'Turmas', icone: <IconeTurmas />, ativo: pathname === '/' || pathname.startsWith('/turmas/') },
     { para: '/alunos', rotulo: 'Alunos', icone: <IconeAluno />, ativo: pathname.startsWith('/alunos') },
+    { para: '/calendario', rotulo: 'Calendário', icone: <IconeCalendario />, ativo: pathname.startsWith('/calendario') },
     ...(coord ? [
-      { para: '/calendario', rotulo: 'Calendário', icone: <IconeCalendario />, ativo: pathname.startsWith('/calendario') },
       { para: '/gestao', rotulo: 'Gestão', icone: <IconeGestao />, ativo: pathname.startsWith('/gestao') },
       { para: '/regras', rotulo: 'Regras', icone: <IconeRegras />, ativo: pathname.startsWith('/regras') },
     ] : []),

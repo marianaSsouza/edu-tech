@@ -85,7 +85,7 @@ Clique em **Sair** e entre como `debora@escola.exemplo` (substituta do 2º A).
    - Spec **lacunas-herdadas**: "Consolidação e reavaliação com origem" (CR-06).
 2. Na página da turma **2º A** (Turmas → Abrir turma), 3º bimestre, mostre **Evolução da escrita**: "3 de 8 avaliáveis avançaram (37,5%)" em relação ao 1º bimestre.
    - Spec **paineis-e-indicadores**: "Evolução entre bimestres" (CR-11).
-3. Como **coordenação**, abra **Calendário** e clique em **Fechar** no 4º bimestre. Antes de confirmar aparecem as ausências por turma; não é preciso confirmar.
+3. Como **coordenação**, abra **Calendário** e clique em **Fechar** no 4º bimestre. Antes de confirmar aparecem as ausências por turma; não é preciso confirmar. (A professora também vê o Calendário, mas só para consulta: sem botões de fechar ou reabrir.)
    - Spec **calendario-letivo**: "Fechar bimestre incompleto" (CA-13.2).
 
 ## Gestão da escola (≈ 1 min 30)

@@ -4,7 +4,8 @@ import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { api, PainelTurma } from '../api';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { AgregadoOculto, Cartoes, textoReferencia } from '../components/Painel';
-import { Avatar, Migalhas, Progresso, Titulo } from '../components/ui';
+import { Migalhas, Progresso, Titulo } from '../components/ui';
+import { AvatarCrianca } from '../components/AvatarCrianca';
 
 type Aluno = PainelTurma['alunos'][number];
 type Filtro = 'TODOS' | 'ATENCAO' | 'SEM_AVALIACAO';
@@ -39,6 +40,7 @@ export default function AlunosTurma() {
     queryFn: () => api<PainelTurma>(`/painel/turmas/${id}?bimestre=${bimestre}&comparar=${comparar}`),
   });
   const d = q.data;
+  const nomeHab = (id: string) => d?.habilidades.find((h) => h.id === id)?.texto ?? id;
 
   const alunos = (d?.alunos ?? []).filter((a) => {
     if (busca.trim() && !a.nome.toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR'))) return false;
@@ -88,7 +90,7 @@ export default function AlunosTurma() {
                 {alunos.length === 0 && <li className="py-6 text-center text-muted">Nenhum aluno com esse filtro.</li>}
                 {alunos.map((a) => (
                   <li key={a.id} className="grid grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-2 py-4 md:grid-cols-[auto_minmax(0,1.2fr)_minmax(0,1fr)_15rem_auto]">
-                    <Avatar nome={a.nome} />
+                    <AvatarCrianca nome={a.nome} tamanho={52} />
                     <div className="min-w-0">
                       <Link to={`/alunos/${a.id}`} state={{ voltar: location.pathname + location.search }} className="text-lg font-bold text-ink no-underline hover:underline">
                         {a.nome}
@@ -124,7 +126,7 @@ export default function AlunosTurma() {
                         <tbody>
                           {d.indicadores.lacunasPorHabilidade.map((l) => (
                             <tr key={l.skillId} className="border-b border-line">
-                              <td className="py-1 font-bold">{l.skillId}</td><td>{l.fracao.n} de {l.fracao.d} ({l.fracao.percentual})</td><td>{l.porAusencia}</td>
+                              <td className="py-1 font-bold">{nomeHab(l.skillId)}</td><td>{l.fracao.n} de {l.fracao.d} ({l.fracao.percentual})</td><td>{l.porAusencia}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -138,7 +140,7 @@ export default function AlunosTurma() {
                       <tbody>
                         {d.indicadores.porHabilidade.map((h) => (
                           <tr key={h.skillId} className="border-b border-line">
-                            <td className="py-1 font-bold">{h.skillId}</td>
+                            <td className="py-1 font-bold">{nomeHab(h.skillId)}</td>
                             <td>{h.C} ({h.consolidacao.percentual ?? 'Sem dados'})</td><td>{h.D}</td><td>{h.NC}</td><td>{h.U}</td>
                           </tr>
                         ))}

@@ -63,3 +63,11 @@ export function Progresso({ n, d, rotulo }: { n: number; d: number; rotulo: stri
     </div>
   );
 }
+
+/** Disciplina da habilidade, por extenso (no lugar de códigos como H02-LP01). Aceita a área ou o ID. */
+export function Disciplina({ area }: { area: string }) {
+  const mat = area === 'MAT' || /-MAT/.test(area);
+  return (
+    <span className={`chip shrink-0 px-2.5 py-0.5 text-xs ${mat ? 'chip-amarelo' : 'chip-lilas'}`}>{mat ? 'Matemática' : 'Português'}</span>
+  );
+}

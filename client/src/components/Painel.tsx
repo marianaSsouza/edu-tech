@@ -29,7 +29,7 @@ export function SeletorBimestre({ periodos, atual, onEscolher }: {
 export function AgregadoOculto({ N, minimo }: { N: number; minimo: number }) {
   return (
     <p className="rounded-lg border border-dashed border-line bg-white px-3 py-2 text-sm" role="note">
-      🔒 <b>Agregado oculto: grupo menor que {minimo}</b> ({N} {N === 1 ? 'criança' : 'crianças'}). A consulta individual continua disponível.
+      🔒 <b>Números ocultos: turma com menos de {minimo} alunos</b> ({N}). A ficha de cada aluno continua disponível.
     </p>
   );
 }

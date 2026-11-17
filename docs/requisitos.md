@@ -171,6 +171,7 @@ As cinco habilidades da captura do 2º ano ficam representadas no recorte, com r
 | Abrir/encerrar/reabrir atenção manual | Sim, aluno atual, com motivo | Não |
 | Cadastrar alunos, turmas e professores | Não | Sim |
 | Vincular docentes, substituir, matricular e transferir | Não | Sim |
+| Consultar o calendário (datas e situação dos bimestres) | Sim | Sim |
 | Fechar/reabrir bimestre com justificativa | Não | Sim |
 | Editar catálogo ou matriz em uso | Não | Não; versão de produto |
 
@@ -391,6 +392,7 @@ Decisões tomadas no desenho técnico (`openspec/changes/especificar-fio-da-apre
 | Autoria | Uma resposta vigente por campo; titular e substituta só coexistem por indicação explícita da coordenação; ninguém substitui resposta alheia; limpeza só pela autora, com justificativa | Seções 5 e 6; RN11; RF-11; RF-13 | D03, D04 |
 | Observações | Entradas independentes por autora; limite de 4.000 caracteres compartilhado entre os textos vigentes do aluno/bimestre; revisões não consomem o limite | Seção 6; RN05; RF-04 (CA-04.3) | D02 |
 | Grupo pequeno | Ocultação de agregados com N < 5 vale para professora e coordenação; consulta individual autorizada continua | Seção 5 (Consulta individual e grupos pequenos); RN13 | D10 |
+| Calendário | Professora consulta datas e situação dos bimestres (só leitura); fechar, reabrir e a trilha continuam só com a coordenação (decisão da usuária, 17/11/2026) | Seção 5; RF-13 | spec calendario-letivo |
 | Gestão escolar | Duplicidade de aluno é sinalizada, nunca mesclada; cadastro com histórico é arquivado, conta é desativada e vínculo é encerrado (só o que nunca valeu pode ser cancelado ou excluído); passagem de ano e repetência só após o fechamento do ano; movimentações ficam em trilha com data, autoria e motivo | Seção 5; RF-12 (CA-12.1–12.4) | spec gestao-escolar |
 
 ## 12. Rastreabilidade e alterações

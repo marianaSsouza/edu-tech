@@ -4,7 +4,7 @@ import { Link, useBlocker, useParams, useSearchParams } from 'react-router-dom';
 import { api, AvaliacaoDto, ErroApi, Observacao, Situacao } from '../api';
 import { useUsuario } from '../App';
 import { Carregando, ErroCaixa } from '../components/Estado';
-import { Migalhas, Titulo } from '../components/ui';
+import { Disciplina, Migalhas, Titulo } from '../components/ui';
 
 const NIVEIS_HAB = [
   { v: 0, rotulo: 'Não consolidada', simbolo: '○' },
@@ -232,8 +232,7 @@ function Formulario({ dados, recarregar, irPara }: {
           <div className="divide-y divide-line">
             {dados.habilidades.map((h) => (
               <CampoNivel key={h.id} nome={`hab-${h.id}`}
-                titulo={<><span className={`chip mr-2 align-middle ${h.area === 'MAT' ? 'chip-amarelo' : 'chip-lilas'}`}>{h.area}</span>
-                  <span className="align-middle text-lg font-bold">{h.texto}</span> <span className="align-middle text-sm text-muted">{h.id}</span></>}
+                titulo={<><Disciplina area={h.area} /><span className="mt-1 block text-lg font-bold">{h.texto}</span></>}
                 dica={h.exemplo} opcoes={NIVEIS_HAB} resposta={h.resposta} pendente={pendentes[h.id]} usuarioId={usuario?.id}
                 podeEditar={pode && !salvando}
                 onEscolher={(n) => escolher(h.id, n)}

@@ -1,21 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { api, Celula, FichaDto } from '../api';
 import { Carregando, ErroCaixa } from '../components/Estado';
 import { CartaoAtencao } from '../components/Atencao';
 import { TabelaLacunas } from '../components/TabelaLacunas';
-import { Migalhas, Titulo } from '../components/ui';
+import { Disciplina, Titulo } from '../components/ui';
 
 const HAB = ['Não consolidada', 'Em desenvolvimento', 'Consolidada'];
 const SIMB = ['○', '◐', '●'];
 const ESCRITA = ['Pré-silábico', 'Silábico', 'Silábico-alfabético', 'Alfabético'];
 const data = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
 
-/** PRO-03 / PRO-05: ficha do aluno com lacunas herdadas e linha do tempo (somente leitura). */
+/** PRO-03 / PRO-05: ficha do aluno — atenção, lacunas herdadas e histórico por ano (somente leitura). */
 export default function Ficha() {
   const { id } = useParams();
-  const location = useLocation();
-  const voltar = (location.state as { voltar?: string } | null)?.voltar;
   const q = useQuery({ queryKey: ['ficha', id], queryFn: () => api<FichaDto>(`/alunos/${id}/ficha`) });
 
   if (q.isLoading) return <Carregando texto="Carregando a ficha…" />;
@@ -26,81 +24,78 @@ export default function Ficha() {
 
   return (
     <section>
-      <Migalhas itens={[
-        { rotulo: 'Turmas', para: '/' },
-        ...(turmaAtual ? [{ rotulo: turmaAtual.nome, para: voltar ?? `/turmas/${turmaAtual.id}` }] : []),
-        { rotulo: `${f.aluno.nome} · ficha` },
-      ]} />
       <Titulo avatar={f.aluno.nome} titulo={f.aluno.nome}
-        sub={`Hoje: ${atual.contexto.etapa}º ano · ano letivo ${atual.contexto.anoLetivo}${turmaAtual ? ` · turma ${turmaAtual.nome}` : ''}`}
-        acoes={<Link to={`/alunos/${f.aluno.id}/avaliacao?ano=${atual.contexto.anoLetivo}`} className="btn">Avaliação por bimestre</Link>} />
+        sub={`${atual.contexto.etapa}º ano${turmaAtual ? ` · Turma ${turmaAtual.nome}` : ''} · ${atual.contexto.anoLetivo}`}
+        acoes={<Link to={`/alunos/${f.aluno.id}/avaliacao?ano=${atual.contexto.anoLetivo}`} className="btn">Avaliar bimestre</Link>} />
       <nav aria-label="Seções da ficha" className="mt-5 flex flex-wrap gap-2">
-        <a href="#atencao" className="chip chip-amarelo no-underline">Atenção pedagógica</a>
-        <a href="#lacunas" className="chip chip-lilas no-underline">Lacunas herdadas</a>
-        <a href="#linha-do-tempo" className="chip chip-menta no-underline">Linha do tempo</a>
+        <a href="#atencao" className="chip chip-amarelo no-underline">Atenção</a>
+        <a href="#lacunas" className="chip chip-lilas no-underline">Lacunas</a>
+        <a href="#historico" className="chip chip-menta no-underline">Histórico</a>
       </nav>
 
       {f.historicoAnteriorIndisponivel && (
-        <p className="card mt-6" role="note">ℹ Histórico anterior indisponível: não há registros de anos anteriores a {f.linhaDoTempo[0].contexto.anoLetivo}. Nenhuma lacuna foi inventada para esse período.</p>
+        <p className="card mt-6" role="note">ℹ Sem histórico antes de {f.linhaDoTempo[0].contexto.anoLetivo}.</p>
       )}
 
       <div id="atencao" className="scroll-mt-4"><CartaoAtencao alunoId={f.aluno.id} a={f.atencao} /></div>
       <div id="lacunas" className="scroll-mt-4"><Lacunas f={f} /></div>
 
-      <h2 id="linha-do-tempo" className="mt-10 scroll-mt-4 text-2xl font-extrabold">Linha do tempo</h2>
+      <h2 id="historico" className="mt-10 scroll-mt-4 text-2xl font-extrabold">Histórico</h2>
+      <p className="mt-1 text-sm text-muted">○ Não consolidada · ◐ Em desenvolvimento · ● Consolidada · — Sem avaliação · ✎ Corrigida</p>
       {[...f.linhaDoTempo].reverse().map((ano) => <Ano key={ano.contexto.id} ano={ano} />)}
     </section>
   );
 }
 
 function Lacunas({ f }: { f: FichaDto }) {
-  const { decomposicao: d, itens, referencia, eventos } = f.lacunas;
+  const { decomposicao: d, itens, eventos } = f.lacunas;
   const pendentes = itens.filter((i) => i.pendente);
   const consolidadas = itens.filter((i) => !i.pendente);
-  if (!itens.length) {
-    return (
-      <div className="card mt-6">
-        <h2 className="text-2xl font-extrabold">Lacunas herdadas</h2>
-        <p className="mt-1 text-muted">Não há ano anterior encerrado nesta escola para herdar habilidades.</p>
-      </div>
-    );
-  }
-  const partes = [
-    d.naoConsolidada && `${d.naoConsolidada} não consolidada${d.naoConsolidada > 1 ? 's' : ''}`,
-    d.emDesenvolvimento && `${d.emDesenvolvimento} em desenvolvimento`,
-    d.semAvaliacao && `${d.semAvaliacao} sem avaliação registrada`,
-  ].filter(Boolean);
 
   return (
     <div className="card mt-6">
-      <h2 className="text-2xl font-extrabold">Lacunas herdadas</h2>
-      <p className="mt-1 font-bold">
-        {d.total === 0 ? 'Nenhuma pendência herdada.' : `${d.total} ${d.total === 1 ? 'pendência' : 'pendências'}: ${partes.join(' + ')}`}
-      </p>
-      <p className="text-sm text-muted">
-        Situação até o {referencia.bimestre}º bimestre de {referencia.anoLetivo}. Habilidades dos anos anteriores encerrados; a última marcação vale, e ausência não é nível.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-2xl font-extrabold">Lacunas dos anos anteriores</h2>
+        {itens.length > 0 && (
+          <span className={`chip px-4 py-1.5 text-base ${d.total === 0 ? 'chip-menta' : 'chip-amarelo'}`}>
+            {d.total === 0 ? 'Nenhuma pendente' : `${d.total} ${d.total === 1 ? 'pendente' : 'pendentes'}`}
+          </span>
+        )}
+      </div>
+      {!itens.length && <p className="mt-1 text-muted">Nenhum ano anterior para herdar.</p>}
+      {d.total > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+          {d.naoConsolidada > 0 && <span className="chip chip-cinza">○ {d.naoConsolidada} não consolidada{d.naoConsolidada > 1 ? 's' : ''}</span>}
+          {d.emDesenvolvimento > 0 && <span className="chip chip-cinza">◐ {d.emDesenvolvimento} em desenvolvimento</span>}
+          {d.semAvaliacao > 0 && <span className="chip chip-cinza">— {d.semAvaliacao} sem avaliação</span>}
+        </div>
+      )}
       {pendentes.length > 0 && <TabelaLacunas alunoId={f.aluno.id} itens={pendentes} podeRegistrar={f.lacunas.podeRegistrar} />}
       {consolidadas.length > 0 && (
         <details className="mt-3">
-          <summary className="cursor-pointer font-bold">Herdadas já consolidadas ({consolidadas.length})</summary>
+          <summary className="cursor-pointer font-bold">Já consolidadas ({consolidadas.length})</summary>
           <TabelaLacunas alunoId={f.aluno.id} itens={consolidadas} podeRegistrar={f.lacunas.podeRegistrar} />
         </details>
       )}
       {eventos.length > 0 && (
-        <>
-          <h3 className="mt-4 font-extrabold">Consolidações e reavaliações registradas</h3>
-          <ul className="mt-1 space-y-2 text-sm">
+        <details className="mt-3">
+          <summary className="cursor-pointer font-bold">Consolidações e reavaliações ({eventos.length})</summary>
+          <ul className="mt-2 space-y-2 text-sm">
             {eventos.map((e) => (
-              <li key={e.id} className="rounded-lg border border-line p-2">
-                <b>{e.tipo === 'CONSOLIDACAO' ? 'Consolidação' : 'Reavaliação'}</b> de <b>{e.skillId}</b> ({e.texto}) —{' '}
-                {SIMB[e.nivel]} {HAB[e.nivel]} no {e.bimestre}º bimestre de {e.anoLetivo}
-                {e.origemAnoLetivo && `, lacuna de ${e.origemAnoLetivo}`}. Por {e.autorNome} em {data(e.em)}.
-                <span className="block text-muted">Evidência: {e.justificativa}</span>
+              <li key={e.id} className="rounded-xl border border-line p-2">
+                <b>{e.tipo === 'CONSOLIDACAO' ? 'Consolidada' : `Reavaliada: ${HAB[e.nivel]}`}</b> · {e.texto}
+                <span className="block text-muted">{e.bimestre}º bim. {e.anoLetivo} · {e.autorNome}</span>
+                <span className="block text-muted">{e.justificativa}</span>
               </li>
             ))}
           </ul>
-        </>
+        </details>
+      )}
+      {itens.length > 0 && (
+        <details className="mt-3 text-sm text-muted">
+          <summary className="cursor-pointer">Como funciona?</summary>
+          <p className="mt-1">Habilidades dos anos já encerrados que não chegaram a "Consolidada". Vale a última avaliação. "Sem avaliação" conta como pendência, mas não é nota.</p>
+        </details>
       )}
     </div>
   );
@@ -109,8 +104,8 @@ function Lacunas({ f }: { f: FichaDto }) {
 function CelulaNivel({ c, escrita }: { c: Celula | null; escrita?: boolean }) {
   if (!c) return <span className="text-muted" title="Sem avaliação">—<span className="sr-only"> Sem avaliação</span></span>;
   if (c.nivel === null) {
-    // tarefa 3.4: resposta limpa — hoje é "Sem avaliação", mas a versão anterior fica em "Correções neste ano"
-    return <span className="text-muted" title="Sem avaliação (resposta limpa; veja as correções)">— ✎<span className="sr-only"> Sem avaliação, resposta limpa</span></span>;
+    // tarefa 3.4: resposta limpa — hoje é "Sem avaliação", mas a versão anterior fica em "Correções"
+    return <span className="text-muted" title="Sem avaliação (resposta limpa)">— ✎<span className="sr-only"> Sem avaliação, resposta limpa</span></span>;
   }
   const rotulo = escrita ? ESCRITA[c.nivel] : HAB[c.nivel];
   return (
@@ -124,17 +119,19 @@ function CelulaNivel({ c, escrita }: { c: Celula | null; escrita?: boolean }) {
 function Ano({ ano }: { ano: FichaDto['linhaDoTempo'][number] }) {
   const { contexto } = ano;
   const correcoes = [
-    ...ano.habilidades.flatMap((h) => h.porBimestre.map((c, i) => ({ c, rotulo: h.id, bim: i + 1, nomes: HAB }))),
+    ...ano.habilidades.flatMap((h) => h.porBimestre.map((c, i) => ({ c, rotulo: h.texto, bim: i + 1, nomes: HAB }))),
     ...ano.escrita.map((c, i) => ({ c, rotulo: 'Escrita', bim: i + 1, nomes: ESCRITA })),
   ].filter((x) => x.c && x.c.revisoes.length);
+  const titular = ano.professoras.filter((p) => p.tipo === 'TITULAR').map((p) => p.nome);
+  const subst = ano.professoras.filter((p) => p.tipo === 'SUBSTITUTA').map((p) => p.nome);
 
   return (
-    <article className="card mt-6">
+    <article className="card mt-4">
       <h3 className="text-lg font-extrabold">
-        {contexto.anoLetivo} · {contexto.etapa}º ano {ano.anoEncerrado && <span className="text-sm font-semibold text-muted">· ano encerrado</span>}
+        {contexto.anoLetivo} · {contexto.etapa}º ano {ano.anoEncerrado && <span className="chip chip-cinza ml-1 text-xs">encerrado</span>}
       </h3>
       <p className="text-sm text-muted">
-        Turma {ano.turmas.map((t) => t.nome).join(' → ')} · {ano.professoras.map((p) => `${p.nome} (${p.tipo === 'TITULAR' ? 'titular' : 'substituta'})`).join(', ')} · catálogo {contexto.catalogo}
+        Turma {ano.turmas.map((t) => t.nome).join(' → ')}{titular.length > 0 && ` · ${titular.join(', ')}`}{subst.length > 0 && ` · substituta: ${subst.join(', ')}`}
       </p>
       <div className="mt-3 overflow-x-auto">
         <table className="w-full min-w-[560px] text-left text-sm">
@@ -145,16 +142,16 @@ function Ano({ ano }: { ano: FichaDto['linhaDoTempo'][number] }) {
               {ano.periodos.map((p) => (
                 <th key={p.bimestre} className="px-1 text-center">{p.bimestre}º{p.situacao === 'FUTURO' && <span className="block text-xs">ainda não</span>}</th>
               ))}
-              <th className="pl-2 text-center">Resumo anual</th>
+              <th className="pl-2 text-center" title="Última avaliação do ano">Final</th>
             </tr>
           </thead>
           <tbody>
             {ano.habilidades.map((h) => (
               <tr key={h.id} className="border-b border-line">
-                <td className="py-1 pr-2"><b>{h.id}</b> <span className="text-muted">{h.texto}</span></td>
+                <td className="py-1.5 pr-2"><span className="flex items-center gap-2"><Disciplina area={h.area} /><span>{h.texto}</span></span></td>
                 {h.porBimestre.map((c, i) => <td key={i} className="px-1 text-center text-base"><CelulaNivel c={c} /></td>)}
                 <td className="pl-2 text-center font-bold">
-                  {h.resumoAnual ? <>{SIMB[h.resumoAnual.nivel]} <span className="sr-only">{HAB[h.resumoAnual.nivel]}</span><span className="text-xs text-muted">({h.resumoAnual.bimestre}º)</span></> : '—'}
+                  {h.resumoAnual ? <>{SIMB[h.resumoAnual.nivel]}<span className="sr-only">{HAB[h.resumoAnual.nivel]}</span></> : '—'}
                 </td>
               </tr>
             ))}
@@ -166,28 +163,26 @@ function Ano({ ano }: { ano: FichaDto['linhaDoTempo'][number] }) {
           </tbody>
         </table>
       </div>
-      <p className="mt-2 text-xs text-muted">○ Não consolidada · ◐ Em desenvolvimento · ● Consolidada · — Sem avaliação · ✎ corrigida. O resumo anual usa a última marcação do ano; não é o 4º bimestre.</p>
 
       {correcoes.length > 0 && (
         <details className="mt-3">
-          <summary className="cursor-pointer font-bold">Correções neste ano ({correcoes.length})</summary>
+          <summary className="cursor-pointer font-bold">Correções ({correcoes.length})</summary>
           <ul className="mt-1 space-y-1 text-sm">
             {correcoes.flatMap((x) => x.c!.revisoes.map((r, k) => (
               <li key={`${x.rotulo}-${x.bim}-${k}`}>
-                <b>{x.rotulo}</b>, {x.bim}º bimestre: de <i>{r.nivelAnterior === null ? 'sem avaliação' : x.nomes[r.nivelAnterior]}</i> para{' '}
-                <i>{r.nivelNovo === null ? 'sem avaliação' : x.nomes[r.nivelNovo]}</i>, por {r.autorNome} em {data(r.em)}. Justificativa: {r.justificativa}
+                <b>{x.rotulo}</b> · {x.bim}º bim.: {r.nivelAnterior === null ? 'sem avaliação' : x.nomes[r.nivelAnterior]} → {r.nivelNovo === null ? 'sem avaliação' : x.nomes[r.nivelNovo]}
+                <span className="text-muted"> · {r.autorNome}, {data(r.em)} · “{r.justificativa}”</span>
               </li>
             )))}
           </ul>
         </details>
       )}
 
-      <h4 className="mt-4 font-extrabold">Observações</h4>
       {ano.ultimaObservacao ? (
-        <p className="mt-1 text-sm">
-          <span className="text-muted">Última ({ano.ultimaObservacao.bimestre}º bim., {ano.ultimaObservacao.autorNome}):</span> {ano.ultimaObservacao.texto}
+        <p className="mt-3 text-sm">
+          <b>Observação</b> <span className="text-muted">({ano.ultimaObservacao.bimestre}º bim., {ano.ultimaObservacao.autorNome}):</span> {ano.ultimaObservacao.texto}
         </p>
-      ) : <p className="mt-1 text-sm text-muted">Nenhuma observação neste ano.</p>}
+      ) : <p className="mt-3 text-sm text-muted">Sem observações.</p>}
       {ano.observacoes.length > 1 && (
         <details className="mt-1 text-sm">
           <summary className="cursor-pointer">Todas as observações ({ano.observacoes.length})</summary>

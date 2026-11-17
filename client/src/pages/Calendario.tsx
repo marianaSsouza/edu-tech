@@ -6,6 +6,7 @@ import { IconeCalendario, IconeSeta } from '../components/Icones';
 
 type Periodo = { bimestre: number; inicio: string; fim: string; estado: 'ABERTO' | 'FECHADO' | 'REABERTO'; situacao: Situacao; justificativa: string | null };
 interface Visao {
+  podeGerenciar: boolean;
   anos: Array<{
     anoLetivo: number; anoFechado: boolean; jaEncerradoAlgumaVez: boolean;
     periodos: Periodo[];
@@ -42,6 +43,7 @@ export default function Calendario() {
   const [acao, setAcao] = useState<Acao | null>(null);
 
   const anos = q.data?.anos ?? [];
+  const gerencia = !!q.data?.podeGerenciar; // professora: só consulta
   const a = anos.find((x) => x.anoLetivo === anoSel) ?? anos.find((x) => x.anoLetivo === Number(hoje.slice(0, 4))) ?? anos[0];
   const atual = a?.periodos.find((p) => p.inicio <= hoje && hoje <= p.fim);
   const bimDoMes = a?.periodos.find((p) => {
@@ -57,8 +59,8 @@ export default function Calendario() {
 
   const prazos = (a?.periodos ?? [])
     .flatMap((p) => [
-      { data: p.inicio, titulo: `Início do ${p.bimestre}º bimestre`, sub: 'Registros do bimestre passam a valer' },
-      { data: p.fim, titulo: `Fim do ${p.bimestre}º bimestre`, sub: 'Depois a coordenação fecha: avaliações ficam só para leitura' },
+      { data: p.inicio, titulo: `Início do ${p.bimestre}º bimestre`, sub: 'Registros liberados' },
+      { data: p.fim, titulo: `Fim do ${p.bimestre}º bimestre`, sub: 'Depois do fechamento, só leitura' },
     ])
     .filter((x) => x.data >= hoje)
     .slice(0, 3);
@@ -75,7 +77,7 @@ export default function Calendario() {
         </div>
         {atual && <span className={`chip px-4 py-2 text-base ${aberto(atual) ? 'chip-menta' : 'chip-cinza'}`}>Período {aberto(atual) ? 'aberto' : 'fechado'}</span>}
       </div>
-      <p className="mt-3 text-muted">Um calendário para a escola toda. Fechar um bimestre bloqueia avaliações, observações e eventos de lacunas daquele período, para todas as turmas.</p>
+      <p className="mt-3 text-muted">{gerencia ? 'Bimestre fechado = registros bloqueados para todas as turmas.' : 'Datas dos bimestres da escola. Bimestre fechado não recebe registros.'}</p>
 
       {q.isLoading && <Carregando />}
       {q.error && <ErroCaixa erro={q.error} tentarDeNovo={() => q.refetch()} />}
@@ -122,7 +124,7 @@ export default function Calendario() {
                           </div>
                           <span className={`chip ${aberto(p) ? 'chip-menta' : 'chip-cinza'}`}>{estadoTexto(p)}</span>
                         </div>
-                        {p.situacao !== 'FUTURO' && (
+                        {gerencia && p.situacao !== 'FUTURO' && (
                           <button type="button" className="btn-sec mt-3 px-3 py-1 text-sm"
                             onClick={() => setAcao({ tipo: p.estado === 'FECHADO' ? 'reabrir' : 'fechar', ano: a.anoLetivo, bimestre: p.bimestre })}>
                             {p.estado === 'FECHADO' ? 'Reabrir' : 'Fechar'} o {p.bimestre}º bimestre
@@ -161,9 +163,11 @@ export default function Calendario() {
                   {atual.bimestre}º bimestre termina {diasEntre(hoje, atual.fim) === 0 ? 'hoje' : `em ${diasEntre(hoje, atual.fim)} ${diasEntre(hoje, atual.fim) === 1 ? 'dia' : 'dias'}`}
                 </span>
               ) : <span className="text-muted">{a.anoFechado ? `Ano ${a.anoLetivo} fechado.` : 'Nenhum bimestre aberto hoje.'}</span>}
-              <button type="button" className="btn px-6 py-3" onClick={() => setAcao({ tipo: a.anoFechado ? 'reabrir' : 'fechar', ano: a.anoLetivo, bimestre: null })}>
-                {a.anoFechado ? 'Reabrir' : 'Fechar'} o ano {a.anoLetivo}
-              </button>
+              {gerencia && (
+                <button type="button" className="btn px-6 py-3" onClick={() => setAcao({ tipo: a.anoFechado ? 'reabrir' : 'fechar', ano: a.anoLetivo, bimestre: null })}>
+                  {a.anoFechado ? 'Reabrir' : 'Fechar'} o ano {a.anoLetivo}
+                </button>
+              )}
             </div>
             {acao?.ano === a.anoLetivo && acao.bimestre === null && <FormAcao acao={acao} fechar={() => setAcao(null)} />}
             {a.trilha.length > 0 && (

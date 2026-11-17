@@ -20,8 +20,9 @@ import { PolicyService } from '../acesso/policy.service';
 export class CalendarioService {
   constructor(private readonly ds: DataSource, private readonly policy: PolicyService, private readonly relogio: Relogio) {}
 
+  /** Todos consultam datas e situação dos bimestres; só a coordenação vê a trilha e age (fechar/reabrir). */
   async visao(u: User) {
-    this.exigirCoordenacao(u);
+    const coord = this.policy.ehCoordenacao(u);
     const hoje = this.relogio.hoje();
     const periodos = await this.ds.getRepository(Period).find({ order: { anoLetivo: 'DESC', bimestre: 'ASC' } });
     const eventos = await this.ds.getRepository(CalendarEvent).find({ order: { id: 'DESC' } });
@@ -34,15 +35,15 @@ export class CalendarioService {
         anoFechado: await this.anoFechado(this.ds.manager, ano),
         jaEncerradoAlgumaVez: await this.ds.getRepository(YearClosure).existsBy({ anoLetivo: ano }),
         periodos: periodos.filter((p) => p.anoLetivo === ano).map((p) => ({
-          bimestre: p.bimestre, inicio: p.inicio, fim: p.fim, estado: p.estado, situacao: situacaoPeriodo(p, hoje), justificativa: p.justificativa,
+          bimestre: p.bimestre, inicio: p.inicio, fim: p.fim, estado: p.estado, situacao: situacaoPeriodo(p, hoje), justificativa: coord ? p.justificativa : null,
         })),
-        trilha: eventos.filter((e) => e.anoLetivo === ano).map((e) => ({
+        trilha: eventos.filter((e) => coord && e.anoLetivo === ano).map((e) => ({
           id: e.id, tipo: e.tipo, bimestre: e.bimestre, justificativa: e.justificativa,
           autorNome: usuarios.find((x) => x.id === e.autorId)?.nome ?? '—', em: new Date(e.criadoEm).toISOString(),
         })),
       });
     }
-    return { anos: resultado };
+    return { podeGerenciar: coord, anos: resultado };
   }
 
   /** CA-13.2: antes de fechar, a coordenação vê o que está sem avaliação em cada turma. */
