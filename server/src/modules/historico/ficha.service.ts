@@ -8,7 +8,7 @@ import { naoEncontrado } from '../../common/erros';
 import { Relogio } from '../../common/relogio';
 import { bimestreSugerido, situacaoPeriodo } from '../../domain/periodo';
 import { calcularLacunas, Marcacao, resumoAnual, ultimaObservacao } from '../../domain/lacunas';
-import { avaliarAtencao, LIMITE_LACUNAS } from '../../domain/atencao';
+import { avaliarAtencao, LIMITE_LACUNAS, manualAtivaEm } from '../../domain/atencao';
 import { PolicyService } from '../acesso/policy.service';
 
 interface Revisao { versaoAnterior: number; nivelAnterior: number | null; nivelNovo: number | null; autorNome: string; justificativa: string; em: string }
@@ -150,7 +150,7 @@ export class FichaService {
       escrita: escritaRef ? escritaRef.nivel : null,
       etapa: atual.etapa,
       bimestre: referencia.bimestre,
-      manuaisAtivas: manuais.filter((x) => x.situacao === 'ABERTA').length,
+      manuaisAtivas: manuais.filter((x) => manualAtivaEm(x, eventosAtencao.filter((e) => e.attentionId === x.id), referencia)).length,
     });
     const podeAgir = !this.policy.ehCoordenacao(u) && (await this.policy.temVinculoAtualComAluno(u.id, studentId));
     const escritaLacuna = await this.policy.avaliarEscrita(u, atual, referencia.bimestre);
@@ -164,7 +164,7 @@ export class FichaService {
         limiteLacunas: LIMITE_LACUNAS,
         podeAgir,
         manuais: manuais.map((x) => ({
-          id: x.id, justificativa: x.justificativa, situacao: x.situacao, autorNome: nome(x.autorId),
+          id: x.id, justificativa: x.justificativa, situacao: x.situacao, autorNome: nome(x.autorId), minha: x.autorId === u.id,
           anoLetivo: x.anoLetivo, bimestre: x.bimestre, em: new Date(x.criadoEm).toISOString(),
           eventos: eventosAtencao.filter((e) => e.attentionId === x.id).map((e) => ({
             id: e.id, tipo: e.tipo, texto: e.texto, autorNome: nome(e.autorId), em: new Date(e.criadoEm).toISOString(),

@@ -42,10 +42,30 @@ export class AtencaoService {
       await this.exigirAcao(u, a.studentId, m);
       if (tipo === 'ENCERRAMENTO' && a.situacao !== 'ABERTA') throw new ErroApi(409, 'CONFLITO_VERSAO', 'Esta atenção já está encerrada. Atualize a tela.');
       if (tipo === 'REABERTURA' && a.situacao !== 'ENCERRADA') throw new ErroApi(409, 'CONFLITO_VERSAO', 'Esta atenção já está aberta. Atualize a tela.');
-      await m.insert(AttentionEvent, { attentionId, tipo, texto, autorId: u.id });
+      const ref = await this.referenciaAtual(m, a.studentId); // tarefa 5.3: período da ação, para o corte histórico
+      await m.insert(AttentionEvent, { attentionId, tipo, texto, autorId: u.id, anoLetivo: ref.anoLetivo, bimestre: ref.bimestre });
       if (tipo !== 'COMENTARIO') {
         await m.update(ManualAttention, { id: attentionId }, { situacao: tipo === 'ENCERRAMENTO' ? 'ENCERRADA' : 'ABERTA' });
       }
+      return { ok: true };
+    }));
+  }
+
+  /**
+   * Tarefa 5.2 (spec "Abertura e autoria de atenção manual"): só a AUTORA, com vínculo atual, corrige o texto
+   * original. A versão anterior fica preservada num evento CORRECAO (texto anterior, quem corrigiu e quando).
+   */
+  async corrigirTexto(u: User, attentionId: number, novoTexto: unknown) {
+    const texto = this.texto(novoTexto, 'Escreva o texto corrigido.');
+    return exclusivo(() => this.ds.transaction(async (m) => {
+      const a = await m.findOneBy(ManualAttention, { id: attentionId });
+      if (!a) throw naoEncontrado('Atenção não encontrada.');
+      await this.exigirAcao(u, a.studentId, m);
+      if (a.autorId !== u.id) throw new ErroApi(403, 'AUTORIA', 'Só a autora pode corrigir o texto original. Você pode registrar um comentário.');
+      if (a.justificativa === texto) throw dadosInvalidos('O texto corrigido é igual ao atual.');
+      const ref = await this.referenciaAtual(m, a.studentId);
+      await m.insert(AttentionEvent, { attentionId, tipo: 'CORRECAO', texto: a.justificativa, autorId: u.id, anoLetivo: ref.anoLetivo, bimestre: ref.bimestre });
+      await m.update(ManualAttention, { id: attentionId }, { justificativa: texto });
       return { ok: true };
     }));
   }
@@ -77,6 +97,11 @@ export class AtencaoController {
   @Post('alunos/:studentId/atencoes')
   abrir(@UsuarioAtual() u: User, @Param('studentId', ParseIntPipe) studentId: number, @Body() body: { justificativa?: unknown }) {
     return this.atencao.abrir(u, studentId, body?.justificativa);
+  }
+
+  @Post('atencoes/:id/correcao')
+  corrigir(@UsuarioAtual() u: User, @Param('id', ParseIntPipe) id: number, @Body() body: { texto?: unknown }) {
+    return this.atencao.corrigirTexto(u, id, body?.texto);
   }
 
   @Post('atencoes/:id/eventos')

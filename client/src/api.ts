@@ -67,8 +67,8 @@ export interface Celula { nivel: number | null; autorNome: string; revisoes: Rev
 export type SituacaoLacuna = 'NAO_CONSOLIDADA' | 'EM_DESENVOLVIMENTO' | 'SEM_AVALIACAO' | 'CONSOLIDADA';
 
 export interface AtencaoManual {
-  id: number; justificativa: string; situacao: 'ABERTA' | 'ENCERRADA'; autorNome: string; anoLetivo: number; bimestre: number; em: string;
-  eventos: Array<{ id: number; tipo: 'COMENTARIO' | 'ENCERRAMENTO' | 'REABERTURA'; texto: string; autorNome: string; em: string }>;
+  id: number; justificativa: string; situacao: 'ABERTA' | 'ENCERRADA'; autorNome: string; anoLetivo: number; bimestre: number; em: string; minha: boolean;
+  eventos: Array<{ id: number; tipo: 'COMENTARIO' | 'ENCERRAMENTO' | 'REABERTURA' | 'CORRECAO'; texto: string; autorNome: string; em: string }>;
 }
 
 export interface FichaDto {

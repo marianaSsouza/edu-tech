@@ -18,7 +18,7 @@ npm test
 npm run dev
 ```
 
-- O `npm test` deve terminar com `Tests: 162 passed`. Deixe esse terminal visível: ele é a prova automática.
+- O `npm test` deve terminar com `Tests: 168 passed`. Deixe esse terminal visível: ele é a prova automática.
 - Abra http://localhost:5173 numa janela e deixe a tela de login pronta.
 - Senha de todas as contas: `demo1234`.
 - A base foi pensada para novembro de 2026: o 3º bimestre tem dados completos e o 4º (em andamento) está vazio.

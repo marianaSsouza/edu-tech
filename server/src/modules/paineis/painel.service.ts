@@ -1,13 +1,13 @@
 import { Controller, Get, Injectable, Module, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 import {
-  CatalogSkill, Enrollment, ManualAttention, PedagogicalContext, PedagogicalEvent, Period, SchoolClass,
+  AttentionEvent, CatalogSkill, Enrollment, ManualAttention, PedagogicalContext, PedagogicalEvent, Period, SchoolClass,
   SkillResponse, Student, User, WritingResponse, YearClosure,
 } from '../../database/entities';
 import { UsuarioAtual } from '../../common/auth';
 import { dadosInvalidos, naoEncontrado } from '../../common/erros';
 import { Relogio } from '../../common/relogio';
-import { avaliarAtencao, LIMITE_LACUNAS } from '../../domain/atencao';
+import { avaliarAtencao, LIMITE_LACUNAS, manualAtivaEm } from '../../domain/atencao';
 import { calcularLacunas, Marcacao } from '../../domain/lacunas';
 import { agregadosVisiveis, agregar, AlunoPainel, evolucaoEscrita, GRUPO_MINIMO } from '../../domain/painel';
 import { bimestreSugerido, situacaoPeriodo } from '../../domain/periodo';
@@ -107,6 +107,7 @@ export class PainelService {
       ds.getRepository(YearClosure).find(),
       ds.getRepository(ManualAttention).findBy({ studentId: In(studentIds.concat(-1)) }),
     ]);
+    const eventosAtencao = await ds.getRepository(AttentionEvent).findBy({ attentionId: In(manuais.map((x) => x.id).concat(-1)) });
     const anoDoCtx = new Map(todosCtx.map((c) => [c.id, c.anoLetivo]));
     const skillsDe = (c: PedagogicalContext) => skills.filter((s) => s.etapa === c.etapa && s.catalogVersion === c.catalogVersion).map((s) => s.id);
 
@@ -132,9 +133,9 @@ export class PainelService {
       const { itens, decomposicao } = calcularLacunas({ contextosElegiveis: elegiveis, marcacoes, referencia: ref });
 
       const escrita = escritas.find((e) => e.contextId === c.id)?.nivel ?? null;
-      // atenção manual aberta até a referência (não aplica ao passado uma atenção aberta depois, CR-23)
-      const manuaisAtivas = manuais.filter((x) => x.studentId === c.studentId && x.situacao === 'ABERTA' &&
-        (x.anoLetivo < ref.anoLetivo || (x.anoLetivo === ref.anoLetivo && x.bimestre <= ref.bimestre))).length;
+      // atenção manual ativa NA referência: aberta até ela e não encerrada até ela (CR-23, tarefa 5.3)
+      const manuaisAtivas = manuais.filter((x) => x.studentId === c.studentId &&
+        manualAtivaEm(x, eventosAtencao.filter((e) => e.attentionId === x.id), ref)).length;
       const atencao = avaliarAtencao({ lacunasPendentes: decomposicao.total, escrita, etapa: c.etapa, bimestre: ref.bimestre, manuaisAtivas });
 
       const skillIds = skillsDe(c);

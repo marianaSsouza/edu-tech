@@ -34,8 +34,8 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 ## 5. Atenção pedagógica — P0
 
 - [x] 5.1 Implementar matriz de escrita e motivos automáticos com limite fixo 2; verificar CA-08.1–08.7 e CR-08–10/14–17, incluindo igualdade ao mínimo, ausência e múltiplos motivos.
-- [ ] 5.2 Implementar abertura, comentários, correção própria, encerramento e reabertura manual; verificar CA-09.1–09.5, texto de 1–2.000 caracteres, sucessora autorizada e negação à coordenação. _(Parcial: abrir, comentar, encerrar e reabrir feitos; falta a autora corrigir o texto original.)_
-- [ ] 5.3 Implementar preservação manual entre anos e ações atuais após fechamento; verificar corte histórico de CR-23, melhora automática sem encerramento manual e aviso separado de histórico indisponível; documentar esses estados. _(Parcial: preservação e ações após fechamento feitas; falta manter a atenção ativa nas consultas anteriores ao encerramento.)_
+- [x] 5.2 Implementar abertura, comentários, correção própria, encerramento e reabertura manual; verificar CA-09.1–09.5, texto de 1–2.000 caracteres, sucessora autorizada e negação à coordenação. _(Concluída em 17/11: correção do texto original pela autora, com versão anterior preservada.)_
+- [x] 5.3 Implementar preservação manual entre anos e ações atuais após fechamento; verificar corte histórico de CR-23, melhora automática sem encerramento manual e aviso separado de histórico indisponível; documentar esses estados. _(Concluída em 17/11: corte histórico da atenção encerrada, `manualAtivaEm`.)_
 
 ## 6. Consulta operacional e indicadores essenciais — P0
 

@@ -2,6 +2,8 @@ import { criarBaseTeste } from '../../test-utils/base-teste';
 import { PolicyService } from '../acesso/policy.service';
 import { AvaliacaoService } from '../avaliacao/avaliacao.service';
 import { FichaService } from '../historico/ficha.service';
+import { PainelService } from '../paineis/painel.service';
+import { AttentionEvent, ManualAttention, SchoolClass } from '../../database/entities';
 import { AtencaoService } from './atencao.service';
 
 type Base = Awaited<ReturnType<typeof criarBaseTeste>>;
@@ -79,5 +81,36 @@ describe('atenção pedagógica — integração', () => {
     await expect(at.registrarEvento(b.coord, manual.id, { tipo: 'ENCERRAMENTO', texto: 'x' })).rejects.toMatchObject({ status: 403 });
     const f = await ficha.ficha(b.coord, (await b.aluno('Davi')).id);
     expect(f.atencao.podeAgir).toBe(false);
+  });
+
+  it('tarefa 5.2: só a autora corrige o texto original; a versão anterior fica preservada', async () => {
+    const davi = await b.aluno('Davi');
+    const manual = await b.ds.getRepository(ManualAttention).findOneByOrFail({ studentId: davi.id });
+    const original = manual.justificativa;
+    await expect(at.corrigirTexto(b.debora, manual.id, 'Outro texto.')).rejects.toMatchObject({ status: 403, codigo: 'AUTORIA' });
+    await expect(at.corrigirTexto(b.coord, manual.id, 'Outro texto.')).rejects.toMatchObject({ status: 403 });
+    await expect(at.corrigirTexto(b.beatriz, manual.id, '   ')).rejects.toMatchObject({ status: 422 });
+
+    await at.corrigirTexto(b.beatriz, manual.id, 'Acompanhar a concentração na leitura e na escrita; reavaliar no 4º bimestre.');
+    const a = (await ficha.ficha(b.beatriz, davi.id)).atencao.manuais[0];
+    expect(a).toMatchObject({ justificativa: 'Acompanhar a concentração na leitura e na escrita; reavaliar no 4º bimestre.', autorNome: 'Profª Beatriz', minha: true });
+    expect(a.eventos.at(-1)).toMatchObject({ tipo: 'CORRECAO', texto: original, autorNome: 'Profª Beatriz' });
+    expect((await ficha.ficha(b.debora, davi.id)).atencao.manuais[0].minha).toBe(false);
+  });
+
+  it('tarefa 5.3 (CR-23): encerrada no 4º bimestre, a atenção manual continua valendo na consulta do 3º', async () => {
+    const painel = new PainelService(b.ds, new PolicyService(b.ds, b.relogio), b.relogio);
+    const t2A = await b.ds.getRepository(SchoolClass).findOneByOrFail({ nome: '2º A', anoLetivo: 2026 });
+    const davi = await b.aluno('Davi');
+    const manual = await b.ds.getRepository(ManualAttention).findOneByOrFail({ studentId: davi.id }); // aberta no 3º bimestre
+    const motivos = async (bim: number) => (await painel.turma(b.coord, t2A.id, bim)).alunos.find((x) => x.id === davi.id)!.atencao.motivos;
+    expect(await motivos(3)).toContain('MANUAL');
+
+    await at.registrarEvento(b.beatriz, manual.id, { tipo: 'ENCERRAMENTO', texto: 'Concentração melhorou com as pausas.' });
+    expect(await b.ds.getRepository(AttentionEvent).findOneBy({ attentionId: manual.id, tipo: 'ENCERRAMENTO' })).toMatchObject({ anoLetivo: 2026, bimestre: 4 });
+    expect(await motivos(3)).toContain('MANUAL');     // consulta anterior ao encerramento
+    expect(await motivos(4)).not.toContain('MANUAL'); // a partir do encerramento
+    expect((await atencaoDe('Davi')).motivos).not.toContain('MANUAL');
+    expect(await motivos(2)).not.toContain('MANUAL'); // aberta no 3º: não vale para trás
   });
 });

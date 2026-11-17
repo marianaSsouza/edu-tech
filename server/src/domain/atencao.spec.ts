@@ -1,4 +1,4 @@
-import { avaliarAtencao, minimoEscrita, textoAtencaoValido } from './atencao';
+import { avaliarAtencao, manualAtivaEm, minimoEscrita, textoAtencaoValido } from './atencao';
 
 const base = { etapa: 2, bimestre: 3, manuaisAtivas: 0 };
 const ALFABETICO = 3;
@@ -45,5 +45,27 @@ describe('atenção automática e manual (RN08, RF-08/09)', () => {
     expect(textoAtencaoValido('   ')).toBe(false);
     expect(textoAtencaoValido('a'.repeat(2000))).toBe(true);
     expect(textoAtencaoValido('a'.repeat(2001))).toBe(false);
+  });
+});
+
+describe('manualAtivaEm — corte histórico da atenção manual (tarefa 5.3, CR-23)', () => {
+  const aberta = { anoLetivo: 2026, bimestre: 3 };
+  const enc = { id: 1, tipo: 'ENCERRAMENTO', anoLetivo: 2026, bimestre: 4 };
+  const reab = { id: 2, tipo: 'REABERTURA', anoLetivo: 2027, bimestre: 1 };
+  it('aberta no 3º bimestre não vale para o 2º (não se aplica ao passado)', () => {
+    expect(manualAtivaEm(aberta, [], { anoLetivo: 2026, bimestre: 2 })).toBe(false);
+    expect(manualAtivaEm(aberta, [], { anoLetivo: 2026, bimestre: 3 })).toBe(true);
+  });
+  it('encerrada no 4º continua ativa na consulta do 3º; no 4º já está encerrada', () => {
+    expect(manualAtivaEm(aberta, [enc], { anoLetivo: 2026, bimestre: 3 })).toBe(true);
+    expect(manualAtivaEm(aberta, [enc], { anoLetivo: 2026, bimestre: 4 })).toBe(false);
+  });
+  it('reaberta depois vale a partir da reabertura, preservando o encerramento anterior', () => {
+    expect(manualAtivaEm(aberta, [enc, reab], { anoLetivo: 2026, bimestre: 4 })).toBe(false);
+    expect(manualAtivaEm(aberta, [enc, reab], { anoLetivo: 2027, bimestre: 1 })).toBe(true);
+  });
+  it('comentário não muda a situação; evento antigo sem período conta como aplicado', () => {
+    expect(manualAtivaEm(aberta, [{ id: 1, tipo: 'COMENTARIO', anoLetivo: 2026, bimestre: 3 }], { anoLetivo: 2026, bimestre: 3 })).toBe(true);
+    expect(manualAtivaEm(aberta, [{ id: 1, tipo: 'ENCERRAMENTO', anoLetivo: null, bimestre: null }], { anoLetivo: 2026, bimestre: 3 })).toBe(false);
   });
 });

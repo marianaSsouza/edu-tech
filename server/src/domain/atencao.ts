@@ -60,3 +60,24 @@ export const LIMITE_TEXTO_ATENCAO = 2000;
 export function textoAtencaoValido(t: unknown): t is string {
   return typeof t === 'string' && t.trim().length > 0 && Array.from(t.trim()).length <= LIMITE_TEXTO_ATENCAO;
 }
+
+/**
+ * Tarefa 5.3 (CR-23, spec atencao-pedagogica "Ciclo de vida manual independente"): a atenção manual está ativa
+ * numa referência (ano, bimestre) se foi aberta até ela e o último encerramento/reabertura até ela não a encerrou.
+ * Encerrar hoje não apaga a atenção das consultas anteriores; abrir hoje não a aplica ao passado.
+ * Evento sem período (registros antigos) é tratado como já aplicado.
+ */
+export interface ManualParaCorte { anoLetivo: number; bimestre: number }
+export interface EventoParaCorte { id: number; tipo: string; anoLetivo: number | null; bimestre: number | null }
+const chave = (ano: number, bim: number) => ano * 10 + bim;
+export function manualAtivaEm(a: ManualParaCorte, eventos: EventoParaCorte[], ref: { anoLetivo: number; bimestre: number }): boolean {
+  const r = chave(ref.anoLetivo, ref.bimestre);
+  if (chave(a.anoLetivo, a.bimestre) > r) return false;
+  let ativa = true;
+  for (const e of [...eventos].sort((x, y) => x.id - y.id)) {
+    if (e.tipo !== 'ENCERRAMENTO' && e.tipo !== 'REABERTURA') continue;
+    if (e.anoLetivo !== null && e.bimestre !== null && chave(e.anoLetivo, e.bimestre) > r) continue;
+    ativa = e.tipo === 'REABERTURA';
+  }
+  return ativa;
+}

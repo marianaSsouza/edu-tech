@@ -17,8 +17,12 @@ export class ManualAttention {
 export class AttentionEvent {
   @PrimaryGeneratedColumn() id: number;
   @Column({ type: 'integer' }) attentionId: number;
-  @Column({ type: 'varchar' }) tipo: 'COMENTARIO' | 'ENCERRAMENTO' | 'REABERTURA';
+  @Column({ type: 'varchar' }) tipo: 'COMENTARIO' | 'ENCERRAMENTO' | 'REABERTURA' | 'CORRECAO';
+  /** CORRECAO: guarda o texto ANTERIOR (a revisão preservada); nos demais, o texto da ação. */
   @Column({ type: 'text' }) texto: string;
   @Column({ type: 'integer' }) autorId: number;
+  /** Tarefa 5.3: período em que a ação aconteceu (corte histórico). Nulo em eventos antigos. */
+  @Column({ type: 'integer', nullable: true }) anoLetivo: number | null;
+  @Column({ type: 'integer', nullable: true }) bimestre: number | null;
   @CreateDateColumn() criadoEm: Date;
 }

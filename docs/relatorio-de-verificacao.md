@@ -3,7 +3,7 @@
 Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
 - **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
-- **Testes automáticos:** 162 de 162 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
+- **Testes automáticos:** 168 de 168 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
 - **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 a 7.4 (gestão: cadastros, vínculos, movimentações, calendário e reabertura depois da passagem de ano, com os documentos-base conciliados na v1.3), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
 
 ## Como conferir
@@ -117,10 +117,10 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | | Lacunas com escrita ausente | ✅ | `atencao.spec.ts` (domain e integração, Davi) |
 | | Histórico externo desconhecido | ⚠️ | A limitação aparece separada e não cria estado de atenção (`ficha.spec.ts`, ingressante). Falta o teste com escrita adequada. |
 | Abertura e autoria de atenção manual | Justificativa vazia | ✅ | `atencao.spec.ts` (integração): "CA-09.1–09.3 … texto vazio é rejeitado" |
-| | Motivos coexistentes | ✅ | Mesmo teste: duas atenções com IDs e autoras próprios. Falta a autora poder corrigir o texto original, que é parte do requisito. |
+| | Motivos coexistentes | ✅ | Mesmo teste: duas atenções com IDs e autoras próprios. Correção do texto original só pela autora, com a versão anterior preservada: `atencao.spec.ts`, "tarefa 5.2: só a autora corrige o texto original" (substituta e coordenação recebem 403); botão **Corrigir texto** na ficha (verificado no navegador). |
 | Ciclo de vida independente | Sucessora encerra atenção | ✅ | `atencao.spec.ts` (integração): "CA-09.5: substituta encerra com justificativa (autora original preservada)…"; verificado também no navegador |
 | | Melhora automática | ✅ | `atencao.spec.ts` (domain): "CA-09.1 / CA-09.5: manual ativa sinaliza sem critério automático" |
-| | Reabertura | ✅ | `atencao.spec.ts` (integração): reabre e preserva os eventos COMENTARIO → ENCERRAMENTO → REABERTURA |
+| | Reabertura | ✅ | `atencao.spec.ts` (integração): reabre e preserva os eventos COMENTARIO → ENCERRAMENTO → REABERTURA. Corte histórico (CR-23, tarefa 5.3): "encerrada no 4º bimestre, a atenção manual continua valendo na consulta do 3º"; regra pura `manualAtivaEm` em `domain/atencao.spec.ts`. |
 
 ## paineis-e-indicadores
 
@@ -213,8 +213,8 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.3.
-- **Parciais:** 3.6 (pré-checagem automática registrada; falta a verificação manual em dois navegadores), 5.2 (falta a correção do texto original), 5.3 (falta o corte histórico da atenção manual encerrada).
+- **Concluídas:** 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1 a 5.3, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.3.
+- **Parciais:** 3.6 (pré-checagem automática registrada; falta a verificação manual em dois navegadores).
 - **Não feitas:** 9.4 (roteiro pronto para preencher em `docs/evidencias/acessibilidade-rnf04.md`) e grupo 10, exceto o que este relatório adianta da 10.2.
 
 ## Limitações conhecidas

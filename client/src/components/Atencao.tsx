@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { api, AtencaoManual, ErroApi, FichaDto } from '../api';
 
 const ESCRITA = ['Pré-silábico', 'Silábico', 'Silábico-alfabético', 'Alfabético'];
-const TIPO = { COMENTARIO: 'Comentário', ENCERRAMENTO: 'Encerramento', REABERTURA: 'Reabertura' };
+const TIPO = { COMENTARIO: 'Comentário', ENCERRAMENTO: 'Encerramento', REABERTURA: 'Reabertura', CORRECAO: 'Texto corrigido pela autora · versão anterior' };
 const data = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
 
 /** PRO-03 / PRO-06: todos os motivos de atenção e o ciclo da atenção manual (RN08, RN09). */
@@ -72,7 +72,10 @@ function ItemManual({ m, podeAgir }: { m: AtencaoManual; podeAgir: boolean }) {
   const [texto, setTexto] = useState('');
   const { erro, enviando, executar } = useAcao();
   const enviar = async () => {
-    if (await executar(() => api(`/atencoes/${m.id}/eventos`, { method: 'POST', body: { tipo: acao, texto } }))) {
+    const pedido = acao === 'CORRECAO'
+      ? api(`/atencoes/${m.id}/correcao`, { method: 'POST', body: { texto } })
+      : api(`/atencoes/${m.id}/eventos`, { method: 'POST', body: { tipo: acao, texto } });
+    if (await executar(() => pedido)) {
       setAcao(null);
       setTexto('');
     }
@@ -97,14 +100,16 @@ function ItemManual({ m, podeAgir }: { m: AtencaoManual; podeAgir: boolean }) {
           {m.situacao === 'ABERTA'
             ? <button type="button" className="btn-sec text-sm" onClick={() => setAcao('ENCERRAMENTO')}>Encerrar</button>
             : <button type="button" className="btn-sec text-sm" onClick={() => setAcao('REABERTURA')}>Reabrir</button>}
+          {m.minha && <button type="button" className="btn-sec text-sm" onClick={() => { setAcao('CORRECAO'); setTexto(m.justificativa); }}>Corrigir texto</button>}
         </div>
       )}
       {acao && (
         <div className="mt-2">
           <label htmlFor={`acao-${m.id}`} className="font-bold">
-            {acao === 'COMENTARIO' ? 'Comentário' : acao === 'ENCERRAMENTO' ? 'Justificativa do encerramento' : 'Motivo da reabertura'}
+            {acao === 'COMENTARIO' ? 'Comentário' : acao === 'ENCERRAMENTO' ? 'Justificativa do encerramento'
+              : acao === 'CORRECAO' ? 'Texto corrigido (a versão atual fica guardada no histórico)' : 'Motivo da reabertura'}
           </label>
-          <textarea id={`acao-${m.id}`} rows={2} maxLength={2000} className="campo mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
+          <textarea id={`acao-${m.id}`} autoFocus rows={2} maxLength={2000} className="campo mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
           {erro && <p role="alert" className="mt-1 text-warn">⚠ {erro}</p>}
           <div className="mt-2 flex gap-2">
             <button type="button" className="btn text-sm" disabled={enviando || !texto.trim()} onClick={enviar}>{enviando ? 'Salvando…' : 'Salvar'}</button>
@@ -130,7 +135,7 @@ function NovaAtencao({ alunoId }: { alunoId: number }) {
   return (
     <div className="mt-3">
       <label htmlFor="nova-atencao" className="font-bold">Justificativa da nova atenção (1 a 2.000 caracteres)</label>
-      <textarea id="nova-atencao" rows={3} maxLength={2000} className="campo mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
+      <textarea id="nova-atencao" autoFocus rows={3} maxLength={2000} className="campo mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
       {erro && <p role="alert" className="mt-1 text-warn">⚠ {erro}</p>}
       <div className="mt-2 flex gap-2">
         <button type="button" className="btn text-sm" disabled={enviando || !texto.trim()} onClick={enviar}>{enviando ? 'Salvando…' : 'Abrir atenção'}</button>
