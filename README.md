@@ -20,7 +20,9 @@ npm run seed       # cria data/fio.sqlite com CAT-v1 e a base fictícia
 npm run dev        # servidor em http://localhost:3000 e cliente em http://localhost:5173
 ```
 
-Abra **http://localhost:5173** e entre com uma das contas de demonstração abaixo. Fluxo: Turmas → Alunos da turma → Avaliação (por bimestre) → Salvar.
+Abra **http://localhost:5173** e entre com uma das contas de demonstração abaixo. Fluxo da professora: Turmas → Abrir turma → Abrir (avaliação do bimestre) → Salvar; o nome do aluno abre a ficha. A coordenação também tem Painel, Calendário, Gestão e Regras no menu lateral.
+
+> **Windows:** se o PowerShell mostrar "a execução de scripts foi desabilitada neste sistema" ao rodar `npm`, use `npm.cmd` no lugar (por exemplo, `npm.cmd run dev`) ou rode os comandos no Prompt de Comando ou no Git Bash. Não é preciso mudar a política de segurança do Windows.
 
 ## Outros comandos
 
@@ -32,9 +34,9 @@ Abra **http://localhost:5173** e entre com uma das contas de demonstração abai
 | `npm run restaurar -- data/backups/<arquivo>` | volta o banco para essa cópia (com o sistema desligado); guarda o banco anterior ao lado |
 | `npm run verificar-restauracao` | ensaia a restauração em pasta separada e grava a evidência em `docs/evidencias/restauracao-rnf05.md` |
 | `npm run desempenho` | mede o RNF-06: cria uma base sintética de 500 alunos e 5 anos em `data/desempenho.sqlite` (fora do git), sobe a aplicação e cronometra 30 operações; o resultado vai para `docs/evidencias/desempenho-rnf06.md` |
-
-Cópia de segurança, restauração e reinício passo a passo: [`docs/guia-operacional.md`](docs/guia-operacional.md).
 | `npm run build` e `npm start` | compila tudo e serve cliente e API juntos em http://localhost:3000 |
+
+Cópia de segurança, restauração, reinício e fim de ano letivo passo a passo: [`docs/guia-operacional.md`](docs/guia-operacional.md).
 
 ## Contas de demonstração (senha: `demo1234`)
 

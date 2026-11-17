@@ -68,8 +68,8 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 ## 10. Integração e entrega
 
 - [ ] 10.1 Executar o roteiro PRO-01–PRO-09 e a demonstração de dois anos, incluindo ausência herdada, consolidação, atenção manual e grupo pequeno; registrar resultados integrados sem confundir simulação com persistência.
-- [ ] 10.2 Conferir rastreabilidade de RF-01–RF-14, todos os CA críticos de D12, CR-01–CR-24 e RNF-01–RNF-07; produzir relatório com resultado por ID e nenhuma declaração de aprovação sem evidência.
-- [ ] 10.3 Preparar candidata, cópia compatível de dados, guia de execução e lista de limitações; verificar execução pelo guia e classificar como parcial se P1 ou critérios obrigatórios estiverem ausentes.
+- [x] 10.2 Conferir rastreabilidade de RF-01–RF-14, todos os CA críticos de D12, CR-01–CR-24 e RNF-01–RNF-07; produzir relatório com resultado por ID e nenhuma declaração de aprovação sem evidência.
+- [x] 10.3 Preparar candidata, cópia compatível de dados, guia de execução e lista de limitações; verificar execução pelo guia e classificar como parcial se P1 ou critérios obrigatórios estiverem ausentes.
 
 ## Workflow follow-up
 

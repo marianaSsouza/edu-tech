@@ -123,6 +123,7 @@ Verificação automática: `server/src/modules/gestao/reabertura.spec.ts` (taref
 | 16/11/2026 | Restauração por `npm run restaurar` em cópia de teste | Conteúdo idêntico à cópia; banco anterior guardado | Executado manualmente; mesmo comportamento coberto por `copia-seguranca.spec.ts` |
 | 16/11/2026 | Hospedagem (tarefa 9.2) | Entrega local: condições de hospedagem não se aplicam; senhas conferidas com hash bcrypt | Seção 6 deste guia |
 | 16/11/2026 | Reabertura depois da passagem de ano (tarefa 7.4) | Matrícula do ano seguinte, herança, eventos posteriores e datas passadas preservados | `reabertura.spec.ts` (3 testes) e seção 7 deste guia |
+| 17/11/2026 | Execução pelo guia (tarefa 10.3) | Clone novo do GitHub: install, seed, test (168/168), build e start sem ajustes | Relatório de verificação, cabeçalho |
 | 16/11/2026 | Medição de desempenho (RNF-06, tarefa 9.3) | 30 de 30 operações em até 2 s | [`desempenho-rnf06.md`](evidencias/desempenho-rnf06.md) |
 
 Observação: a base de demonstração atual não tem revisões registradas (0 linhas em `revisoes_resposta`). Por isso, a preservação de versões e revisões é provada pelo teste automático, que cria uma correção antes da cópia.

@@ -62,6 +62,12 @@ describe('ficha do aluno: histórico e lacunas herdadas — integração (tarefa
     expect(f.historicoAnteriorIndisponivel).toBe(true);
     expect(f.lacunas.decomposicao.total).toBe(0);
     expect(f.atencao.estado).toBe('INCOMPLETA'); // limitação do histórico não cria estado de atenção
+
+    // cenário "Histórico externo desconhecido": escrita adequada, sem pendência e sem manual
+    await av.salvarEscrita(b.beatriz, c.id, { bimestre: 4, nivel: 3 });
+    const depois = await ficha.ficha(b.beatriz, s.id);
+    expect(depois.atencao).toMatchObject({ estado: 'SEM_SINAL', motivos: [] });
+    expect(depois.historicoAnteriorIndisponivel).toBe(true); // a limitação continua visível, separada
   });
 
   it('ano anterior reaberto continua elegível para herança (spec lacunas, "Ano anterior reaberto")', async () => {

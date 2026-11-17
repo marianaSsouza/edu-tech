@@ -1,10 +1,12 @@
 # Relatório de verificação — Fio da Aprendizagem
 
-Tarefa 10.2 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
+Tarefas 10.2 e 10.3 do `tasks.md`. Mostra, para cada spec de `openspec/changes/especificar-fio-da-aprendizagem/specs/`, se cada cenário foi implementado e qual é a evidência. Nada é declarado "feito" sem evidência.
 
-- **Data:** 16/11/2026 · **Código verificado:** branch `main`, a partir do a partir do commit da tarefa 4.3/7.3/8.2 (ver `git log`)
+- **Data:** 17/11/2026 · **Código verificado:** branch `main` (ver `git log`; o último commit é a versão candidata).
+- **Execução pelo guia (10.3):** em 17/11, um clone novo do GitHub (commit `680307e`) seguiu só o README: `npm install`, `npm run seed`, `npm test` (168 de 168), `npm run build` e `npm start` (API e telas respondendo e login funcionando), sem nenhum ajuste manual.
 - **Testes automáticos:** 168 de 168 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Classificação da entrega:** **parcial**. O P0 (grupos 1 a 6) está demonstrável. Do P1 foram feitas as tarefas 3.4 (limpeza justificada), 4.3, 7.1 a 7.4 (gestão: cadastros, vínculos, movimentações, calendário e reabertura depois da passagem de ano, com os documentos-base conciliados na v1.3), 8.2 (evolução da escrita), 8.3 e 8.4 (regras e casos) 9.1 (cópia e restauração), 9.2 (hospedagem: não se aplica, registrado) e 9.3 (desempenho); os demais itens dos grupos 7 a 10 não foram concluídos. Ver o fim do documento.
+- **Resultado:** 88 dos 93 cenários das specs com evidência (✅), 4 parciais (⚠️), nenhum não feito e 1 que não se aplica à entrega local. Rastreabilidade por RF, RNF e CR na seção "Rastreabilidade por ID".
+- **Classificação da entrega:** **parcial**, conforme a regra da tarefa 10.3 (P1 incompleto = parcial). P0 e quase todo o P1 estão implementados e verificados (gestão, calendário, indicadores, regras, cópia de segurança, desempenho). Ficam parciais: a verificação manual de acessibilidade em dois navegadores (9.4/3.6, em andamento pelo grupo), o teste automático de interface da falha de gravação (RF-13/RNF-07), a publicação de um CAT-v2 real e a execução integrada do roteiro completo (10.1). Ver "Tarefas" e "Limitações" no fim.
 
 ## Como conferir
 
@@ -32,17 +34,17 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 | Spec | Cenários | ✅ | ⚠️ | ❌ | N/A |
 | --- | --- | --- | --- | --- | --- |
-| acesso-e-permissoes | 9 | 7 | 0 | 1 | 1 |
-| avaliacao-bimestral | 12 | 9 | 3 | 0 | 0 |
+| acesso-e-permissoes | 9 | 8 | 0 | 0 | 1 |
+| avaliacao-bimestral | 12 | 10 | 2 | 0 | 0 |
 | historico-pedagogico | 6 | 6 | 0 | 0 | 0 |
 | lacunas-herdadas | 11 | 11 | 0 | 0 | 0 |
-| atencao-pedagogica | 13 | 12 | 1 | 0 | 0 |
+| atencao-pedagogica | 13 | 13 | 0 | 0 | 0 |
 | paineis-e-indicadores | 15 | 15 | 0 | 0 | 0 |
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
-| calendario-letivo | 7 | 6 | 1 | 0 | 0 |
+| calendario-letivo | 7 | 7 | 0 | 0 | 0 |
 | gestao-escolar | 8 | 8 | 0 | 0 | 0 |
 | regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **84** | **7** | **1** | **1** |
+| **Total** | **93** | **88** | **4** | **0** | **1** |
 
 ---
 
@@ -57,7 +59,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Edição pedagógica por autoria | Titular e substituta simultâneas | ✅ | `avaliacao.spec.ts`: "Beatriz salva; Débora sem versão recebe 409; com versão recebe 403 AUTORIA; mas salva uma habilidade ausente" |
 | | Correção antiga pela autora | ✅ | `calendario.spec.ts`: "correção antiga pela autora em bimestre reaberto…": a autora corrige o 1º bimestre reaberto, com revisão; outra professora recebe AUTORIA. A regra não exige a turma original (`policy.service.ts`), mas não há teste com turma de origem diferente. |
 | | Coordenação tenta editar | ✅ | `avaliacao.spec.ts`: "coordenação lê tudo, mas … salvar dá 403"; a tela fica em modo consulta, sem botão Salvar (verificado manualmente) |
-| Gestão restrita e sessão identificada | Professor tenta administrar matrícula | ❌ | Não há rotas de matrícula nem de cadastro (grupo 7). O cabeçalho já identifica pessoa e perfil, e a sessão encerrada leva ao login. |
+| Gestão restrita e sessão identificada | Professor tenta administrar matrícula | ✅ | `gestao.spec.ts`: "CA-12.4: professora não acessa nenhuma operação administrativa (403)" e `movimentacoes.spec.ts` (403 em todas as movimentações); o menu "Gestão" só aparece para a coordenação. O menu lateral identifica pessoa e perfil; sessão encerrada leva ao login. |
 | Proteção de credenciais (hospedada) | Acesso hospedado | N/A | A entrega é local; a não aplicabilidade está registrada em [`docs/guia-operacional.md`](guia-operacional.md), seção 6 (tarefa 9.2). Mesmo assim, foi conferido em `data/fio.sqlite` que as 5 senhas estão com hash bcrypt e que a senha de demonstração não aparece no arquivo. O cookie é `httpOnly`. |
 
 ## avaliacao-bimestral
@@ -71,7 +73,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | | Limite e vazio | ✅ | Mesmo teste, mais "texto vazio é rejeitado" (a observação é opcional; não se cria observação vazia) e `regras.spec.ts` |
 | Salvamento explícito e persistente | Reabrir sessão | ✅ | Verificado manualmente: salvar, sair, entrar de novo e ver os valores. A persistência é em SQLite, com transação (`seed.spec.ts`: "grava de forma atômica"). |
 | | Falha de gravação | ⚠️ | A tela só mostra "Tudo salvo" se todas as chamadas derem certo; em erro, lista as falhas e mantém as alterações (`Avaliacao.tsx`). Falta teste automático de interface. |
-| | Saída com alterações | ⚠️ | Implementado (`beforeunload` e confirmação ao trocar de tela, em `Avaliacao.tsx`). Não verificado no navegador. |
+| | Saída com alterações | ✅ | `beforeunload` e confirmação ao trocar de tela (`Avaliacao.tsx`). Verificado no navegador em 17/11: com um nível marcado e não salvo, "Voltar" mostra "Há alterações não salvas nesta avaliação. Sair mesmo assim e perder as alterações?" e, ao cancelar, a tela continua na avaliação. |
 | Revisões e limpeza justificada | Limpeza de resposta | ✅ | `limpar.spec.ts`: "a autora limpa com justificativa: vigente fica Sem avaliação e a versão anterior continua consultável"; regras (justificativa, autoria, versão, coordenação, período fechado) testadas. Na ficha, a célula mostra "— ✎" e a versão anterior aparece em "Correções neste ano". |
 | | Retificação pela sucessora | ✅ | A sucessora registra observação própria sem alterar o registro alheio: `avaliacao.spec.ts` (AUTORIA 403 e observações de duas autoras) |
 | Concorrência sem perda silenciosa | Duas professoras na mesma resposta ausente | ✅ | `avaliacao.spec.ts`: "duas criações simultâneas da mesma habilidade: um sucesso e um 409 (CA-13.5)" |
@@ -115,7 +117,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | | Múltiplos motivos | ✅ | `atencao.spec.ts` (domain): "CR-17"; `painel.spec.ts`: o aluno conta uma vez em "Em atenção" |
 | Ausência e informação incompleta | Sem escrita e sem outro motivo | ✅ | `atencao.spec.ts` (domain): "CR-16 / CA-08.7"; integração: "sem escrita fica incompleta" |
 | | Lacunas com escrita ausente | ✅ | `atencao.spec.ts` (domain e integração, Davi) |
-| | Histórico externo desconhecido | ⚠️ | A limitação aparece separada e não cria estado de atenção (`ficha.spec.ts`, ingressante). Falta o teste com escrita adequada. |
+| | Histórico externo desconhecido | ✅ | `ficha.spec.ts`: ingressante sem prontuário fica "Atenção não concluída" sem escrita e, com escrita adequada, "Sem sinal de atenção", com "Histórico anterior indisponível" visível à parte. |
 | Abertura e autoria de atenção manual | Justificativa vazia | ✅ | `atencao.spec.ts` (integração): "CA-09.1–09.3 … texto vazio é rejeitado" |
 | | Motivos coexistentes | ✅ | Mesmo teste: duas atenções com IDs e autoras próprios. Correção do texto original só pela autora, com a versão anterior preservada: `atencao.spec.ts`, "tarefa 5.2: só a autora corrige o texto original" (substituta e coordenação recebem 403); botão **Corrigir texto** na ficha (verificado no navegador). |
 | Ciclo de vida independente | Sucessora encerra atenção | ✅ | `atencao.spec.ts` (integração): "CA-09.5: substituta encerra com justificativa (autora original preservada)…"; verificado também no navegador |
@@ -162,7 +164,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Fechamento com ausências | Fechar bimestre incompleto | ✅ | `calendario.spec.ts`: "CA-13.2…": lista as ausências por turma, fecha com justificativa e trilha, bloqueia a escrita e não cria avaliações; tela "Calendário" da coordenação |
 | | Ano com período aberto | ✅ | `calendario.spec.ts`: "CA-13.3…": 422 BIMESTRE_ABERTO; com os quatro fechados, o ano fecha |
 | Bloqueios por período | Tentativa de editar avaliação fechada | ✅ | `acesso.spec.ts` e `avaliacao.spec.ts`: "bimestre 2 de 2026 dá 422 PERIODO_FECHADO"; a tela mostra "🔒 Este bimestre está fechado" |
-| | Encerramento atual de atenção manual | ⚠️ | As ações de atenção não dependem do período (`atencao.service.ts`). Falta manter a atenção ativa nas consultas anteriores ao encerramento: hoje o painel usa a situação atual. |
+| | Encerramento atual de atenção manual | ✅ | As ações de atenção não dependem do período (`atencao.service.ts`). `atencao.spec.ts`: "encerrada no 4º bimestre, a atenção manual continua valendo na consulta do 3º" (tarefa 5.3). |
 | Reabertura preserva encerramento | Reabertura após passagem de ano | ✅ | `reabertura.spec.ts` (tarefa 7.4), com passagem real para 2027: "a matrícula de 2027 permanece e 2026 continua elegível para herança", "uma correção antiga, feita depois da reabertura, não supera a consolidação de 2027" e "datas de referência passadas não mudam". Também `calendario.spec.ts` (reabrir bimestre de ano fechado exige reabrir o ano). Procedimento: `docs/guia-operacional.md`, seção 7. |
 
 ## gestao-escolar
@@ -204,8 +206,47 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | CR-20 | ✅ | `painel.spec.ts` (domain); `evolucao.spec.ts` |
 | CR-21 | ✅ | `acesso.spec.ts`, `avaliacao.spec.ts`, `ficha.spec.ts`, `painel.spec.ts` |
 | CR-22 | ✅ | Tela de regras / `casos-referencia.ts`: com um CAT-v2 hipotético, a turma CAT-v1 continua com T = 64 (não existe CAT-v2 real no banco) |
-| CR-23 | ✅ | `lacunas.spec.ts`; o painel considera a atenção manual aberta até a referência |
+| CR-23 | ✅ | `lacunas.spec.ts`; atenção manual com corte histórico na abertura e no encerramento (`manualAtivaEm`, `atencao.spec.ts`); `reabertura.spec.ts` |
 | CR-24 | ✅ | `cat-v1.spec.ts` (fixture separada) e `percentual.spec.ts` (17/40 = 42,5%) |
+
+### Rastreabilidade por ID (tarefa 10.2)
+
+Resultado por identificador dos documentos-base. A coluna "Evidência" aponta para as seções acima (por spec) e para os testes; nada é marcado ✅ sem teste ou verificação registrada.
+
+**Requisitos funcionais**
+
+| ID | Situação | Evidência principal |
+| --- | --- | --- |
+| RF-01 Identificar aluno, turma, ano e bimestre | ✅ | avaliacao-bimestral e calendario-letivo; `avaliacao.spec.ts`, `calendario.spec.ts` |
+| RF-02 Avaliar habilidades do catálogo | ✅ | avaliacao-bimestral e catalogo-pedagogico; `cat-v1.spec.ts`, `avaliacao.spec.ts` (a publicação de um CAT-v2 real não existe; ver ⚠️ em catalogo-pedagogico) |
+| RF-03 Registrar escrita por bimestre | ✅ | avaliacao-bimestral; `avaliacao.spec.ts` |
+| RF-04 Observações livres | ✅ | avaliacao-bimestral; limite compartilhado de 4.000 em `avaliacao.spec.ts` e `regras.spec.ts` |
+| RF-05 Trajetória individual | ✅ | historico-pedagogico; `ficha.spec.ts` |
+| RF-06 Lacunas herdadas | ✅ | lacunas-herdadas; `lacunas.spec.ts`, `ficha.spec.ts` |
+| RF-07 Consolidação/reavaliação herdada | ✅ | lacunas-herdadas; `lacunas.spec.ts` (historico) |
+| RF-08 Atenção e motivos | ✅ | atencao-pedagogica; `atencao.spec.ts` (domain e integração) |
+| RF-09 Atenção manual | ✅ | atencao-pedagogica; `atencao.spec.ts` (inclui correção pela autora e corte histórico) |
+| RF-10 Painel da turma | ✅ | paineis-e-indicadores; `painel.spec.ts`, `evolucao.spec.ts` |
+| RF-11 Consulta ampla da coordenação | ✅ | paineis-e-indicadores e acesso-e-permissoes; `painel.spec.ts`, `acesso.spec.ts` |
+| RF-12 Gestão de alunos, turmas, matrículas e docentes | ✅ | gestao-escolar (8 de 8); `gestao.spec.ts`, `movimentacoes.spec.ts`, `reabertura.spec.ts` |
+| RF-13 Salvamento, revisões e fechamento | ⚠️ | avaliacao-bimestral e calendario-letivo; `limpar.spec.ts`, `calendario.spec.ts`. Parcial: falta teste automático de interface para "falha de gravação" (o comportamento está implementado em `Avaliacao.tsx`) |
+| RF-14 Regras e casos de referência | ✅ | regras-e-casos-de-referencia; `casos-referencia.spec.ts` e tela Regras |
+
+**Requisitos não funcionais**
+
+| ID | Situação | Evidência |
+| --- | --- | --- |
+| RNF-01 Integridade histórica | ✅ | Revisões e eventos preservam o original: `avaliacao.spec.ts`, `limpar.spec.ts`, `lacunas.spec.ts`, `movimentacoes.spec.ts` (nada copiado) |
+| RNF-02 Autenticação e autorização | ✅ | `acesso.spec.ts` (leitura e escrita negadas por acesso direto), CR-21, `gestao.spec.ts` (CA-12.4, elevação de perfil) |
+| RNF-03 Rastreabilidade | ✅ | Autora, instante e contexto em respostas, revisões, eventos, vínculos, calendário e movimentações (`calendario.spec.ts`, `movimentacoes.spec.ts`); textos pedagógicos fora dos logs |
+| RNF-04 Acessibilidade e clareza | ⚠️ | Pré-checagem e correções em [`docs/evidencias/acessibilidade-rnf04.md`](evidencias/acessibilidade-rnf04.md); falta a verificação manual em dois navegadores (tarefa 9.4, parte 2 do arquivo) |
+| RNF-05 Dados e recuperação | ✅ | Base só sintética; [`docs/evidencias/restauracao-rnf05.md`](evidencias/restauracao-rnf05.md), `copia-seguranca.spec.ts` |
+| RNF-06 Desempenho de referência | ✅ | [`docs/evidencias/desempenho-rnf06.md`](evidencias/desempenho-rnf06.md): 30 de 30 em até 2 s |
+| RNF-07 Persistência e falhas | ⚠️ | Dados persistem entre sessões (`seed.spec.ts`, `copia-seguranca.spec.ts`); conflito pede atualização (`avaliacao.spec.ts`, 409). Mesma pendência de RF-13 quanto ao teste de interface da falha de gravação |
+
+**Casos de referência:** CR-01 a CR-24 conforme a tabela "Casos de referência (CR)" acima; além disso, 23 deles rodam ao vivo na tela **Regras** (23 de 23 aprovados) e o CR-21 é provado por integração.
+
+**Critérios CA críticos (D12):** CA-01 a CA-14 estão cobertos pelos cenários das specs listados nas seções acima, conforme a tabela de rastreabilidade de `design.md` (D12). Os únicos critérios ainda parciais são os de RF-13/RNF-07 e RNF-04 citados nesta seção.
 
 ---
 
@@ -213,12 +254,17 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1 a 5.3, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.3.
+- **Concluídas:** 10.2 e 10.3, 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1 a 5.3, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.3.
 - **Parciais:** 3.6 (pré-checagem automática registrada; falta a verificação manual em dois navegadores).
-- **Não feitas:** 9.4 (roteiro pronto para preencher em `docs/evidencias/acessibilidade-rnf04.md`) e grupo 10, exceto o que este relatório adianta da 10.2.
+- **Não feitas:** 9.4 (roteiro pronto para preencher em `docs/evidencias/acessibilidade-rnf04.md`, em andamento pelo grupo) e 10.1 (execução integrada do roteiro de demonstração, a fazer no ensaio da apresentação).
 
 ## Limitações conhecidas
 
 - As sessões ficam em memória: reiniciar o servidor desloga todos (decisão do MVP).
 - A data de "hoje" vem do relógio do computador (fuso America/Sao_Paulo). A base fictícia foi pensada para novembro de 2026: 3º e 4º bimestres abertos, e o 4º sem registros.
 - Nenhum dado real: escola, alunos e textos são fictícios.
+- Entrega local, sem hospedagem: HTTPS, recuperação de senha por e-mail e backup diário não se aplicam (guia operacional, seção 6). A "nova senha" é gerada pela coordenação.
+- Não existe catálogo CAT-v2 publicado; a regra de versão fixada por contexto está implementada e testada só com o CAT-v1 e o catálogo demonstrativo (CR-22, CR-24).
+- Passagem de ano exige que o ano esteja fechado no Calendário; na base de demonstração (novembro de 2026) ela é recusada de propósito.
+- Acessibilidade: não houve teste com leitor de tela; a verificação manual em dois navegadores está em andamento.
+- Falha de gravação: o comportamento (não mostrar "Tudo salvo" e manter as alterações) está implementado, mas sem teste automático de interface.
