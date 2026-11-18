@@ -23,7 +23,9 @@ RNF-04: fluxos essenciais operáveis por **teclado**, **foco visível**, **rótu
 2. **Foco pouco visível no menu lateral** (contorno azul em fundo azul): agora é branco.
 3. **Faltava atalho para pular o menu**: adicionado o link "Pular para o conteúdo", que aparece no primeiro Tab.
 
-## Parte 2 — Verificação manual em dois navegadores (preencher)
+## Parte 2 — Verificação manual em dois navegadores
+
+**Resultado (18/11/2026):** executada por um integrante do grupo com o roteiro abaixo. Segundo o relato à usuária, **os 8 fluxos funcionaram só com teclado nos dois navegadores, no computador e em 360 px, e os componentes ficaram responsivos**; nenhuma correção foi pedida. Os nomes e as versões dos navegadores não foram registrados neste arquivo (campos abaixo em branco).
 
 Use dois navegadores instalados (por exemplo **Chrome** e **Edge**, ou **Firefox**). Para 360 px: abra as Ferramentas do desenvolvedor (F12), clique no ícone de celular e digite 360 na largura.
 
@@ -49,4 +51,4 @@ Em cada linha, confira também: **o foco aparece** (contorno) o tempo todo? Os *
 - Não houve teste com leitor de tela (NVDA ou similar), apenas a verificação de nomes acessíveis acima.
 - Em 360 px, as tabelas largas (lacunas, avaliações por bimestre e mês do calendário) rolam para o lado **dentro do cartão**, o que é esperado.
 
-Depois de preencher, salve este arquivo; ele é a evidência da tarefa 9.4 citada no relatório de verificação.
+Este arquivo é a evidência das tarefas 3.6 e 9.4 citada no relatório de verificação.

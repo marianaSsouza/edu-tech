@@ -22,7 +22,7 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 - [x] 3.3 Implementar salvamento parcial, confirmação após persistência, aviso de saída e erro recuperável; verificar CA-13.1, RNF-07 e releitura depois de reabrir a sessão.
 - [x] 3.4 Implementar revisão justificada e limpeza de resposta, preservando versões; verificar CA-13.4, RNF-01/03 e retificação pela sucessora sem alterar o indicador antigo.
 - [x] 3.5 Implementar conflito por versão desatualizada e unicidade sob gravação simultânea; verificar CA-13.5, disputa de duas autoras pelo campo ausente e limite de observações sob concorrência.
-- [ ] 3.6 Verificar fluxo de registro por teclado em desktop e 360 px, foco, rótulos e estados de PRO-04; registrar evidências de RNF-04 e documentar salvamento, correção e conflito. _(Parcial: pré-checagem registrada em `docs/evidencias/acessibilidade-rnf04.md`; falta a verificação manual em dois navegadores, parte 2 do mesmo arquivo.)_
+- [x] 3.6 Verificar fluxo de registro por teclado em desktop e 360 px, foco, rótulos e estados de PRO-04; registrar evidências de RNF-04 e documentar salvamento, correção e conflito. _(Concluída em 18/11: `docs/evidencias/acessibilidade-rnf04.md`.)_
 
 ## 4. Histórico e lacunas — P0
 
@@ -63,11 +63,11 @@ Checklist de implementação. Situação em 16/11/2026 conferida em `docs/relato
 - [x] 9.1 Preparar cópia de segurança e procedimento de restauração da demonstração; executar restauração preservando vínculos, versões e autoria e registrar evidência de RNF-05 no guia operacional.
 - [x] 9.2 Se houver hospedagem, verificar conexão protegida, recuperação confiável de acesso, ausência de senhas em texto simples e backup diário com retenção de 30 dias/acesso restrito; se a entrega for local, registrar explicitamente a não aplicabilidade das condições de hospedagem.
 - [x] 9.3 Medir RNF-06 com 500 alunos, cinco anos e 30 operações após inicialização; verificar pelo menos 29 em até 2 segundos e registrar ambiente, dados e tempos, corrigindo consultas que não cumprirem a meta.
-- [ ] 9.4 Verificar fluxos administrativos e de consulta por teclado, em desktop e 360 px, em dois navegadores disponíveis; registrar versões, foco, rótulos, estados e limitações conforme RNF-04.
+- [x] 9.4 Verificar fluxos administrativos e de consulta por teclado, em desktop e 360 px, em dois navegadores disponíveis; registrar versões, foco, rótulos, estados e limitações conforme RNF-04.
 
 ## 10. Integração e entrega
 
-- [ ] 10.1 Executar o roteiro PRO-01–PRO-09 e a demonstração de dois anos, incluindo ausência herdada, consolidação, atenção manual e grupo pequeno; registrar resultados integrados sem confundir simulação com persistência.
+- [x] 10.1 Executar o roteiro PRO-01–PRO-09 e a demonstração de dois anos, incluindo ausência herdada, consolidação, atenção manual e grupo pequeno; registrar resultados integrados sem confundir simulação com persistência.
 - [x] 10.2 Conferir rastreabilidade de RF-01–RF-14, todos os CA críticos de D12, CR-01–CR-24 e RNF-01–RNF-07; produzir relatório com resultado por ID e nenhuma declaração de aprovação sem evidência.
 - [x] 10.3 Preparar candidata, cópia compatível de dados, guia de execução e lista de limitações; verificar execução pelo guia e classificar como parcial se P1 ou critérios obrigatórios estiverem ausentes.
 

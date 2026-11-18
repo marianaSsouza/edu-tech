@@ -5,8 +5,8 @@ Tarefas 10.2 e 10.3 do `tasks.md`. Mostra, para cada spec de `openspec/changes/e
 - **Data:** 17/11/2026 · **Código verificado:** branch `main` (ver `git log`; o último commit é a versão candidata).
 - **Execução pelo guia (10.3):** em 17/11, um clone novo do GitHub (commit `680307e`) seguiu só o README: `npm install`, `npm run seed`, `npm test` (168 de 168), `npm run build` e `npm start` (API e telas respondendo e login funcionando), sem nenhum ajuste manual.
 - **Testes automáticos:** 168 de 168 passando (`npm test`). Saída completa em [`docs/evidencias/saida-npm-test.txt`](evidencias/saida-npm-test.txt).
-- **Resultado:** 88 dos 93 cenários das specs com evidência (✅), 4 parciais (⚠️), nenhum não feito e 1 que não se aplica à entrega local. Rastreabilidade por RF, RNF e CR na seção "Rastreabilidade por ID".
-- **Classificação da entrega:** **parcial**, conforme a regra da tarefa 10.3 (P1 incompleto = parcial). P0 e quase todo o P1 estão implementados e verificados (gestão, calendário, indicadores, regras, cópia de segurança, desempenho). Ficam parciais: a verificação manual de acessibilidade em dois navegadores (9.4/3.6, em andamento pelo grupo), o teste automático de interface da falha de gravação (RF-13/RNF-07), a publicação de um CAT-v2 real e a execução integrada do roteiro completo (10.1). Ver "Tarefas" e "Limitações" no fim.
+- **Resultado:** 90 dos 93 cenários das specs com evidência (✅), 2 parciais (⚠️), nenhum não feito e 1 que não se aplica à entrega local. Rastreabilidade por RF, RNF e CR na seção "Rastreabilidade por ID".
+- **Classificação da entrega:** **parcial**, por cautela, conforme a regra da tarefa 10.3. Todas as tarefas do `tasks.md` estão concluídas e todo o P0 e o P1 estão implementados; ficam com evidência parcial apenas dois cenários: o teste automático de interface da falha de gravação (o comportamento está implementado em `Avaliacao.tsx`) e a publicação de um catálogo CAT-v2 real (a regra de versão fixada está implementada e testada). Ver "Limitações" no fim.
 
 ## Como conferir
 
@@ -35,7 +35,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Spec | Cenários | ✅ | ⚠️ | ❌ | N/A |
 | --- | --- | --- | --- | --- | --- |
 | acesso-e-permissoes | 9 | 8 | 0 | 0 | 1 |
-| avaliacao-bimestral | 12 | 10 | 2 | 0 | 0 |
+| avaliacao-bimestral | 12 | 11 | 1 | 0 | 0 |
 | historico-pedagogico | 6 | 6 | 0 | 0 | 0 |
 | lacunas-herdadas | 11 | 11 | 0 | 0 | 0 |
 | atencao-pedagogica | 13 | 13 | 0 | 0 | 0 |
@@ -43,8 +43,8 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | catalogo-pedagogico | 6 | 5 | 1 | 0 | 0 |
 | calendario-letivo | 7 | 7 | 0 | 0 | 0 |
 | gestao-escolar | 8 | 8 | 0 | 0 | 0 |
-| regras-e-casos-de-referencia | 6 | 5 | 1 | 0 | 0 |
-| **Total** | **93** | **88** | **4** | **0** | **1** |
+| regras-e-casos-de-referencia | 6 | 6 | 0 | 0 | 0 |
+| **Total** | **93** | **90** | **2** | **0** | **1** |
 
 ---
 
@@ -77,7 +77,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Revisões e limpeza justificada | Limpeza de resposta | ✅ | `limpar.spec.ts`: "a autora limpa com justificativa: vigente fica Sem avaliação e a versão anterior continua consultável"; regras (justificativa, autoria, versão, coordenação, período fechado) testadas. Na ficha, a célula mostra "— ✎" e a versão anterior aparece em "Correções neste ano". |
 | | Retificação pela sucessora | ✅ | A sucessora registra observação própria sem alterar o registro alheio: `avaliacao.spec.ts` (AUTORIA 403 e observações de duas autoras) |
 | Concorrência sem perda silenciosa | Duas professoras na mesma resposta ausente | ✅ | `avaliacao.spec.ts`: "duas criações simultâneas da mesma habilidade: um sucesso e um 409 (CA-13.5)" |
-| Interface acessível e estados claros | Registro por teclado em 360 px | ⚠️ | Rádios nativos dentro de `fieldset`/`legend`, foco visível, estados em texto e símbolo; pré-checagem registrada em [`docs/evidencias/acessibilidade-rnf04.md`](evidencias/acessibilidade-rnf04.md) (17/11): ordem do Tab, foco visível, nomes acessíveis em 8 telas e 10 telas sem rolagem lateral em 360 px; três problemas encontrados e corrigidos (Ficha e Calendário passavam de 360 px, foco no menu lateral, atalho "Pular para o conteúdo"). Falta a verificação manual em dois navegadores (parte 2 do mesmo arquivo, tarefa 9.4). |
+| Interface acessível e estados claros | Registro por teclado em 360 px | ✅ | Pré-checagem automática e correções (17/11) e verificação manual em dois navegadores, no computador e em 360 px, feita por integrante do grupo (18/11, todos os fluxos aprovados): [`docs/evidencias/acessibilidade-rnf04.md`](evidencias/acessibilidade-rnf04.md). Rádios nativos em `fieldset`/`legend`, foco visível, estados em texto e símbolo. |
 
 ## historico-pedagogico
 
@@ -188,7 +188,7 @@ Arquivos de teste citados (todos em `server/src/`): `domain/regras.spec.ts`, `do
 | Execução isolada | Execução com falha | ✅ | `casos-referencia.spec.ts`: "falha controlada aparece como falha, com esperado e obtido, e ajusta o total"; na tela, "Simular um erro" mostra o CR-01 como "Diferente", com resposta certa e valor calculado lado a lado (verificado no navegador). A execução não acessa o banco. |
 | | Antes da conclusão | ✅ | Enquanto executa, a tela mostra só "⏳ Conferindo os exemplos…"; o resumo e os exemplos só aparecem com o resultado real (`Regras.tsx`; verificado no navegador). |
 | Contratos dos casos de referência | Casos reproduzíveis | ✅ | Os 24 CR estão em `modules/regras/casos-referencia.ts`, com as funções reais: 23 executados na tela (`casos-referencia.spec.ts`: "23 casos … aprovados") e o CR-21 marcado "fora da tela", com evidência de integração. |
-| Demonstração e evidências | Declaração de conclusão | ⚠️ | Este relatório e o roteiro de demonstração (`docs/roteiro-demonstracao.md`). O roteiro PRO-01 a PRO-09 completo (10.1) depende do P1. |
+| Demonstração e evidências | Declaração de conclusão | ✅ | Roteiro [`docs/roteiro-demonstracao.md`](roteiro-demonstracao.md) percorrido no sistema em 18/11 com a base de demonstração (resultado por tela em "Execução do roteiro (10.1)"); este relatório declara o resultado por ID e as limitações. |
 | | Entrega parcial | ✅ | Este relatório declara a entrega como parcial e lista o que falta |
 
 ### Casos de referência (CR)
@@ -239,24 +239,38 @@ Resultado por identificador dos documentos-base. A coluna "Evidência" aponta pa
 | RNF-01 Integridade histórica | ✅ | Revisões e eventos preservam o original: `avaliacao.spec.ts`, `limpar.spec.ts`, `lacunas.spec.ts`, `movimentacoes.spec.ts` (nada copiado) |
 | RNF-02 Autenticação e autorização | ✅ | `acesso.spec.ts` (leitura e escrita negadas por acesso direto), CR-21, `gestao.spec.ts` (CA-12.4, elevação de perfil) |
 | RNF-03 Rastreabilidade | ✅ | Autora, instante e contexto em respostas, revisões, eventos, vínculos, calendário e movimentações (`calendario.spec.ts`, `movimentacoes.spec.ts`); textos pedagógicos fora dos logs |
-| RNF-04 Acessibilidade e clareza | ⚠️ | Pré-checagem e correções em [`docs/evidencias/acessibilidade-rnf04.md`](evidencias/acessibilidade-rnf04.md); falta a verificação manual em dois navegadores (tarefa 9.4, parte 2 do arquivo) |
+| RNF-04 Acessibilidade e clareza | ✅ | [`docs/evidencias/acessibilidade-rnf04.md`](evidencias/acessibilidade-rnf04.md): pré-checagem automática com correções e verificação manual em dois navegadores (computador e 360 px). Sem teste com leitor de tela (limitação) |
 | RNF-05 Dados e recuperação | ✅ | Base só sintética; [`docs/evidencias/restauracao-rnf05.md`](evidencias/restauracao-rnf05.md), `copia-seguranca.spec.ts` |
 | RNF-06 Desempenho de referência | ✅ | [`docs/evidencias/desempenho-rnf06.md`](evidencias/desempenho-rnf06.md): 30 de 30 em até 2 s |
 | RNF-07 Persistência e falhas | ⚠️ | Dados persistem entre sessões (`seed.spec.ts`, `copia-seguranca.spec.ts`); conflito pede atualização (`avaliacao.spec.ts`, 409). Mesma pendência de RF-13 quanto ao teste de interface da falha de gravação |
 
 **Casos de referência:** CR-01 a CR-24 conforme a tabela "Casos de referência (CR)" acima; além disso, 23 deles rodam ao vivo na tela **Regras** (23 de 23 aprovados) e o CR-21 é provado por integração.
 
-**Critérios CA críticos (D12):** CA-01 a CA-14 estão cobertos pelos cenários das specs listados nas seções acima, conforme a tabela de rastreabilidade de `design.md` (D12). Os únicos critérios ainda parciais são os de RF-13/RNF-07 e RNF-04 citados nesta seção.
+**Critérios CA críticos (D12):** CA-01 a CA-14 estão cobertos pelos cenários das specs listados nas seções acima, conforme a tabela de rastreabilidade de `design.md` (D12). Os únicos critérios ainda parciais são os de RF-13/RNF-07 citados nesta seção.
 
 ---
+
+### Execução do roteiro (10.1)
+
+Roteiro percorrido no sistema em 18/11/2026, com a base de demonstração recém-criada (`seed:reset`), nas contas da professora, da substituta e da coordenação. Resultado por tela do protótipo (PRO):
+
+| Tela | O que foi conferido | Resultado |
+| --- | --- | --- |
+| PRO-01 Entrada e contexto | Login, perfil no menu lateral, turma/ano/bimestre visíveis | ✅ |
+| PRO-02 Minha turma | Lista com desenho, habilidades avaliadas e selo por aluno; indicadores do 3º bimestre (48,4% = 31/64; escrita 75,0% = 6/8) e aviso de 0,0% sem registros no 4º | ✅ |
+| PRO-03 Ficha e histórico | Atenção, lacunas, histórico de 2025 e 2026 com autoria, ✎ e correções, observações | ✅ |
+| PRO-04 Avaliação e revisão | Salvar ("✔ Tudo salvo"), correção sem justificativa recusada, com justificativa aceita, bimestre fechado só leitura, substituta não troca resposta da titular | ✅ |
+| PRO-05 Lacunas herdadas | Bernardo: 6 pendentes (1 não consolidada, 3 em desenvolvimento, 2 sem avaliação), consolidação de 2026 com evidência; 2025 preservado | ✅ |
+| PRO-06 Atenção manual | Davi: substituta comenta/encerra, só a autora corrige o texto | ✅ |
+| PRO-07 Coordenação: consulta | Escola inteira no 3º bimestre; 2º B com números ocultos e fichas abertas | ✅ |
+| PRO-08 Coordenação: gestão | Possível duplicidade, vínculos titular/substituta, calendário com ausências antes de fechar (verificados também em 16 e 17/11, com troca de turma e contas) | ✅ |
+| PRO-09 Regras e casos | 23 de 23 conferidos na hora e falha simulada visível | ✅ |
 
 ## Tarefas do `tasks.md`
 
 As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais trazem uma nota. Resumo:
 
-- **Concluídas:** 10.2 e 10.3, 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.5, 4.1 a 4.4, 5.1 a 5.3, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.3.
-- **Parciais:** 3.6 (pré-checagem automática registrada; falta a verificação manual em dois navegadores).
-- **Não feitas:** 9.4 (roteiro pronto para preencher em `docs/evidencias/acessibilidade-rnf04.md`, em andamento pelo grupo) e 10.1 (execução integrada do roteiro de demonstração, a fazer no ensaio da apresentação).
+- **Concluídas:** todas — 1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.6, 4.1 a 4.4, 5.1 a 5.3, 6.1 a 6.4, 7.1 a 7.4, 8.1 a 8.4, 9.1 a 9.4 e 10.1 a 10.3.
 
 ## Limitações conhecidas
 
@@ -266,5 +280,5 @@ As tarefas concluídas estão marcadas `[x]` no próprio `tasks.md`; as parciais
 - Entrega local, sem hospedagem: HTTPS, recuperação de senha por e-mail e backup diário não se aplicam (guia operacional, seção 6). A "nova senha" é gerada pela coordenação.
 - Não existe catálogo CAT-v2 publicado; a regra de versão fixada por contexto está implementada e testada só com o CAT-v1 e o catálogo demonstrativo (CR-22, CR-24).
 - Passagem de ano exige que o ano esteja fechado no Calendário; na base de demonstração (novembro de 2026) ela é recusada de propósito.
-- Acessibilidade: não houve teste com leitor de tela; a verificação manual em dois navegadores está em andamento.
+- Acessibilidade: não houve teste com leitor de tela; a verificação manual em dois navegadores foi feita pelo grupo, mas os nomes e versões dos navegadores não foram anotados.
 - Falha de gravação: o comportamento (não mostrar "Tudo salvo" e manter as alterações) está implementado, mas sem teste automático de interface.
