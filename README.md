@@ -1,6 +1,6 @@
 # Fio da Aprendizagem — guia de execução
 
-MVP acadêmico (escola fictícia, dados sintéticos). Uma aplicação web única: **NestJS + TypeORM + SQLite** no servidor e **React + Vite + Tailwind** no cliente. As decisões estão em `openspec/changes/especificar-fio-da-aprendizagem/design.md` (D13 a D17).
+MVP acadêmico (escola fictícia, dados sintéticos). Uma aplicação web única: **NestJS + TypeORM + SQLite** no servidor e **React + Vite + Tailwind** no cliente. As decisões estão em `openspec/changes/especificar-fio-da-aprendizagem/design.md` (D13 a D17). Visão da arquitetura, stack, módulos e modelo de dados: [`docs/arquitetura.md`](docs/arquitetura.md).
 
 ## Ferramentas e versões (tarefa 1.1)
 
